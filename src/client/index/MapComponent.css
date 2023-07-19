@@ -1,0 +1,13 @@
+.map-container-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+  margin: auto;
+  max-width: 100vw;
+}
+
+#map-container {
+  width: 100%;
+  min-height: 600px;
+  flex: 1;
+}

@@ -10,7 +10,7 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "module": "es6",
+    "module": "es2022",
     "target": "es6",
     "lib": ["es2017", "dom"],
     "declaration": true,
