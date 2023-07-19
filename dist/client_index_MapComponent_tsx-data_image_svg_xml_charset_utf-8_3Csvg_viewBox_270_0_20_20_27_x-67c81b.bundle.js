@@ -117,6 +117,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mapbox_gl_dist_mapbox_gl_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! mapbox-gl/dist/mapbox-gl.css */ "../node_modules/mapbox-gl/dist/mapbox-gl.css");
 /* harmony import */ var _mapbox_mapbox_gl_draw_dist_mapbox_gl_draw_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css */ "../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../constants */ "./constants.ts");
+/* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
+/* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! osmtogeojson */ "../node_modules/osmtogeojson/index.js");
+/* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(osmtogeojson__WEBPACK_IMPORTED_MODULE_9__);
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -126,6 +129,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
 
 
 
@@ -154,7 +159,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             // TODO: style selector
             style: "mapbox://styles/mapbox/streets-v11",
         };
-        this.updateDrawing = (e) => {
+        this.updateDrawing = (e) => __awaiter(this, void 0, void 0, function* () {
             (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(e);
             const data = this.drawControl.getAll();
             if (data.features.length > 0) {
@@ -163,27 +168,53 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 const perimeterKm = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.length(data, { units: "kilometers" });
                 // Print up to 2 decimal places.
                 (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(`Area: ${areaKm.toFixed(2)} km², Perimeter: ${perimeterKm.toFixed(2)} km`);
+                const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
+                (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(parkingAreas);
+                // Render all of the type: "relation" areas on the map.
+                this.map.getSource("parkingAreas").setData(osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(parkingAreas));
             }
-        };
+        });
         if (props.initialState) {
             this.state = Object.assign(Object.assign({}, this.state), props.initialState);
         }
     }
     constructMap() {
-        this.map = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().Map)({
-            container: this.mapDivRef.current,
-            style: this.state.style,
-            accessToken: this.props.apiKey,
+        return __awaiter(this, void 0, void 0, function* () {
+            this.map = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().Map)({
+                container: this.mapDivRef.current,
+                style: this.state.style,
+                accessToken: this.props.apiKey,
+                center: [-95.3698, 29.7604],
+                zoom: 13,
+            });
+            this.map.addControl(this.mapControl);
+            this.map.addControl(this.drawControl);
+            // Add a source for the parking areas in red.
+            this.map.on("draw.create", this.updateDrawing);
+            this.map.on("draw.delete", this.updateDrawing);
+            this.map.on("draw.update", this.updateDrawing);
+            yield new Promise((resolve) => {
+                this.map.once("styledata", () => {
+                    this.map.addSource("parkingAreas", {
+                        type: "geojson",
+                    });
+                    this.map.addLayer({
+                        id: "parkingAreas",
+                        type: "fill",
+                        source: "parkingAreas",
+                        paint: {
+                            "fill-color": "red",
+                            "fill-opacity": 0.5,
+                        },
+                    });
+                    resolve();
+                });
+            });
         });
-        this.map.addControl(this.mapControl);
-        this.map.addControl(this.drawControl);
-        this.map.on("draw.create", this.updateDrawing);
-        this.map.on("draw.delete", this.updateDrawing);
-        this.map.on("draw.update", this.updateDrawing);
     }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.constructMap();
+            yield this.constructMap();
         });
     }
     componentWillUpdate(nextProps, nextState) {

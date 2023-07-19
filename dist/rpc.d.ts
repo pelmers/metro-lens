@@ -6,4 +6,8 @@ export declare const ServerCalls: {
         i: t.NullC;
         o: t.StringC;
     };
+    GetParkingAreas: () => {
+        i: t.AnyC;
+        o: t.AnyC;
+    };
 };

@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 import { RpcServer } from "roots-rpc";
 import { e } from "./constants";
+import { FeatureCollection, featureCollection } from "@turf/turf";
 
 export function wrapServerErrors(server: RpcServer) {
   const oldRegister = server.register.bind(server);
@@ -16,5 +17,10 @@ export const ServerCalls = {
   GetMapboxApiKey: () => ({
     i: t.null,
     o: t.string,
+  }),
+  GetParkingAreas: () => ({
+    i: t.any,
+    // TODO: figure out what does this return
+    o: t.any,
   }),
 };

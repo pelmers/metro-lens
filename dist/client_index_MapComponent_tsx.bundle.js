@@ -6,7 +6,7 @@
   \***************************************/
 /***/ (() => {
 
-throw new Error("Module parse failed: Unterminated string constant (16:7)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n| import \"./MapComponent.css\";\n| import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';\n> import '@mapbox/mapbox-gl-js/;\n| import { d } from \"../../constants\";\n| export default class MapComponent extends React.Component {");
+throw new Error("Module parse failed: Unexpected token (54:16)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n|                 this.map.getSource(\"parkingAreas\").setData(osmtogeojson(parkingAreas));\n|                 this.map.\n>                 ;\n|             }\n|         });");
 
 /***/ })
 

@@ -9,21 +9,13 @@ import compression from "compression";
 import favicon from "serve-favicon";
 import consoleStamp from "console-stamp";
 import ws from "ws";
-import {
-  CLIENT_CALLS_SERVER_RPC_PREFIX,
-  RPC_WS_PATH,
-  d,
-  e,
-} from "../constants";
+import { RPC_WS_PATH, d } from "../constants";
 import { r } from "./utils";
-import { RpcServer, WebsocketTransport } from "roots-rpc";
-import { ServerCalls, wrapServerErrors } from "../rpc";
+import { createRpcServer } from "./rpcServer";
 
 consoleStamp(console);
 const app = express();
 const port = 4041;
-
-const mapboxApiKey = process.env.MAPBOX_API_KEY;
 
 async function main() {
   app.use(compression());
@@ -50,11 +42,11 @@ function handleRpcConnection(socket: ws, req: http.IncomingMessage) {
       req.url
     }`
   );
-  const server = new RpcServer(
-    new WebsocketTransport(socket, CLIENT_CALLS_SERVER_RPC_PREFIX)
-  );
-  wrapServerErrors(server);
-  server.register(ServerCalls.GetMapboxApiKey, async () => mapboxApiKey);
+  const server = createRpcServer(socket);
+  socket.on("close", () => {
+    server.dispose();
+    d(`Client(${JSON.stringify(req.headers["user-agent"])}) disconnected`);
+  });
 }
 
 main();

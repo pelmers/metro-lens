@@ -37168,6 +37168,39 @@ if (
 
 /***/ }),
 
+/***/ "../node_modules/react-dom/client.js":
+/*!*******************************************!*\
+  !*** ../node_modules/react-dom/client.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var m = __webpack_require__(/*! react-dom */ "../node_modules/react-dom/index.js");
+if (false) {} else {
+  var i = m.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+  exports.createRoot = function(c, o) {
+    i.usingClientEntryPoint = true;
+    try {
+      return m.createRoot(c, o);
+    } finally {
+      i.usingClientEntryPoint = false;
+    }
+  };
+  exports.hydrateRoot = function(c, h, o) {
+    i.usingClientEntryPoint = true;
+    try {
+      return m.hydrateRoot(c, h, o);
+    } finally {
+      i.usingClientEntryPoint = false;
+    }
+  };
+}
+
+
+/***/ }),
+
 /***/ "../node_modules/react-dom/index.js":
 /*!******************************************!*\
   !*** ../node_modules/react-dom/index.js ***!
@@ -41104,7 +41137,8 @@ if (false) {} else {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   connect: () => (/* binding */ connect),
-/* harmony export */   getMapboxKey: () => (/* binding */ getMapboxKey)
+/* harmony export */   getMapboxKey: () => (/* binding */ getMapboxKey),
+/* harmony export */   getParkingAreas: () => (/* binding */ getParkingAreas)
 /* harmony export */ });
 /* harmony import */ var isomorphic_ws__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! isomorphic-ws */ "../node_modules/isomorphic-ws/browser.js");
 /* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roots-rpc */ "../node_modules/roots-rpc/dist/index.js");
@@ -41116,6 +41150,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let getMapboxKey;
+let getParkingAreas;
 let alreadyConnected = false;
 function connect() {
     if (alreadyConnected) {
@@ -41124,7 +41159,8 @@ function connect() {
     alreadyConnected = true;
     const socket = new isomorphic_ws__WEBPACK_IMPORTED_MODULE_0__["default"](`${_constants__WEBPACK_IMPORTED_MODULE_2__.WS_DOMAIN_NAME}/${_constants__WEBPACK_IMPORTED_MODULE_2__.RPC_WS_PATH}`);
     const client = new roots_rpc__WEBPACK_IMPORTED_MODULE_1__.RpcClient(new roots_rpc__WEBPACK_IMPORTED_MODULE_1__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_2__.CLIENT_CALLS_SERVER_RPC_PREFIX));
-    getMapboxKey = client.connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetMapboxApiKey);
+    getMapboxKey = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.e)(client.connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetMapboxApiKey));
+    getParkingAreas = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.e)(client.connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetParkingAreas));
     // Reconnect if socket closes
     socket.onclose = () => {
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket closed, reconnecting...`);
@@ -41225,6 +41261,11 @@ const ServerCalls = {
     GetMapboxApiKey: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__["null"],
         o: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
+    }),
+    GetParkingAreas: () => ({
+        i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        // TODO: figure out what does this return
+        o: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
     }),
 };
 
@@ -41522,7 +41563,7 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../node_modules/react-dom/index.js");
+/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "../node_modules/react-dom/client.js");
 /* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
 /**
  * Starting plan: show a map and a way to draw polygons
@@ -41566,13 +41607,14 @@ function main() {
         (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connect)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox-gl_dist-9f31bb"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox-gl_dist-ba298a"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
             (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
         ]);
-        react_dom__WEBPACK_IMPORTED_MODULE_1__.render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+        // render with createroot
+        (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(document.getElementById("react-root")).render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(TitleComponent, null),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(mapComponent.default, { apiKey: apiKey }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FooterComponent, null)), document.getElementById("react-root"));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FooterComponent, null)));
     });
 }
 main();

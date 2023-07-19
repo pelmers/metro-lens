@@ -21,10 +21,10 @@ export default class MapComponent extends React.Component<Props, State> {
         style: string;
     };
     constructor(props: Props);
-    constructMap(): void;
+    constructMap(): Promise<void>;
     updateDrawing: (e: {
         type: string;
-    }) => void;
+    }) => Promise<void>;
     componentDidMount(): Promise<void>;
     componentWillUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): Promise<void>;
     render(): React.JSX.Element;

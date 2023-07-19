@@ -17,6 +17,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { connect, getMapboxKey } from "../rpcClient";
 
 function TitleComponent() {
@@ -37,13 +38,13 @@ async function main() {
     import("./MapComponent"),
     getMapboxKey(),
   ]);
-  ReactDOM.render(
+  // render with createroot
+  createRoot(document.getElementById("react-root")).render(
     <>
       <TitleComponent />
       <mapComponent.default apiKey={apiKey} />
       <FooterComponent />
-    </>,
-    document.getElementById("react-root")
+    </>
   );
 }
 

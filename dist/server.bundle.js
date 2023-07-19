@@ -90,7 +90,110 @@ const ServerCalls = {
         i: io_ts__WEBPACK_IMPORTED_MODULE_0__["null"],
         o: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
     }),
+    GetParkingAreas: () => ({
+        i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+        // TODO: figure out what does this return
+        o: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+    }),
 };
+
+
+/***/ }),
+
+/***/ "./server/queryOverpass.ts":
+/*!*********************************!*\
+  !*** ./server/queryOverpass.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   queryOverpass: () => (/* binding */ queryOverpass)
+/* harmony export */ });
+/* harmony import */ var node_fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! node-fetch */ "node-fetch");
+/* harmony import */ var node_fetch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(node_fetch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../constants */ "./constants.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const OVERPASS_INSTANCE_URL = "https://overpass-api.de/api/interpreter";
+function queryOverpass(queryCode) {
+    return __awaiter(this, void 0, void 0, function* () {
+        (0,_constants__WEBPACK_IMPORTED_MODULE_1__.d)(`Querying overpass with query code:\n${queryCode}`);
+        const url = `${OVERPASS_INSTANCE_URL}?data=${encodeURIComponent(queryCode)}`;
+        const response = yield node_fetch__WEBPACK_IMPORTED_MODULE_0___default()(url);
+        const json = yield response.json();
+        return json;
+    });
+}
+
+
+/***/ }),
+
+/***/ "./server/rpcServer.ts":
+/*!*****************************!*\
+  !*** ./server/rpcServer.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createRpcServer: () => (/* binding */ createRpcServer)
+/* harmony export */ });
+/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roots-rpc */ "roots-rpc");
+/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(roots_rpc__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../rpc */ "./rpc.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants */ "./constants.ts");
+/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+const mapboxApiKey = process.env.MAPBOX_API_KEY;
+function createRpcServer(socket) {
+    const server = new roots_rpc__WEBPACK_IMPORTED_MODULE_0__.RpcServer(new roots_rpc__WEBPACK_IMPORTED_MODULE_0__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_2__.CLIENT_CALLS_SERVER_RPC_PREFIX));
+    (0,_rpc__WEBPACK_IMPORTED_MODULE_1__.wrapServerErrors)(server);
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetMapboxApiKey, () => __awaiter(this, void 0, void 0, function* () { return mapboxApiKey; }));
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetParkingAreas, getParkingAreas);
+    return server;
+}
+function getParkingAreas(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // TODO: remove cast if i make better io-ts typing for turf
+        const input = i;
+        const polygon = input.features[0].geometry;
+        const coords = polygon.coordinates[0].map(([lng, lat]) => `${lat} ${lng}`);
+        const polyFilter = `poly:"${coords.join(" ")}"`;
+        const overpassql = `
+    [out:json][timeout:30];
+    (
+      nwr["amenity"="parking"](${polyFilter});
+    );
+      out body;
+      >;
+      out skel qt;`;
+        const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_3__.queryOverpass)(overpassql);
+        (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Received ${result.elements.length} results`);
+        return result;
+    });
+}
 
 
 /***/ }),
@@ -153,6 +256,16 @@ module.exports = require("express");
 /***/ ((module) => {
 
 module.exports = require("io-ts");
+
+/***/ }),
+
+/***/ "node-fetch":
+/*!*****************************!*\
+  !*** external "node-fetch" ***!
+  \*****************************/
+/***/ ((module) => {
+
+module.exports = require("node-fetch");
 
 /***/ }),
 
@@ -283,9 +396,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ws__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(ws__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../constants */ "./constants.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./server/utils.ts");
-/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! roots-rpc */ "roots-rpc");
-/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(roots_rpc__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../rpc */ "./rpc.ts");
+/* harmony import */ var _rpcServer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./rpcServer */ "./server/rpcServer.ts");
 // Serve index.html on the route '/'
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -304,11 +415,9 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
 console_stamp__WEBPACK_IMPORTED_MODULE_3___default()(console);
 const app = express__WEBPACK_IMPORTED_MODULE_0___default()();
 const port = 4041;
-const mapboxApiKey = process.env.MAPBOX_API_KEY;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         app.use(compression__WEBPACK_IMPORTED_MODULE_1___default()());
@@ -329,9 +438,11 @@ function main() {
 }
 function handleRpcConnection(socket, req) {
     (0,_constants__WEBPACK_IMPORTED_MODULE_5__.d)(`Client(${JSON.stringify(req.headers["user-agent"])}) connected to ${req.url}`);
-    const server = new roots_rpc__WEBPACK_IMPORTED_MODULE_7__.RpcServer(new roots_rpc__WEBPACK_IMPORTED_MODULE_7__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_5__.CLIENT_CALLS_SERVER_RPC_PREFIX));
-    (0,_rpc__WEBPACK_IMPORTED_MODULE_8__.wrapServerErrors)(server);
-    server.register(_rpc__WEBPACK_IMPORTED_MODULE_8__.ServerCalls.GetMapboxApiKey, () => __awaiter(this, void 0, void 0, function* () { return mapboxApiKey; }));
+    const server = (0,_rpcServer__WEBPACK_IMPORTED_MODULE_7__.createRpcServer)(socket);
+    socket.on("close", () => {
+        server.dispose();
+        (0,_constants__WEBPACK_IMPORTED_MODULE_5__.d)(`Client(${JSON.stringify(req.headers["user-agent"])}) disconnected`);
+    });
 }
 main();
 
