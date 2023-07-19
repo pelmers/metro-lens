@@ -41418,7 +41418,7 @@ const ServerCalls = {
 /******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
-/******/ 		// no baseURI
+/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
 /******/ 		
 /******/ 		// object to store loaded and loading chunks
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
@@ -41566,7 +41566,7 @@ function main() {
         (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connect)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_css-loader_dist_runtime_api_js-node_modules_css-loader_dist_runtime_sour-a6b31e"), __webpack_require__.e("client_index_MapComponent_tsx")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox-gl_dist-9f31bb"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
             (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
         ]);
         react_dom__WEBPACK_IMPORTED_MODULE_1__.render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,

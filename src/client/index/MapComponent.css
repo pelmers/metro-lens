@@ -8,6 +8,8 @@
 
 #map-container {
   width: 100%;
+  max-width: 800px;
+  margin: auto;
   min-height: 600px;
   flex: 1;
 }
