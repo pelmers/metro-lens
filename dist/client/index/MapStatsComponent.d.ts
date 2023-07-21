@@ -9,7 +9,7 @@ export type StatValue = {
 export type Props = {
     area: StatValue;
     perimeter: StatValue;
-    parkingPlaces: StatValue;
+    parkingArea: StatValue;
 };
 export declare const NoPolygonValue: StatValue;
 export declare const OverpassAreaTooBigValue: StatValue;

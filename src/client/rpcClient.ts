@@ -6,16 +6,17 @@ import {
   CLIENT_CALLS_SERVER_RPC_PREFIX,
   d,
   e,
+  t,
 } from "../constants";
 import { ServerCalls, TClippedAndUnclippedXml } from "../rpc";
-import { AnyJson, AsyncFN } from "roots-rpc/dist/rpcTypes";
+import { AnyJson, AsyncFN, FNDecl } from "roots-rpc/dist/rpcTypes";
 
 export let getMapboxKey: AsyncFN<null, string>;
 export let getParkingAreas: AsyncFN<AnyJson, TClippedAndUnclippedXml>;
 
 let alreadyConnected = false;
 
-export function connect() {
+export function connectClient() {
   if (alreadyConnected) {
     throw new Error("Already connected");
   }
@@ -24,14 +25,18 @@ export function connect() {
   const client = new RpcClient(
     new WebsocketTransport(socket, CLIENT_CALLS_SERVER_RPC_PREFIX)
   );
-  getMapboxKey = e(client.connect(ServerCalls.GetMapboxApiKey));
-  getParkingAreas = e(client.connect(ServerCalls.GetParkingAreas));
+  function connect<I extends AnyJson, O extends AnyJson>(loader: () => FNDecl<I, O>) {
+    const {name} = loader;
+    return t(e(client.connect(loader)), name);
+  };
+  getMapboxKey = connect(ServerCalls.GetMapboxApiKey);
+  getParkingAreas = connect(ServerCalls.GetParkingAreas);
 
   // Reconnect if socket closes
   socket.onclose = () => {
     d(`Socket closed, reconnecting...`);
     alreadyConnected = false;
     client.dispose();
-    connect();
+    connectClient();
   };
 }

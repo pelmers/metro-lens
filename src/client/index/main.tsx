@@ -17,7 +17,7 @@
 
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { connect, getMapboxKey } from "../rpcClient";
+import { connectClient, getMapboxKey } from "../rpcClient";
 
 function TitleComponent() {
   // TODO: add logo, into, etc.
@@ -31,7 +31,7 @@ function FooterComponent() {
 
 // Render react-root app
 async function main() {
-  connect();
+  connectClient();
   // Import MapComponent dynamically for code splitting
   const [mapComponent, apiKey] = await Promise.all([
     import("./MapComponent"),

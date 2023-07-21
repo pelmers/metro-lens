@@ -232,6 +232,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+const EmptyFeatureCollection = {
+    type: "FeatureCollection",
+    features: [],
+};
 // Unclipped with opacity 0.2
 const UNCLIPPED_SURFACE_PARKING_SOURCE_ID = "unclippedSurfaceParkingAreas";
 // Clipped with opacity 0.5
@@ -258,7 +262,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             stats: {
                 area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
                 perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-                parkingPlaces: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
+                parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
             },
         };
         // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
@@ -285,7 +289,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         this.updateParkingFeatures = (data, areaKm) => __awaiter(this, void 0, void 0, function* () {
             if (areaKm > _constants__WEBPACK_IMPORTED_MODULE_7__.OVERPASS_STATS_AREA_LIMIT_KM2) {
                 return {
-                    parkingPlaces: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.OverpassAreaTooBigValue,
+                    parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.OverpassAreaTooBigValue,
                 };
             }
             const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
@@ -295,22 +299,17 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             const unclippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(unclippedXmlObject);
             this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData(clippedGeoJsonAreas);
             this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData(unclippedGeoJsonAreas);
+            // Calculate the total area of the parking lots with turf.area
             return {
-                parkingPlaces: {
+                parkingArea: {
                     value: clippedGeoJsonAreas.features.length,
-                    units: "places",
+                    units: "km²",
                 },
             };
         });
         this.deleteFeatures = () => {
-            this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData({
-                type: "FeatureCollection",
-                features: [],
-            });
-            this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData({
-                type: "FeatureCollection",
-                features: [],
-            });
+            this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData(EmptyFeatureCollection);
+            this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData(EmptyFeatureCollection);
         };
         if (props.initialState) {
             this.state = Object.assign(Object.assign({}, this.state), props.initialState);
@@ -334,6 +333,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 this.map.once("styledata", () => {
                     this.map.addSource(SURFACE_PARKING_SOURCE_ID, {
                         type: "geojson",
+                        data: EmptyFeatureCollection,
                     });
                     this.map.addLayer({
                         id: SURFACE_PARKING_SOURCE_ID,
@@ -346,6 +346,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                     });
                     this.map.addSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID, {
                         type: "geojson",
+                        data: EmptyFeatureCollection,
                     });
                     this.map.addLayer({
                         id: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
@@ -427,10 +428,10 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     valueToDisplay(this.props.area)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "Perimeter: ",
-                    valueToDisplay(this.props.area)),
+                    valueToDisplay(this.props.perimeter)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "Parking places: ",
-                    valueToDisplay(this.props.parkingPlaces)))));
+                    "Parking Area: ",
+                    valueToDisplay(this.props.parkingArea)))));
     }
 }
 

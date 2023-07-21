@@ -41,3 +41,18 @@ export function e<TInput extends any[], TOutput>(
     }
   };
 }
+
+/** Like e, but using a timer */
+export function t<TInput extends any[], TOutput>(
+  func: (...args: TInput) => Promise<TOutput>,
+  name?: string
+) {
+  return async (...args: TInput) => {
+    const start = Date.now();
+    try {
+      return await func(...args);
+    } finally {
+      d(`Executing ${name || func.name} took ${Date.now() - start}ms`);
+    }
+  };
+}

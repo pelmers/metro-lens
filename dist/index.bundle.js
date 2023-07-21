@@ -41136,7 +41136,7 @@ if (false) {} else {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   connect: () => (/* binding */ connect),
+/* harmony export */   connectClient: () => (/* binding */ connectClient),
 /* harmony export */   getMapboxKey: () => (/* binding */ getMapboxKey),
 /* harmony export */   getParkingAreas: () => (/* binding */ getParkingAreas)
 /* harmony export */ });
@@ -41152,21 +41152,26 @@ __webpack_require__.r(__webpack_exports__);
 let getMapboxKey;
 let getParkingAreas;
 let alreadyConnected = false;
-function connect() {
+function connectClient() {
     if (alreadyConnected) {
         throw new Error("Already connected");
     }
     alreadyConnected = true;
     const socket = new isomorphic_ws__WEBPACK_IMPORTED_MODULE_0__["default"](`${_constants__WEBPACK_IMPORTED_MODULE_2__.WS_DOMAIN_NAME}/${_constants__WEBPACK_IMPORTED_MODULE_2__.RPC_WS_PATH}`);
     const client = new roots_rpc__WEBPACK_IMPORTED_MODULE_1__.RpcClient(new roots_rpc__WEBPACK_IMPORTED_MODULE_1__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_2__.CLIENT_CALLS_SERVER_RPC_PREFIX));
-    getMapboxKey = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.e)(client.connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetMapboxApiKey));
-    getParkingAreas = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.e)(client.connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetParkingAreas));
+    function connect(loader) {
+        const { name } = loader;
+        return (0,_constants__WEBPACK_IMPORTED_MODULE_2__.t)((0,_constants__WEBPACK_IMPORTED_MODULE_2__.e)(client.connect(loader)), name);
+    }
+    ;
+    getMapboxKey = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetMapboxApiKey);
+    getParkingAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetParkingAreas);
     // Reconnect if socket closes
     socket.onclose = () => {
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket closed, reconnecting...`);
         alreadyConnected = false;
         client.dispose();
-        connect();
+        connectClient();
     };
 }
 
@@ -41189,7 +41194,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
 /* harmony export */   e: () => (/* binding */ e),
-/* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage)
+/* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage),
+/* harmony export */   t: () => (/* binding */ t)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -41229,6 +41235,18 @@ function e(func, params = {}) {
             const message = `${prefix}${getErrorMessage(e)}`;
             d(`Error: ${message}`);
             throw e;
+        }
+    });
+}
+/** Like e, but using a timer */
+function t(func, name) {
+    return (...args) => __awaiter(this, void 0, void 0, function* () {
+        const start = Date.now();
+        try {
+            return yield func(...args);
+        }
+        finally {
+            d(`Executing ${name || func.name} took ${Date.now() - start}ms`);
         }
     });
 }
@@ -41609,7 +41627,7 @@ function FooterComponent() {
 // Render react-root app
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connect)();
+        (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
             Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox-gl_dist-ba298a"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),

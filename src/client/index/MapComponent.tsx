@@ -28,6 +28,11 @@ type State = {
   stats: MapStatsComponentProps;
 };
 
+const EmptyFeatureCollection: FeatureCollection = {
+  type: "FeatureCollection",
+  features: [],
+};
+
 // Unclipped with opacity 0.2
 const UNCLIPPED_SURFACE_PARKING_SOURCE_ID = "unclippedSurfaceParkingAreas";
 // Clipped with opacity 0.5
@@ -57,7 +62,7 @@ export default class MapComponent extends React.Component<Props, State> {
     stats: {
       area: NoPolygonValue,
       perimeter: NoPolygonValue,
-      parkingPlaces: NoPolygonValue,
+      parkingArea: NoPolygonValue,
     },
   };
 
@@ -88,6 +93,7 @@ export default class MapComponent extends React.Component<Props, State> {
       this.map.once("styledata", () => {
         this.map.addSource(SURFACE_PARKING_SOURCE_ID, {
           type: "geojson",
+          data: EmptyFeatureCollection,
         });
         this.map.addLayer({
           id: SURFACE_PARKING_SOURCE_ID,
@@ -100,6 +106,7 @@ export default class MapComponent extends React.Component<Props, State> {
         });
         this.map.addSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID, {
           type: "geojson",
+          data: EmptyFeatureCollection,
         });
         this.map.addLayer({
           id: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
@@ -151,37 +158,42 @@ export default class MapComponent extends React.Component<Props, State> {
   ) => {
     if (areaKm > OVERPASS_STATS_AREA_LIMIT_KM2) {
       return {
-        parkingPlaces: OverpassAreaTooBigValue,
+        parkingArea: OverpassAreaTooBigValue,
       };
     }
     const parkingAreas = await getParkingAreas(data as any);
-    const clippedXmlObject = new DOMParser().parseFromString(parkingAreas.clippedXml, "text/xml");
-    const unclippedXmlObject = new DOMParser().parseFromString(parkingAreas.unclippedXml, "text/xml");
+    const clippedXmlObject = new DOMParser().parseFromString(
+      parkingAreas.clippedXml,
+      "text/xml"
+    );
+    const unclippedXmlObject = new DOMParser().parseFromString(
+      parkingAreas.unclippedXml,
+      "text/xml"
+    );
     const clippedGeoJsonAreas = osmtogeojson(clippedXmlObject);
     const unclippedGeoJsonAreas = osmtogeojson(unclippedXmlObject);
     (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
       clippedGeoJsonAreas
     );
-    (this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
-      unclippedGeoJsonAreas
-    );
+    (
+      this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource
+    ).setData(unclippedGeoJsonAreas);
+    // Calculate the total area of the parking lots with turf.area
     return {
-      parkingPlaces: {
+      parkingArea: {
         value: clippedGeoJsonAreas.features.length,
-        units: "places",
+        units: "km²",
       },
     };
   };
 
   deleteFeatures = () => {
-    (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData({
-      type: "FeatureCollection",
-      features: [],
-    });
-    (this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData({
-      type: "FeatureCollection",
-      features: [],
-    });
+    (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
+      EmptyFeatureCollection
+    );
+    (
+      this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource
+    ).setData(EmptyFeatureCollection);
   };
 
   async componentDidMount() {

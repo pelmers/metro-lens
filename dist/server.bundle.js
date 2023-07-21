@@ -17,7 +17,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
 /* harmony export */   e: () => (/* binding */ e),
-/* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage)
+/* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage),
+/* harmony export */   t: () => (/* binding */ t)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -57,6 +58,18 @@ function e(func, params = {}) {
             const message = `${prefix}${getErrorMessage(e)}`;
             d(`Error: ${message}`);
             throw e;
+        }
+    });
+}
+/** Like e, but using a timer */
+function t(func, name) {
+    return (...args) => __awaiter(this, void 0, void 0, function* () {
+        const start = Date.now();
+        try {
+            return yield func(...args);
+        }
+        finally {
+            d(`Executing ${name || func.name} took ${Date.now() - start}ms`);
         }
     });
 }
@@ -157,9 +170,9 @@ function osmiumSort(inputFile) {
  */
 function savePolygonFormat(coords, filename) {
     return __awaiter(this, void 0, void 0, function* () {
-        const header = 'custom_poly\narea\n';
-        const footer = '\nEND';
-        const polyContents = header + coords.map(([lng, lat]) => ` ${lng} ${lat}`).join('\n') + footer;
+        const header = "custom_poly\narea\n";
+        const footer = "\nEND";
+        const polyContents = header + coords.map(([lng, lat]) => ` ${lng} ${lat}`).join("\n") + footer;
         yield (0,util__WEBPACK_IMPORTED_MODULE_1__.promisify)((fs__WEBPACK_IMPORTED_MODULE_2___default().writeFile))(filename, polyContents);
     });
 }
@@ -303,7 +316,7 @@ function getParkingAreas(i) {
             // TODO: Print elapsed time
             return result;
         }));
-        return { clippedXml, unclippedXml, };
+        return { clippedXml, unclippedXml };
     });
 }
 
@@ -361,7 +374,9 @@ function withTempFolder(fn) {
         // Create a temporary folder
         const tempDir = yield tmp_promise__WEBPACK_IMPORTED_MODULE_1___default().dir();
         try {
-            return yield (0,_constants__WEBPACK_IMPORTED_MODULE_3__.e)(fn, { errorPrefix: `Error from temp folder ${tempDir.path}` })(tempDir.path);
+            return yield (0,_constants__WEBPACK_IMPORTED_MODULE_3__.e)(fn, {
+                errorPrefix: `Error from temp folder ${tempDir.path}`,
+            })(tempDir.path);
         }
         finally {
             // Delete the temporary folder

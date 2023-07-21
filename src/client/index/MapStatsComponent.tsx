@@ -16,7 +16,7 @@ export type StatValue =
 export type Props = {
   area: StatValue;
   perimeter: StatValue;
-  parkingPlaces: StatValue;
+  parkingArea: StatValue;
 };
 
 export const NoPolygonValue: StatValue = {
@@ -43,8 +43,8 @@ export class MapStatsComponent extends React.Component<Props> {
       <div id="map-stats-container">
         <ul>
           <li>Area: {valueToDisplay(this.props.area)}</li>
-          <li>Perimeter: {valueToDisplay(this.props.area)}</li>
-          <li>Parking places: {valueToDisplay(this.props.parkingPlaces)}</li>
+          <li>Perimeter: {valueToDisplay(this.props.perimeter)}</li>
+          <li>Parking Area: {valueToDisplay(this.props.parkingArea)}</li>
         </ul>
       </div>
     );

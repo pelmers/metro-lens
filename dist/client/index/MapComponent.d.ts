@@ -29,7 +29,7 @@ export default class MapComponent extends React.Component<Props, State> {
     updateParkingFeatures: (data: FeatureCollection<Geometry, {
         [name: string]: any;
     }>, areaKm: number) => Promise<{
-        parkingPlaces: import("./MapStatsComponent").StatValue;
+        parkingArea: import("./MapStatsComponent").StatValue;
     }>;
     deleteFeatures: () => void;
     componentDidMount(): Promise<void>;
