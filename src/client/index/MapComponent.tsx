@@ -7,7 +7,10 @@ import "./MapComponent.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-import { OVERPASS_STATS_AREA_LIMIT_KM2, d } from "../../constants";
+import {
+  OVERPASS_STATS_AREA_LIMIT_KM2,
+  wrapWithDefault,
+} from "../../constants";
 import { getParkingAreas } from "../rpcClient";
 
 import osmtogeojson from "osmtogeojson";
@@ -129,7 +132,7 @@ export default class MapComponent extends React.Component<Props, State> {
   }
 
   // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
-  updateDrawing = async (e: { type: string }) => {
+  updateDrawing = async (_evt: { type: string }) => {
     const data = this.drawControl.getAll();
     if (data.features.length > 0) {
       const area = turf.area(data);
@@ -155,35 +158,38 @@ export default class MapComponent extends React.Component<Props, State> {
     }
   };
 
-  updateParkingFeatures = async (
-    data: FeatureCollection<Geometry, { [name: string]: any }>,
-    areaKm: number
-  ) => {
-    if (areaKm > OVERPASS_STATS_AREA_LIMIT_KM2) {
+  updateParkingFeatures = wrapWithDefault(
+    { parkingArea: { missing: "Error (see console)" } },
+    async (
+      data: FeatureCollection<Geometry, { [name: string]: any }>,
+      areaKm: number
+    ) => {
+      if (areaKm > OVERPASS_STATS_AREA_LIMIT_KM2) {
+        return {
+          parkingArea: OverpassAreaTooBigValue,
+        };
+      }
+      const parkingAreas = await getParkingAreas(data as any);
+      const xmlObject = new DOMParser().parseFromString(
+        parkingAreas.xml,
+        "text/xml"
+      );
+      const geoJsons = osmtogeojson(xmlObject);
+      (
+        this.map.getSource(MapLayers.SURFACE_PARKING.id) as GeoJSONSource
+      ).setData(geoJsons);
+      // Calculate the total area of the parking lots by taking the union then using turf.area
+      // Note that we take the union first to avoid double counting accidentally overlapping parking lots
+      const parkingUnion = unionPolygon(geoJsons);
+      const parkingAreaValueM2 = parkingUnion ? turf.area(parkingUnion) : 0;
       return {
-        parkingArea: OverpassAreaTooBigValue,
+        parkingArea: {
+          value: parkingAreaValueM2 / 1000000,
+          units: "km²",
+        },
       };
     }
-    const parkingAreas = await getParkingAreas(data as any);
-    const xmlObject = new DOMParser().parseFromString(
-      parkingAreas.xml,
-      "text/xml"
-    );
-    const geoJsons = osmtogeojson(xmlObject);
-    (this.map.getSource(MapLayers.SURFACE_PARKING.id) as GeoJSONSource).setData(
-      geoJsons
-    );
-    // Calculate the total area of the parking lots by taking the union then using turf.area
-    // Note that we take the union first to avoid double counting accidentally overlapping parking lots
-    const parkingUnion = unionPolygon(geoJsons);
-    const parkingAreaValueM2 = parkingUnion ? turf.area(parkingUnion) : 0;
-    return {
-      parkingArea: {
-        value: parkingAreaValueM2 / 1000000,
-        units: "km²",
-      },
-    };
-  };
+  );
 
   deleteFeatures = () => {
     for (const layer of Object.values(MapLayers)) {

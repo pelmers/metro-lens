@@ -42,6 +42,20 @@ export function e<TInput extends any[], TOutput>(
   };
 }
 
+/** Catches errors and returns a default value (also logs with e, above) */
+export function wrapWithDefault<TInput extends any[], TOutput>(
+  defaultValue: TOutput,
+  func: (...args: TInput) => Promise<TOutput>
+) {
+  return async (...args: TInput) => {
+    try {
+      return await e(func)(...args);
+    } catch (_err) {
+      return defaultValue;
+    }
+  };
+}
+
 /** Like e, but using a timer */
 export function t<TInput extends any[], TOutput>(
   func: (...args: TInput) => Promise<TOutput>,
