@@ -25,13 +25,18 @@ export function connectClient() {
   const client = new RpcClient(
     new WebsocketTransport(socket, CLIENT_CALLS_SERVER_RPC_PREFIX)
   );
-  function connect<I extends AnyJson, O extends AnyJson>(loader: () => FNDecl<I, O>) {
-    const {name} = loader;
+  function connect<I extends AnyJson, O extends AnyJson>(
+    loader: () => FNDecl<I, O>
+  ) {
+    const { name } = loader;
     return t(e(client.connect(loader)), name);
-  };
+  }
   getMapboxKey = connect(ServerCalls.GetMapboxApiKey);
   getParkingAreas = connect(ServerCalls.GetParkingAreas);
 
+  socket.onopen = () => {
+    d(`Socket opened`);
+  };
   // Reconnect if socket closes
   socket.onclose = () => {
     d(`Socket closed, reconnecting...`);

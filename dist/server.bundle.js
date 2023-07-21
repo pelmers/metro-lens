@@ -95,7 +95,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function wrapServerErrors(server) {
     const oldRegister = server.register.bind(server);
-    server.register = (call, func) => oldRegister(call, (0,_constants__WEBPACK_IMPORTED_MODULE_1__.e)(func, { errorPrefix: call.name }));
+    server.register = (call, func) => oldRegister(call, (0,_constants__WEBPACK_IMPORTED_MODULE_1__.t)((0,_constants__WEBPACK_IMPORTED_MODULE_1__.e)(func, { errorPrefix: call.name }), call.name));
 }
 function optional(typ) {
     return io_ts__WEBPACK_IMPORTED_MODULE_0__.union([io_ts__WEBPACK_IMPORTED_MODULE_0__["null"], io_ts__WEBPACK_IMPORTED_MODULE_0__.undefined, typ]);

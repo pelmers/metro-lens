@@ -41163,9 +41163,11 @@ function connectClient() {
         const { name } = loader;
         return (0,_constants__WEBPACK_IMPORTED_MODULE_2__.t)((0,_constants__WEBPACK_IMPORTED_MODULE_2__.e)(client.connect(loader)), name);
     }
-    ;
     getMapboxKey = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetMapboxApiKey);
     getParkingAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetParkingAreas);
+    socket.onopen = () => {
+        (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket opened`);
+    };
     // Reconnect if socket closes
     socket.onclose = () => {
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket closed, reconnecting...`);
@@ -41272,7 +41274,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function wrapServerErrors(server) {
     const oldRegister = server.register.bind(server);
-    server.register = (call, func) => oldRegister(call, (0,_constants__WEBPACK_IMPORTED_MODULE_0__.e)(func, { errorPrefix: call.name }));
+    server.register = (call, func) => oldRegister(call, (0,_constants__WEBPACK_IMPORTED_MODULE_0__.t)((0,_constants__WEBPACK_IMPORTED_MODULE_0__.e)(func, { errorPrefix: call.name }), call.name));
 }
 function optional(typ) {
     return io_ts__WEBPACK_IMPORTED_MODULE_1__.union([io_ts__WEBPACK_IMPORTED_MODULE_1__["null"], io_ts__WEBPACK_IMPORTED_MODULE_1__.undefined, typ]);
@@ -41617,7 +41619,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 function TitleComponent() {
-    // TODO: add logo, into, etc.
+    // TODO: add logo, intro, etc.
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Shitty World of Polygons");
 }
 function FooterComponent() {

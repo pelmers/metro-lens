@@ -20,7 +20,7 @@ import { createRoot } from "react-dom/client";
 import { connectClient, getMapboxKey } from "../rpcClient";
 
 function TitleComponent() {
-  // TODO: add logo, into, etc.
+  // TODO: add logo, intro, etc.
   return <h1>Shitty World of Polygons</h1>;
 }
 

@@ -38,7 +38,6 @@ function valueToDisplay(value: StatValue): string {
 export class MapStatsComponent extends React.Component<Props> {
   // Renders a div with unordered list of each stat
   render() {
-    d(this.props);
     return (
       <div id="map-stats-container">
         <ul>

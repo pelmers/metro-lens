@@ -33,10 +33,24 @@ const EmptyFeatureCollection: FeatureCollection = {
   features: [],
 };
 
-// Unclipped with opacity 0.2
-const UNCLIPPED_SURFACE_PARKING_SOURCE_ID = "unclippedSurfaceParkingAreas";
-// Clipped with opacity 0.5
-const SURFACE_PARKING_SOURCE_ID = "surfaceParkingAreas";
+const MapLayers = {
+  SURFACE_PARKING: {
+    id: "surfaceParkingAreas",
+    type: "fill" as const,
+    paint: {
+      "fill-color": "red",
+      "fill-opacity": 0.5,
+    },
+  },
+  UNCLIPPED_SURFACE_PARKING: {
+    id: "unclippedSurfaceParkingAreas",
+    type: "fill" as const,
+    paint: {
+      "fill-color": "red",
+      "fill-opacity": 0.1,
+    },
+  },
+};
 
 export default class MapComponent extends React.Component<Props, State> {
   map: mapboxgl.Map;
@@ -91,32 +105,16 @@ export default class MapComponent extends React.Component<Props, State> {
 
     await new Promise<void>((resolve) => {
       this.map.once("styledata", () => {
-        this.map.addSource(SURFACE_PARKING_SOURCE_ID, {
-          type: "geojson",
-          data: EmptyFeatureCollection,
-        });
-        this.map.addLayer({
-          id: SURFACE_PARKING_SOURCE_ID,
-          type: "fill",
-          source: SURFACE_PARKING_SOURCE_ID,
-          paint: {
-            "fill-color": "red",
-            "fill-opacity": 0.5,
-          },
-        });
-        this.map.addSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID, {
-          type: "geojson",
-          data: EmptyFeatureCollection,
-        });
-        this.map.addLayer({
-          id: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
-          type: "fill",
-          source: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
-          paint: {
-            "fill-color": "red",
-            "fill-opacity": 0.2,
-          },
-        });
+        for (const layer of Object.values(MapLayers)) {
+          this.map.addSource(layer.id, {
+            type: "geojson",
+            data: EmptyFeatureCollection,
+          });
+          this.map.addLayer({
+            ...layer,
+            source: layer.id,
+          });
+        }
         resolve();
       });
     });
@@ -129,13 +127,8 @@ export default class MapComponent extends React.Component<Props, State> {
       const area = turf.area(data);
       const areaKm = area / 1000000;
       const perimeterKm = turf.length(data, { units: "kilometers" });
-      // Print up to 2 decimal places.
-      d(
-        `Area: ${areaKm.toFixed(2)} km², Perimeter: ${perimeterKm.toFixed(
-          2
-        )} km`
-      );
       const parkingStats = await this.updateParkingFeatures(data, areaKm);
+      // TODO: all the other stats too
       this.setState({
         stats: {
           area: {
@@ -172,12 +165,15 @@ export default class MapComponent extends React.Component<Props, State> {
     );
     const clippedGeoJsonAreas = osmtogeojson(clippedXmlObject);
     const unclippedGeoJsonAreas = osmtogeojson(unclippedXmlObject);
-    (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
+    (this.map.getSource(MapLayers.SURFACE_PARKING.id) as GeoJSONSource).setData(
       clippedGeoJsonAreas
     );
     (
-      this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource
+      this.map.getSource(
+        MapLayers.UNCLIPPED_SURFACE_PARKING.id
+      ) as GeoJSONSource
     ).setData(unclippedGeoJsonAreas);
+    // TODO
     // Calculate the total area of the parking lots with turf.area
     return {
       parkingArea: {
@@ -188,12 +184,11 @@ export default class MapComponent extends React.Component<Props, State> {
   };
 
   deleteFeatures = () => {
-    (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
-      EmptyFeatureCollection
-    );
-    (
-      this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource
-    ).setData(EmptyFeatureCollection);
+    for (const layer of Object.values(MapLayers)) {
+      (this.map.getSource(layer.id) as GeoJSONSource).setData(
+        EmptyFeatureCollection
+      );
+    }
   };
 
   async componentDidMount() {
@@ -213,6 +208,7 @@ export default class MapComponent extends React.Component<Props, State> {
     return (
       <div className="map-container-container">
         <div id="map-container" ref={this.mapDivRef} />
+        {/* TODO add a map legend, e.g. https://docs.mapbox.com/mapbox-gl-js/example/updating-choropleth/ */}
         <MapStatsComponent {...this.state.stats} />
       </div>
     );

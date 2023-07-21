@@ -22,7 +22,6 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
   display: flex;
-  min-height: 480px;
   margin: auto;
   max-width: 100vw;
   flex-flow: row wrap;
@@ -36,7 +35,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
   min-height: 600px;
   flex: 1;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,iBAAiB;EACjB,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  min-height: 480px;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 900px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 900px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -236,10 +235,24 @@ const EmptyFeatureCollection = {
     type: "FeatureCollection",
     features: [],
 };
-// Unclipped with opacity 0.2
-const UNCLIPPED_SURFACE_PARKING_SOURCE_ID = "unclippedSurfaceParkingAreas";
-// Clipped with opacity 0.5
-const SURFACE_PARKING_SOURCE_ID = "surfaceParkingAreas";
+const MapLayers = {
+    SURFACE_PARKING: {
+        id: "surfaceParkingAreas",
+        type: "fill",
+        paint: {
+            "fill-color": "red",
+            "fill-opacity": 0.5,
+        },
+    },
+    UNCLIPPED_SURFACE_PARKING: {
+        id: "unclippedSurfaceParkingAreas",
+        type: "fill",
+        paint: {
+            "fill-color": "red",
+            "fill-opacity": 0.1,
+        },
+    },
+};
 class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor(props) {
         super(props);
@@ -272,9 +285,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 const area = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.area(data);
                 const areaKm = area / 1000000;
                 const perimeterKm = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.length(data, { units: "kilometers" });
-                // Print up to 2 decimal places.
-                (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(`Area: ${areaKm.toFixed(2)} km², Perimeter: ${perimeterKm.toFixed(2)} km`);
                 const parkingStats = yield this.updateParkingFeatures(data, areaKm);
+                // TODO: all the other stats too
                 this.setState({
                     stats: Object.assign({ area: {
                             value: areaKm,
@@ -297,8 +309,9 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             const unclippedXmlObject = new DOMParser().parseFromString(parkingAreas.unclippedXml, "text/xml");
             const clippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(clippedXmlObject);
             const unclippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(unclippedXmlObject);
-            this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData(clippedGeoJsonAreas);
-            this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData(unclippedGeoJsonAreas);
+            this.map.getSource(MapLayers.SURFACE_PARKING.id).setData(clippedGeoJsonAreas);
+            this.map.getSource(MapLayers.UNCLIPPED_SURFACE_PARKING.id).setData(unclippedGeoJsonAreas);
+            // TODO
             // Calculate the total area of the parking lots with turf.area
             return {
                 parkingArea: {
@@ -308,8 +321,9 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             };
         });
         this.deleteFeatures = () => {
-            this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData(EmptyFeatureCollection);
-            this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData(EmptyFeatureCollection);
+            for (const layer of Object.values(MapLayers)) {
+                this.map.getSource(layer.id).setData(EmptyFeatureCollection);
+            }
         };
         if (props.initialState) {
             this.state = Object.assign(Object.assign({}, this.state), props.initialState);
@@ -331,32 +345,13 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.map.on("draw.delete", this.deleteFeatures);
             yield new Promise((resolve) => {
                 this.map.once("styledata", () => {
-                    this.map.addSource(SURFACE_PARKING_SOURCE_ID, {
-                        type: "geojson",
-                        data: EmptyFeatureCollection,
-                    });
-                    this.map.addLayer({
-                        id: SURFACE_PARKING_SOURCE_ID,
-                        type: "fill",
-                        source: SURFACE_PARKING_SOURCE_ID,
-                        paint: {
-                            "fill-color": "red",
-                            "fill-opacity": 0.5,
-                        },
-                    });
-                    this.map.addSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID, {
-                        type: "geojson",
-                        data: EmptyFeatureCollection,
-                    });
-                    this.map.addLayer({
-                        id: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
-                        type: "fill",
-                        source: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
-                        paint: {
-                            "fill-color": "red",
-                            "fill-opacity": 0.2,
-                        },
-                    });
+                    for (const layer of Object.values(MapLayers)) {
+                        this.map.addSource(layer.id, {
+                            type: "geojson",
+                            data: EmptyFeatureCollection,
+                        });
+                        this.map.addLayer(Object.assign(Object.assign({}, layer), { source: layer.id }));
+                    }
                     resolve();
                 });
             });
@@ -420,7 +415,6 @@ function valueToDisplay(value) {
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     // Renders a div with unordered list of each stat
     render() {
-        (0,_constants__WEBPACK_IMPORTED_MODULE_1__.d)(this.props);
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,

@@ -1,6 +1,5 @@
 .map-container-container {
   display: flex;
-  min-height: 480px;
   margin: auto;
   max-width: 100vw;
   flex-flow: row wrap;
