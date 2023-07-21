@@ -6,6 +6,10 @@ declare const ClippedAndUnclippedXml: t.TypeC<{
     unclippedXml: t.StringC;
 }>;
 export type TClippedAndUnclippedXml = t.TypeOf<typeof ClippedAndUnclippedXml>;
+declare const XmlResult: t.TypeC<{
+    xml: t.StringC;
+}>;
+export type TXmlResult = t.TypeOf<typeof XmlResult>;
 export declare const ServerCalls: {
     GetMapboxApiKey: () => {
         i: t.NullC;
@@ -14,8 +18,7 @@ export declare const ServerCalls: {
     GetParkingAreas: () => {
         i: t.AnyC;
         o: t.TypeC<{
-            clippedXml: t.StringC;
-            unclippedXml: t.StringC;
+            xml: t.StringC;
         }>;
     };
 };

@@ -23,7 +23,7 @@ export default class MapComponent extends React.Component<Props, State> {
     state: State;
     constructor(props: Props);
     constructMap(): Promise<void>;
-    updateDrawing: (e: {
+    updateDrawing: (_evt: {
         type: string;
     }) => Promise<void>;
     updateParkingFeatures: (data: FeatureCollection<Geometry, {

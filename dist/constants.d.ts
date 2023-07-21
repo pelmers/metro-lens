@@ -11,5 +11,7 @@ export declare function getErrorMessage(e: unknown): string;
 export declare function e<TInput extends any[], TOutput>(func: (...args: TInput) => Promise<TOutput>, params?: {
     errorPrefix?: string;
 }): (...args: TInput) => Promise<TOutput>;
+/** Catches errors and returns a default value (also logs with e, above) */
+export declare function wrapWithDefault<TInput extends any[], TOutput>(defaultValue: TOutput, func: (...args: TInput) => Promise<TOutput>): (...args: TInput) => Promise<TOutput>;
 /** Like e, but using a timer */
 export declare function t<TInput extends any[], TOutput>(func: (...args: TInput) => Promise<TOutput>, name?: string): (...args: TInput) => Promise<TOutput>;

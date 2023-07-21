@@ -41197,7 +41197,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   d: () => (/* binding */ d),
 /* harmony export */   e: () => (/* binding */ e),
 /* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage),
-/* harmony export */   t: () => (/* binding */ t)
+/* harmony export */   t: () => (/* binding */ t),
+/* harmony export */   wrapWithDefault: () => (/* binding */ wrapWithDefault)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -41237,6 +41238,17 @@ function e(func, params = {}) {
             const message = `${prefix}${getErrorMessage(e)}`;
             d(`Error: ${message}`);
             throw e;
+        }
+    });
+}
+/** Catches errors and returns a default value (also logs with e, above) */
+function wrapWithDefault(defaultValue, func) {
+    return (...args) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            return yield e(func)(...args);
+        }
+        catch (_err) {
+            return defaultValue;
         }
     });
 }
@@ -41283,6 +41295,9 @@ const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
     clippedXml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
     unclippedXml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
 });
+const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
+    xml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
+});
 const ServerCalls = {
     GetMapboxApiKey: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__["null"],
@@ -41290,7 +41305,7 @@ const ServerCalls = {
     }),
     GetParkingAreas: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
-        o: ClippedAndUnclippedXml,
+        o: XmlResult,
     }),
 };
 
@@ -41595,7 +41610,7 @@ __webpack_require__.r(__webpack_exports__);
  * once a polygon is drawn let's show the following statistics:
  * area, perimeter
  * area of parks/green space
- * length + area of roads/highways
+ * length + area of roads/highways (issue: osm does not have a width for roads, but sometimes a lane count)
  * area of parking spaces
  * area of buildings
  * area of water

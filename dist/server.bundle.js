@@ -18,7 +18,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   d: () => (/* binding */ d),
 /* harmony export */   e: () => (/* binding */ e),
 /* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage),
-/* harmony export */   t: () => (/* binding */ t)
+/* harmony export */   t: () => (/* binding */ t),
+/* harmony export */   wrapWithDefault: () => (/* binding */ wrapWithDefault)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -58,6 +59,17 @@ function e(func, params = {}) {
             const message = `${prefix}${getErrorMessage(e)}`;
             d(`Error: ${message}`);
             throw e;
+        }
+    });
+}
+/** Catches errors and returns a default value (also logs with e, above) */
+function wrapWithDefault(defaultValue, func) {
+    return (...args) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            return yield e(func)(...args);
+        }
+        catch (_err) {
+            return defaultValue;
         }
     });
 }
@@ -104,6 +116,9 @@ const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
     clippedXml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
     unclippedXml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
 });
+const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
+    xml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
+});
 const ServerCalls = {
     GetMapboxApiKey: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_0__["null"],
@@ -111,7 +126,7 @@ const ServerCalls = {
     }),
     GetParkingAreas: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
-        o: ClippedAndUnclippedXml,
+        o: XmlResult,
     }),
 };
 
@@ -126,7 +141,8 @@ const ServerCalls = {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   osmconvertWithPolygon: () => (/* binding */ osmconvertWithPolygon),
+/* harmony export */   osmconvertFilterWithPolygon: () => (/* binding */ osmconvertFilterWithPolygon),
+/* harmony export */   osmconvertMergeXmlResults: () => (/* binding */ osmconvertMergeXmlResults),
 /* harmony export */   osmiumSort: () => (/* binding */ osmiumSort),
 /* harmony export */   savePolygonFormat: () => (/* binding */ savePolygonFormat)
 /* harmony export */ });
@@ -136,7 +152,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var util__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! fs */ "fs");
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../constants */ "./constants.ts");
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! path */ "path");
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../constants */ "./constants.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils */ "./server/utils.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -151,11 +170,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
+const NoResultsOsmXML = `
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+</osm>
+`;
 function execCommand(command) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0,_constants__WEBPACK_IMPORTED_MODULE_3__.e)((0,util__WEBPACK_IMPORTED_MODULE_1__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_0__.exec))(command);
+        yield (0,_constants__WEBPACK_IMPORTED_MODULE_4__.e)((0,_constants__WEBPACK_IMPORTED_MODULE_4__.t)((0,util__WEBPACK_IMPORTED_MODULE_1__.promisify)(child_process__WEBPACK_IMPORTED_MODULE_0__.exec), command))(command);
     });
 }
+/**
+ * Sort the given osm file in place using osmium
+ */
 function osmiumSort(inputFile) {
     return __awaiter(this, void 0, void 0, function* () {
         const outputFile = inputFile + ".sorted.xml";
@@ -180,10 +209,33 @@ function savePolygonFormat(coords, filename) {
  * Calls osmconvert on the input file with the given polygon file as a filter
  * saves the output to the given output file
  */
-function osmconvertWithPolygon(inputFile, polygonFile, outputFile) {
+function osmconvertFilterWithPolygon(inputFile, polygonFile, outputFile) {
     return __awaiter(this, void 0, void 0, function* () {
         const command = `osmconvert ${inputFile} -B=${polygonFile} -o=${outputFile}`;
         yield execCommand(command);
+    });
+}
+/**
+ * Merge the contents of multiple osm xml files using osmconvert, returns the result as a string
+ */
+function osmconvertMergeXmlResults(inputContentses) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (inputContentses.length === 0) {
+            return NoResultsOsmXML;
+        }
+        return yield (0,_utils__WEBPACK_IMPORTED_MODULE_5__.withTempFolder)((tempFolder) => __awaiter(this, void 0, void 0, function* () {
+            // Write each input to a file
+            const inputFiles = yield Promise.all(inputContentses.map((contents, i) => __awaiter(this, void 0, void 0, function* () {
+                const filename = path__WEBPACK_IMPORTED_MODULE_3___default().join(tempFolder, `input${i}.xml`);
+                yield (0,util__WEBPACK_IMPORTED_MODULE_1__.promisify)((fs__WEBPACK_IMPORTED_MODULE_2___default().writeFile))(filename, contents);
+                return filename;
+            })));
+            const outputFile = path__WEBPACK_IMPORTED_MODULE_3___default().join(tempFolder, "output.xml");
+            const command = `osmconvert ${inputFiles.join(" ")} -o=${outputFile}`;
+            yield execCommand(command);
+            // Read output file and return it
+            return yield (0,util__WEBPACK_IMPORTED_MODULE_1__.promisify)((fs__WEBPACK_IMPORTED_MODULE_2___default().readFile))(outputFile, "utf8");
+        }));
     });
 }
 
@@ -286,37 +338,41 @@ function getPolyFilter(coords) {
 function getParkingAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: remove cast if i make better io-ts typing for turf
-        const input = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_6__.unkinkPolygon)(i);
-        const polygon = input.features[0].geometry;
-        const coords = polygon.coordinates[0];
-        // Docs for osmconvert say the output should have:
-        // objects  ordered  by  their  type:  first, all nodes, next, all ways, followed by all
-        // relations. Within each of these sections, the objects section must be sorted by their id
-        // in ascending order.
-        const overpassql = `
-    [out:xml][timeout:30];
-    (
-      nwr["amenity"="parking"](${getPolyFilter(coords)});
-    );
-      out body;
-      >;
-      out body qt;`;
-        const unclippedXml = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_7__.queryOverpass)(overpassql);
-        const clippedXml = yield (0,_utils__WEBPACK_IMPORTED_MODULE_8__.withTempFolder)((tempFolder) => __awaiter(this, void 0, void 0, function* () {
-            // Subtract 1 from number of points because the first and last point are the same
-            (0,_constants__WEBPACK_IMPORTED_MODULE_5__.d)(`Processing ${(unclippedXml.length / 1000).toFixed(2)} kb XML in ${tempFolder} with polygon of ${coords.length - 1} points...`);
-            const xmlFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "result.xml");
-            const polygonFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "polygon.poly");
-            const outputFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "output.xml");
-            yield util__WEBPACK_IMPORTED_MODULE_2___default().promisify((fs__WEBPACK_IMPORTED_MODULE_1___default().writeFile))(xmlFile, unclippedXml);
-            yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.savePolygonFormat)(coords, polygonFile);
-            yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmiumSort)(xmlFile);
-            yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmconvertWithPolygon)(xmlFile, polygonFile, outputFile);
-            const result = yield util__WEBPACK_IMPORTED_MODULE_2___default().promisify((fs__WEBPACK_IMPORTED_MODULE_1___default().readFile))(outputFile, "utf-8");
-            // TODO: Print elapsed time
-            return result;
-        }));
-        return { clippedXml, unclippedXml };
+        const input = i;
+        const xmlResults = [];
+        for (const polygon of input.features) {
+            const geo = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_6__.unkinkPolygon)(polygon).features[0].geometry;
+            const coords = geo.coordinates[0];
+            // Docs for osmconvert say the output should have:
+            // objects  ordered  by  their  type:  first, all nodes, next, all ways, followed by all
+            // relations. Within each of these sections, the objects section must be sorted by their id
+            // in ascending order.
+            const overpassql = `
+      [out:xml][timeout:30];
+      (
+        nwr["amenity"="parking"](${getPolyFilter(coords)});
+      );
+        out body;
+        >;
+        out body qt;`;
+            const unclippedXml = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_7__.queryOverpass)(overpassql);
+            const result = yield (0,_utils__WEBPACK_IMPORTED_MODULE_8__.withTempFolder)((tempFolder) => __awaiter(this, void 0, void 0, function* () {
+                // Subtract 1 from number of points because the first and last point are the same
+                (0,_constants__WEBPACK_IMPORTED_MODULE_5__.d)(`Processing ${(unclippedXml.length / 1000).toFixed(2)} kb XML in ${tempFolder} with polygon of ${coords.length - 1} points...`);
+                const xmlFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "result.xml");
+                const polygonFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "polygon.poly");
+                const outputFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "output.xml");
+                yield util__WEBPACK_IMPORTED_MODULE_2___default().promisify((fs__WEBPACK_IMPORTED_MODULE_1___default().writeFile))(xmlFile, unclippedXml);
+                yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.savePolygonFormat)(coords, polygonFile);
+                yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmiumSort)(xmlFile);
+                yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmconvertFilterWithPolygon)(xmlFile, polygonFile, outputFile);
+                const result = yield util__WEBPACK_IMPORTED_MODULE_2___default().promisify((fs__WEBPACK_IMPORTED_MODULE_1___default().readFile))(outputFile, "utf-8");
+                // TODO: Print elapsed time
+                return result;
+            }));
+            xmlResults.push(result);
+        }
+        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmconvertMergeXmlResults)(xmlResults) };
     });
 }
 

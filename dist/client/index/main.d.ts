@@ -3,7 +3,7 @@
  * once a polygon is drawn let's show the following statistics:
  * area, perimeter
  * area of parks/green space
- * length + area of roads/highways
+ * length + area of roads/highways (issue: osm does not have a width for roads, but sometimes a lane count)
  * area of parking spaces
  * area of buildings
  * area of water

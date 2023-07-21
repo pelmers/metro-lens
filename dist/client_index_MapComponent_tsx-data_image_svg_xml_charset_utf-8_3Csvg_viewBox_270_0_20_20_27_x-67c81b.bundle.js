@@ -244,15 +244,23 @@ const MapLayers = {
             "fill-opacity": 0.5,
         },
     },
-    UNCLIPPED_SURFACE_PARKING: {
-        id: "unclippedSurfaceParkingAreas",
-        type: "fill",
-        paint: {
-            "fill-color": "red",
-            "fill-opacity": 0.1,
-        },
-    },
 };
+// Take the union of all features with Polygon geometry in collection
+// Can be null if no features have Polygon geometry
+function unionPolygon(collection) {
+    let union = null;
+    for (const feature of collection.features) {
+        if (feature.geometry.type === "Polygon") {
+            if (union) {
+                union = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.union(union, feature);
+            }
+            else {
+                union = feature;
+            }
+        }
+    }
+    return union;
+}
 class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor(props) {
         super(props);
@@ -270,8 +278,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         this.mapControl = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().NavigationControl)({ visualizePitch: true });
         this.mapDivRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
         this.state = {
-            // TODO: style selector
-            style: "mapbox://styles/mapbox/streets-v11",
+            // use satellite style
+            style: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
             stats: {
                 area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
                 perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
@@ -279,7 +287,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             },
         };
         // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
-        this.updateDrawing = (e) => __awaiter(this, void 0, void 0, function* () {
+        this.updateDrawing = (_evt) => __awaiter(this, void 0, void 0, function* () {
             const data = this.drawControl.getAll();
             if (data.features.length > 0) {
                 const area = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.area(data);
@@ -297,33 +305,42 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                         } }, parkingStats),
                 });
             }
+            else {
+                this.deleteFeatures();
+            }
         });
-        this.updateParkingFeatures = (data, areaKm) => __awaiter(this, void 0, void 0, function* () {
+        this.updateParkingFeatures = (0,_constants__WEBPACK_IMPORTED_MODULE_7__.wrapWithDefault)({ parkingArea: { missing: "Error (see console)" } }, (data, areaKm) => __awaiter(this, void 0, void 0, function* () {
             if (areaKm > _constants__WEBPACK_IMPORTED_MODULE_7__.OVERPASS_STATS_AREA_LIMIT_KM2) {
                 return {
                     parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.OverpassAreaTooBigValue,
                 };
             }
             const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
-            const clippedXmlObject = new DOMParser().parseFromString(parkingAreas.clippedXml, "text/xml");
-            const unclippedXmlObject = new DOMParser().parseFromString(parkingAreas.unclippedXml, "text/xml");
-            const clippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(clippedXmlObject);
-            const unclippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(unclippedXmlObject);
-            this.map.getSource(MapLayers.SURFACE_PARKING.id).setData(clippedGeoJsonAreas);
-            this.map.getSource(MapLayers.UNCLIPPED_SURFACE_PARKING.id).setData(unclippedGeoJsonAreas);
-            // TODO
-            // Calculate the total area of the parking lots with turf.area
+            const xmlObject = new DOMParser().parseFromString(parkingAreas.xml, "text/xml");
+            const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(xmlObject);
+            this.map.getSource(MapLayers.SURFACE_PARKING.id).setData(geoJsons);
+            // Calculate the total area of the parking lots by taking the union then using turf.area
+            // Note that we take the union first to avoid double counting accidentally overlapping parking lots
+            const parkingUnion = unionPolygon(geoJsons);
+            const parkingAreaValueM2 = parkingUnion ? _turf_turf__WEBPACK_IMPORTED_MODULE_3__.area(parkingUnion) : 0;
             return {
                 parkingArea: {
-                    value: clippedGeoJsonAreas.features.length,
+                    value: parkingAreaValueM2 / 1000000,
                     units: "km²",
                 },
             };
-        });
+        }));
         this.deleteFeatures = () => {
             for (const layer of Object.values(MapLayers)) {
                 this.map.getSource(layer.id).setData(EmptyFeatureCollection);
             }
+            this.setState({
+                stats: {
+                    area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
+                    perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
+                    parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
+                },
+            });
         };
         if (props.initialState) {
             this.state = Object.assign(Object.assign({}, this.state), props.initialState);
@@ -342,7 +359,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.map.addControl(this.drawControl);
             this.map.on("draw.create", this.updateDrawing);
             this.map.on("draw.update", this.updateDrawing);
-            this.map.on("draw.delete", this.deleteFeatures);
+            this.map.on("draw.delete", this.updateDrawing);
             yield new Promise((resolve) => {
                 this.map.once("styledata", () => {
                     for (const layer of Object.values(MapLayers)) {
@@ -402,7 +419,7 @@ const NoPolygonValue = {
     missing: "Select a polygon",
 };
 const OverpassAreaTooBigValue = {
-    missing: `Area too large (${_constants__WEBPACK_IMPORTED_MODULE_1__.OVERPASS_STATS_AREA_LIMIT_KM2})`,
+    missing: `Selection too large (${_constants__WEBPACK_IMPORTED_MODULE_1__.OVERPASS_STATS_AREA_LIMIT_KM2} km²)`,
 };
 function valueToDisplay(value) {
     if ("missing" in value) {
