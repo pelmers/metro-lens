@@ -5,6 +5,13 @@ import fs from "fs";
 import path from "path";
 import type { Position } from "@turf/turf";
 import { e } from "../constants";
+import { withTempFolder } from "./utils";
+
+const NoResultsOsmXML = `
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API">
+</osm>
+`;
 
 async function execCommand(command: string): Promise<void> {
   await e(promisify(exec))(command);
@@ -36,11 +43,34 @@ export async function savePolygonFormat(
  * Calls osmconvert on the input file with the given polygon file as a filter
  * saves the output to the given output file
  */
-export async function osmconvertWithPolygon(
+export async function osmconvertFilterWithPolygon(
   inputFile: string,
   polygonFile: string,
   outputFile: string
 ): Promise<void> {
   const command = `osmconvert ${inputFile} -B=${polygonFile} -o=${outputFile}`;
   await execCommand(command);
+}
+
+export async function osmconvertMergeXmlResults(
+  inputContentses: string[]
+): Promise<string> {
+  if (inputContentses.length === 0) {
+    return NoResultsOsmXML;
+  }
+  return await withTempFolder(async (tempFolder) => {
+    // Write each input to a file
+    const inputFiles = await Promise.all(
+      inputContentses.map(async (contents, i) => {
+        const filename = path.join(tempFolder, `input${i}.xml`);
+        await promisify(fs.writeFile)(filename, contents);
+        return filename;
+      })
+    );
+    const outputFile = path.join(tempFolder, "output.xml");
+    const command = `osmconvert ${inputFiles.join(" ")} -o=${outputFile}`;
+    await execCommand(command);
+    // Read output file and return it
+    return await promisify(fs.readFile)(outputFile, "utf8");
+  });
 }

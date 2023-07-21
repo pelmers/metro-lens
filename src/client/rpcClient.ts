@@ -8,11 +8,11 @@ import {
   e,
   t,
 } from "../constants";
-import { ServerCalls, TClippedAndUnclippedXml } from "../rpc";
+import { ServerCalls, TClippedAndUnclippedXml, TXmlResult } from "../rpc";
 import { AnyJson, AsyncFN, FNDecl } from "roots-rpc/dist/rpcTypes";
 
 export let getMapboxKey: AsyncFN<null, string>;
-export let getParkingAreas: AsyncFN<AnyJson, TClippedAndUnclippedXml>;
+export let getParkingAreas: AsyncFN<AnyJson, TXmlResult>;
 
 let alreadyConnected = false;
 

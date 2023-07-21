@@ -42,15 +42,23 @@ const MapLayers = {
       "fill-opacity": 0.5,
     },
   },
-  UNCLIPPED_SURFACE_PARKING: {
-    id: "unclippedSurfaceParkingAreas",
-    type: "fill" as const,
-    paint: {
-      "fill-color": "red",
-      "fill-opacity": 0.1,
-    },
-  },
 };
+
+// Take the union of all features with Polygon geometry in collection
+// Can be null if no features have Polygon geometry
+function unionPolygon(collection: FeatureCollection) {
+  let union: turf.Feature<turf.Polygon | turf.MultiPolygon> | null = null;
+  for (const feature of collection.features) {
+    if (feature.geometry.type === "Polygon") {
+      if (union) {
+        union = turf.union(union, feature as turf.Feature<turf.Polygon>);
+      } else {
+        union = feature as turf.Feature<turf.Polygon>;
+      }
+    }
+  }
+  return union;
+}
 
 export default class MapComponent extends React.Component<Props, State> {
   map: mapboxgl.Map;
@@ -71,8 +79,8 @@ export default class MapComponent extends React.Component<Props, State> {
   mapDivRef: React.RefObject<HTMLDivElement> = React.createRef();
 
   state: State = {
-    // TODO: style selector
-    style: "mapbox://styles/mapbox/streets-v11",
+    // use satellite style
+    style: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
     stats: {
       area: NoPolygonValue,
       perimeter: NoPolygonValue,
@@ -101,7 +109,7 @@ export default class MapComponent extends React.Component<Props, State> {
 
     this.map.on("draw.create", this.updateDrawing);
     this.map.on("draw.update", this.updateDrawing);
-    this.map.on("draw.delete", this.deleteFeatures);
+    this.map.on("draw.delete", this.updateDrawing);
 
     await new Promise<void>((resolve) => {
       this.map.once("styledata", () => {
@@ -142,6 +150,8 @@ export default class MapComponent extends React.Component<Props, State> {
           ...parkingStats,
         },
       });
+    } else {
+      this.deleteFeatures();
     }
   };
 
@@ -155,29 +165,21 @@ export default class MapComponent extends React.Component<Props, State> {
       };
     }
     const parkingAreas = await getParkingAreas(data as any);
-    const clippedXmlObject = new DOMParser().parseFromString(
-      parkingAreas.clippedXml,
+    const xmlObject = new DOMParser().parseFromString(
+      parkingAreas.xml,
       "text/xml"
     );
-    const unclippedXmlObject = new DOMParser().parseFromString(
-      parkingAreas.unclippedXml,
-      "text/xml"
-    );
-    const clippedGeoJsonAreas = osmtogeojson(clippedXmlObject);
-    const unclippedGeoJsonAreas = osmtogeojson(unclippedXmlObject);
+    const geoJsons = osmtogeojson(xmlObject);
     (this.map.getSource(MapLayers.SURFACE_PARKING.id) as GeoJSONSource).setData(
-      clippedGeoJsonAreas
+      geoJsons
     );
-    (
-      this.map.getSource(
-        MapLayers.UNCLIPPED_SURFACE_PARKING.id
-      ) as GeoJSONSource
-    ).setData(unclippedGeoJsonAreas);
-    // TODO
-    // Calculate the total area of the parking lots with turf.area
+    // Calculate the total area of the parking lots by taking the union then using turf.area
+    // Note that we take the union first to avoid double counting accidentally overlapping parking lots
+    const parkingUnion = unionPolygon(geoJsons);
+    const parkingAreaValueM2 = parkingUnion ? turf.area(parkingUnion) : 0;
     return {
       parkingArea: {
-        value: clippedGeoJsonAreas.features.length,
+        value: parkingAreaValueM2 / 1000000,
         units: "km²",
       },
     };
@@ -189,6 +191,13 @@ export default class MapComponent extends React.Component<Props, State> {
         EmptyFeatureCollection
       );
     }
+    this.setState({
+      stats: {
+        area: NoPolygonValue,
+        perimeter: NoPolygonValue,
+        parkingArea: NoPolygonValue,
+      },
+    });
   };
 
   async componentDidMount() {

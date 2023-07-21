@@ -19,6 +19,11 @@ const ClippedAndUnclippedXml = t.type({
 });
 export type TClippedAndUnclippedXml = t.TypeOf<typeof ClippedAndUnclippedXml>;
 
+const XmlResult = t.type({
+  xml: t.string,
+});
+export type TXmlResult = t.TypeOf<typeof XmlResult>;
+
 export const ServerCalls = {
   GetMapboxApiKey: () => ({
     i: t.null,
@@ -26,6 +31,6 @@ export const ServerCalls = {
   }),
   GetParkingAreas: () => ({
     i: t.any,
-    o: ClippedAndUnclippedXml,
+    o: XmlResult,
   }),
 };

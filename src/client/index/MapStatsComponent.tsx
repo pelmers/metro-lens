@@ -24,7 +24,7 @@ export const NoPolygonValue: StatValue = {
 };
 
 export const OverpassAreaTooBigValue: StatValue = {
-  missing: `Area too large (${OVERPASS_STATS_AREA_LIMIT_KM2})`,
+  missing: `Selection too large (${OVERPASS_STATS_AREA_LIMIT_KM2} km²)`,
 };
 
 function valueToDisplay(value: StatValue): string {
