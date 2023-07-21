@@ -33,4 +33,8 @@ export const ServerCalls = {
     i: t.any,
     o: XmlResult,
   }),
+  GetNatureAndParkAreas: () => ({
+    i: t.any,
+    o: XmlResult,
+  }),
 };

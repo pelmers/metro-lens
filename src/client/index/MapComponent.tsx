@@ -1,26 +1,31 @@
 import React from "react";
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import * as turf from "@turf/turf";
 
 import "./MapComponent.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import {
   OVERPASS_STATS_AREA_LIMIT_KM2,
   wrapWithDefault,
 } from "../../constants";
-import { getParkingAreas } from "../rpcClient";
+import { getNatureAndParkAreas, getParkingAreas } from "../rpcClient";
 
 import osmtogeojson from "osmtogeojson";
 import {
+  DefaultStats,
+  ErrorValue,
   MapStatsComponent,
   Props as MapStatsComponentProps,
-  NoPolygonValue,
   OverpassAreaTooBigValue,
+  StatValue,
 } from "./MapStatsComponent";
 import { FeatureCollection, Geometry } from "geojson";
+import { TXmlResult } from "../../rpc";
 
 type Props = {
   apiKey: string;
@@ -42,6 +47,14 @@ const MapLayers = {
     type: "fill" as const,
     paint: {
       "fill-color": "red",
+      "fill-opacity": 0.5,
+    },
+  },
+  NATURE_AND_PARKS: {
+    id: "natureAndParks",
+    type: "fill" as const,
+    paint: {
+      "fill-color": "green",
       "fill-opacity": 0.5,
     },
   },
@@ -78,17 +91,17 @@ export default class MapComponent extends React.Component<Props, State> {
   });
 
   mapControl = new mapboxgl.NavigationControl({ visualizePitch: true });
+  geocoderControl = new MapboxGeocoder({
+    accessToken: this.props.apiKey,
+    mapboxgl: mapboxgl,
+  });
 
   mapDivRef: React.RefObject<HTMLDivElement> = React.createRef();
 
   state: State = {
     // use satellite style
     style: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
-    stats: {
-      area: NoPolygonValue,
-      perimeter: NoPolygonValue,
-      parkingArea: NoPolygonValue,
-    },
+    stats: DefaultStats,
   };
 
   constructor(props: Props) {
@@ -107,7 +120,17 @@ export default class MapComponent extends React.Component<Props, State> {
       zoom: 13,
     });
 
+    this.map.addControl(this.geocoderControl);
     this.map.addControl(this.mapControl);
+    // Add geolocate control
+    this.map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+      })
+    );
     this.map.addControl(this.drawControl);
 
     this.map.on("draw.create", this.updateDrawing);
@@ -134,62 +157,64 @@ export default class MapComponent extends React.Component<Props, State> {
   // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
   updateDrawing = async (_evt: { type: string }) => {
     const data = this.drawControl.getAll();
-    if (data.features.length > 0) {
-      const area = turf.area(data);
-      const areaKm = area / 1000000;
-      const perimeterKm = turf.length(data, { units: "kilometers" });
-      const parkingStats = await this.updateParkingFeatures(data, areaKm);
-      // TODO: all the other stats too
-      this.setState({
-        stats: {
-          area: {
-            value: areaKm,
-            units: "km²",
-          },
-          perimeter: {
-            value: perimeterKm,
-            units: "km",
-          },
-          ...parkingStats,
-        },
-      });
-    } else {
+    if (data.features.length == 0) {
       this.deleteFeatures();
+      return;
     }
-  };
+    const area = {
+      value: turf.area(data) / 1000000,
+      units: "km²",
+    };
+    const perimeter = {
+      value: turf.length(data, { units: "kilometers" }),
+      units: "km",
+    };
 
-  updateParkingFeatures = wrapWithDefault(
-    { parkingArea: { missing: "Error (see console)" } },
-    async (
-      data: FeatureCollection<Geometry, { [name: string]: any }>,
-      areaKm: number
-    ) => {
-      if (areaKm > OVERPASS_STATS_AREA_LIMIT_KM2) {
+    const updateAreaFeature = wrapWithDefault(
+      ErrorValue,
+      async (
+        mapLayerId: string,
+        overpassQueryFn: (data: any) => Promise<TXmlResult>
+      ): Promise<StatValue> => {
+        if (area.value > OVERPASS_STATS_AREA_LIMIT_KM2) {
+          return OverpassAreaTooBigValue;
+        }
+
+        const areas = await overpassQueryFn(data);
+        const xmlObject = new DOMParser().parseFromString(
+          areas.xml,
+          "text/xml"
+        );
+        const geoJsons = osmtogeojson(xmlObject);
+
+        (this.map.getSource(mapLayerId) as GeoJSONSource).setData(geoJsons);
+
+        // Calculate the total area of the features by taking the union then using turf.area
+        // Note that we take the union first to avoid double counting accidentally overlapping features
+        const union = unionPolygon(geoJsons);
+        const areaValueM2 = union ? turf.area(union) : 0;
+
         return {
-          parkingArea: OverpassAreaTooBigValue,
+          value: areaValueM2 / 1000000,
+          units: "km²",
         };
       }
-      const parkingAreas = await getParkingAreas(data as any);
-      const xmlObject = new DOMParser().parseFromString(
-        parkingAreas.xml,
-        "text/xml"
-      );
-      const geoJsons = osmtogeojson(xmlObject);
-      (
-        this.map.getSource(MapLayers.SURFACE_PARKING.id) as GeoJSONSource
-      ).setData(geoJsons);
-      // Calculate the total area of the parking lots by taking the union then using turf.area
-      // Note that we take the union first to avoid double counting accidentally overlapping parking lots
-      const parkingUnion = unionPolygon(geoJsons);
-      const parkingAreaValueM2 = parkingUnion ? turf.area(parkingUnion) : 0;
-      return {
-        parkingArea: {
-          value: parkingAreaValueM2 / 1000000,
-          units: "km²",
-        },
-      };
-    }
-  );
+    );
+
+    const [parkingArea, natureArea] = await Promise.all([
+      updateAreaFeature(MapLayers.SURFACE_PARKING.id, getParkingAreas),
+      updateAreaFeature(MapLayers.NATURE_AND_PARKS.id, getNatureAndParkAreas),
+    ]);
+    // TODO: all the other stats too
+    this.setState({
+      stats: {
+        area,
+        perimeter,
+        natureArea,
+        parkingArea,
+      },
+    });
+  };
 
   deleteFeatures = () => {
     for (const layer of Object.values(MapLayers)) {
@@ -198,11 +223,7 @@ export default class MapComponent extends React.Component<Props, State> {
       );
     }
     this.setState({
-      stats: {
-        area: NoPolygonValue,
-        perimeter: NoPolygonValue,
-        parkingArea: NoPolygonValue,
-      },
+      stats: DefaultStats,
     });
   };
 

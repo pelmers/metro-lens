@@ -17,10 +17,22 @@ export type Props = {
   area: StatValue;
   perimeter: StatValue;
   parkingArea: StatValue;
+  natureArea: StatValue;
 };
 
 export const NoPolygonValue: StatValue = {
   missing: "Select a polygon",
+};
+
+export const ErrorValue: StatValue = {
+  missing: "Error (see console)",
+};
+
+export const DefaultStats = {
+  area: NoPolygonValue,
+  perimeter: NoPolygonValue,
+  parkingArea: NoPolygonValue,
+  natureArea: NoPolygonValue,
 };
 
 export const OverpassAreaTooBigValue: StatValue = {
@@ -44,6 +56,7 @@ export class MapStatsComponent extends React.Component<Props> {
           <li>Area: {valueToDisplay(this.props.area)}</li>
           <li>Perimeter: {valueToDisplay(this.props.perimeter)}</li>
           <li>Parking Area: {valueToDisplay(this.props.parkingArea)}</li>
+          <li>Nature Area: {valueToDisplay(this.props.natureArea)}</li>
         </ul>
       </div>
     );

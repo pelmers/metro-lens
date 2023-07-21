@@ -66,7 +66,7 @@ export function t<TInput extends any[], TOutput>(
     try {
       return await func(...args);
     } finally {
-      d(`Executing ${name || func.name} took ${Date.now() - start}ms`);
+      d(`${name || func.name}: ${Date.now() - start}ms`);
     }
   };
 }

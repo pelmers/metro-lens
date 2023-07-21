@@ -13,6 +13,7 @@ import { AnyJson, AsyncFN, FNDecl } from "roots-rpc/dist/rpcTypes";
 
 export let getMapboxKey: AsyncFN<null, string>;
 export let getParkingAreas: AsyncFN<AnyJson, TXmlResult>;
+export let getNatureAndParkAreas: AsyncFN<AnyJson, TXmlResult>;
 
 let alreadyConnected = false;
 
@@ -33,6 +34,7 @@ export function connectClient() {
   }
   getMapboxKey = connect(ServerCalls.GetMapboxApiKey);
   getParkingAreas = connect(ServerCalls.GetParkingAreas);
+  getNatureAndParkAreas = connect(ServerCalls.GetNatureAndParkAreas);
 
   socket.onopen = () => {
     d(`Socket opened`);
