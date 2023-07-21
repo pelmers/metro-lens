@@ -4,7 +4,7 @@ import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import type { Position } from "@turf/turf";
-import { e } from "../constants";
+import { e, t } from "../constants";
 import { withTempFolder } from "./utils";
 
 const NoResultsOsmXML = `
@@ -14,9 +14,12 @@ const NoResultsOsmXML = `
 `;
 
 async function execCommand(command: string): Promise<void> {
-  await e(promisify(exec))(command);
+  await e(t(promisify(exec), command))(command);
 }
 
+/**
+ * Sort the given osm file in place using osmium
+ */
 export async function osmiumSort(inputFile: string): Promise<void> {
   const outputFile = inputFile + ".sorted.xml";
   const command = `osmium sort ${inputFile} -o ${outputFile}`;
@@ -52,6 +55,9 @@ export async function osmconvertFilterWithPolygon(
   await execCommand(command);
 }
 
+/**
+ * Merge the contents of multiple osm xml files using osmconvert, returns the result as a string
+ */
 export async function osmconvertMergeXmlResults(
   inputContentses: string[]
 ): Promise<string> {
