@@ -1,9 +1,12 @@
 // TODO: update the domain when I have picked a final domain name!
 export const DOMAIN = "devzone.pelmers.com";
+
 export const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 
 export const RPC_WS_PATH = "rpc";
 export const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
+
+export const OVERPASS_STATS_AREA_LIMIT_KM2 = 250;
 
 const DEBUG_LOG = true;
 

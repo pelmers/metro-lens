@@ -41184,6 +41184,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CLIENT_CALLS_SERVER_RPC_PREFIX: () => (/* binding */ CLIENT_CALLS_SERVER_RPC_PREFIX),
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
+/* harmony export */   OVERPASS_STATS_AREA_LIMIT_KM2: () => (/* binding */ OVERPASS_STATS_AREA_LIMIT_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
@@ -41204,6 +41205,7 @@ const DOMAIN = "devzone.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
+const OVERPASS_STATS_AREA_LIMIT_KM2 = 250;
 const DEBUG_LOG = true;
 const d = DEBUG_LOG
     ? (...args) => console.log(...args)
@@ -41257,6 +41259,10 @@ function wrapServerErrors(server) {
 function optional(typ) {
     return io_ts__WEBPACK_IMPORTED_MODULE_1__.union([io_ts__WEBPACK_IMPORTED_MODULE_1__["null"], io_ts__WEBPACK_IMPORTED_MODULE_1__.undefined, typ]);
 }
+const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
+    clippedXml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
+    unclippedXml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
+});
 const ServerCalls = {
     GetMapboxApiKey: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__["null"],
@@ -41264,8 +41270,7 @@ const ServerCalls = {
     }),
     GetParkingAreas: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
-        // TODO: figure out what does this return
-        o: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        o: ClippedAndUnclippedXml,
     }),
 };
 

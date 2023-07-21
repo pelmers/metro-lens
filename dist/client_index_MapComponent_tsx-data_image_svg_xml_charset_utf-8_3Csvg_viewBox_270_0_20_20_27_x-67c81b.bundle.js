@@ -64,15 +64,15 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed width and light gray background */
 #map-stats-container {
-    width: 300px;
-    background-color: #f8f8f8;
-    padding: 4px;
-    margin-left: calc(min(2vw, 6px));
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 5px #ddd;
+  width: 300px;
+  background-color: #f8f8f8;
+  padding: 4px;
+  margin-left: calc(min(2vw, 6px));
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 5px #ddd;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;IACI,YAAY;IACZ,yBAAyB;IACzB,YAAY;IACZ,gCAAgC;IAChC,kBAAkB;IAClB,sBAAsB;IACtB,wBAAwB;AAC5B","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n    width: 300px;\n    background-color: #f8f8f8;\n    padding: 4px;\n    margin-left: calc(min(2vw, 6px));\n    border-radius: 5px;\n    border: 1px solid #ddd;\n    box-shadow: 0 0 5px #ddd;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;AAC1B","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 300px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -232,6 +232,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+// Unclipped with opacity 0.2
+const UNCLIPPED_SURFACE_PARKING_SOURCE_ID = "unclippedSurfaceParkingAreas";
+// Clipped with opacity 0.5
+const SURFACE_PARKING_SOURCE_ID = "surfaceParkingAreas";
 class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor(props) {
         super(props);
@@ -251,13 +255,14 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         this.state = {
             // TODO: style selector
             style: "mapbox://styles/mapbox/streets-v11",
-            polygonStats: {
-                area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MissingValue,
-                perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MissingValue,
+            stats: {
+                area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
+                perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
+                parkingPlaces: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
             },
         };
+        // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
         this.updateDrawing = (e) => __awaiter(this, void 0, void 0, function* () {
-            (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(e);
             const data = this.drawControl.getAll();
             if (data.features.length > 0) {
                 const area = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.area(data);
@@ -265,28 +270,44 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 const perimeterKm = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.length(data, { units: "kilometers" });
                 // Print up to 2 decimal places.
                 (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(`Area: ${areaKm.toFixed(2)} km², Perimeter: ${perimeterKm.toFixed(2)} km`);
-                // TODO: set a cap on the area before asking for overpass data.
-                const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
-                (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(parkingAreas);
-                // TODO
-                // Cut out parts of all the parking areas outside the drawn polygon with turf.difference
-                this.map.getSource("parkingAreas").setData(osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(parkingAreas));
+                const parkingStats = yield this.updateParkingFeatures(data, areaKm);
                 this.setState({
-                    polygonStats: {
-                        area: {
+                    stats: Object.assign({ area: {
                             value: areaKm,
                             units: "km²",
-                        },
-                        perimeter: {
+                        }, perimeter: {
                             value: perimeterKm,
                             units: "km",
-                        },
-                    },
+                        } }, parkingStats),
                 });
             }
         });
+        this.updateParkingFeatures = (data, areaKm) => __awaiter(this, void 0, void 0, function* () {
+            if (areaKm > _constants__WEBPACK_IMPORTED_MODULE_7__.OVERPASS_STATS_AREA_LIMIT_KM2) {
+                return {
+                    parkingPlaces: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.OverpassAreaTooBigValue,
+                };
+            }
+            const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
+            const clippedXmlObject = new DOMParser().parseFromString(parkingAreas.clippedXml, "text/xml");
+            const unclippedXmlObject = new DOMParser().parseFromString(parkingAreas.unclippedXml, "text/xml");
+            const clippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(clippedXmlObject);
+            const unclippedGeoJsonAreas = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(unclippedXmlObject);
+            this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData(clippedGeoJsonAreas);
+            this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData(unclippedGeoJsonAreas);
+            return {
+                parkingPlaces: {
+                    value: clippedGeoJsonAreas.features.length,
+                    units: "places",
+                },
+            };
+        });
         this.deleteFeatures = () => {
-            this.map.getSource("parkingAreas").setData({
+            this.map.getSource(SURFACE_PARKING_SOURCE_ID).setData({
+                type: "FeatureCollection",
+                features: [],
+            });
+            this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID).setData({
                 type: "FeatureCollection",
                 features: [],
             });
@@ -306,22 +327,33 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             });
             this.map.addControl(this.mapControl);
             this.map.addControl(this.drawControl);
-            // Add a source for the parking areas in red.
             this.map.on("draw.create", this.updateDrawing);
             this.map.on("draw.update", this.updateDrawing);
             this.map.on("draw.delete", this.deleteFeatures);
             yield new Promise((resolve) => {
                 this.map.once("styledata", () => {
-                    this.map.addSource("parkingAreas", {
+                    this.map.addSource(SURFACE_PARKING_SOURCE_ID, {
                         type: "geojson",
                     });
                     this.map.addLayer({
-                        id: "parkingAreas",
+                        id: SURFACE_PARKING_SOURCE_ID,
                         type: "fill",
-                        source: "parkingAreas",
+                        source: SURFACE_PARKING_SOURCE_ID,
                         paint: {
                             "fill-color": "red",
                             "fill-opacity": 0.5,
+                        },
+                    });
+                    this.map.addSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID, {
+                        type: "geojson",
+                    });
+                    this.map.addLayer({
+                        id: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
+                        type: "fill",
+                        source: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
+                        paint: {
+                            "fill-color": "red",
+                            "fill-opacity": 0.2,
                         },
                     });
                     resolve();
@@ -344,7 +376,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     render() {
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MapStatsComponent, Object.assign({}, this.state.polygonStats))));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MapStatsComponent, Object.assign({}, this.state.stats))));
     }
 }
 
@@ -360,7 +392,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   MapStatsComponent: () => (/* binding */ MapStatsComponent),
-/* harmony export */   MissingValue: () => (/* binding */ MissingValue)
+/* harmony export */   NoPolygonValue: () => (/* binding */ NoPolygonValue),
+/* harmony export */   OverpassAreaTooBigValue: () => (/* binding */ OverpassAreaTooBigValue)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
@@ -369,8 +402,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const MissingValue = {
+const NoPolygonValue = {
     missing: "Select a polygon",
+};
+const OverpassAreaTooBigValue = {
+    missing: `Area too large (${_constants__WEBPACK_IMPORTED_MODULE_1__.OVERPASS_STATS_AREA_LIMIT_KM2})`,
 };
 function valueToDisplay(value) {
     if ("missing" in value) {
@@ -391,7 +427,10 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     valueToDisplay(this.props.area)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "Perimeter: ",
-                    valueToDisplay(this.props.area)))));
+                    valueToDisplay(this.props.area)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "Parking places: ",
+                    valueToDisplay(this.props.parkingPlaces)))));
     }
 }
 

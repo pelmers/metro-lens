@@ -7,11 +7,11 @@ import {
   d,
   e,
 } from "../constants";
-import { ServerCalls } from "../rpc";
+import { ServerCalls, TClippedAndUnclippedXml } from "../rpc";
 import { AnyJson, AsyncFN } from "roots-rpc/dist/rpcTypes";
 
 export let getMapboxKey: AsyncFN<null, string>;
-export let getParkingAreas: AsyncFN<AnyJson, AnyJson>;
+export let getParkingAreas: AsyncFN<AnyJson, TClippedAndUnclippedXml>;
 
 let alreadyConnected = false;
 

@@ -1,1 +1,1 @@
-export declare function queryOverpass(queryCode: string): Promise<any>;
+export declare function queryOverpass(queryCode: string): Promise<string>;

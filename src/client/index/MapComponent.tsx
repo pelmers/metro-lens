@@ -7,7 +7,7 @@ import "./MapComponent.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
-import { d } from "../../constants";
+import { OVERPASS_STATS_AREA_LIMIT_KM2, d } from "../../constants";
 import { getParkingAreas } from "../rpcClient";
 
 import osmtogeojson from "osmtogeojson";
@@ -15,7 +15,9 @@ import {
   MapStatsComponent,
   Props as MapStatsComponentProps,
   NoPolygonValue,
+  OverpassAreaTooBigValue,
 } from "./MapStatsComponent";
+import { FeatureCollection, Geometry } from "geojson";
 
 type Props = {
   apiKey: string;
@@ -23,8 +25,13 @@ type Props = {
 };
 type State = {
   style: string;
-  polygonStats: MapStatsComponentProps;
+  stats: MapStatsComponentProps;
 };
+
+// Unclipped with opacity 0.2
+const UNCLIPPED_SURFACE_PARKING_SOURCE_ID = "unclippedSurfaceParkingAreas";
+// Clipped with opacity 0.5
+const SURFACE_PARKING_SOURCE_ID = "surfaceParkingAreas";
 
 export default class MapComponent extends React.Component<Props, State> {
   map: mapboxgl.Map;
@@ -47,9 +54,10 @@ export default class MapComponent extends React.Component<Props, State> {
   state: State = {
     // TODO: style selector
     style: "mapbox://styles/mapbox/streets-v11",
-    polygonStats: {
+    stats: {
       area: NoPolygonValue,
       perimeter: NoPolygonValue,
+      parkingPlaces: NoPolygonValue,
     },
   };
 
@@ -71,7 +79,6 @@ export default class MapComponent extends React.Component<Props, State> {
 
     this.map.addControl(this.mapControl);
     this.map.addControl(this.drawControl);
-    // Add a source for the parking areas in red.
 
     this.map.on("draw.create", this.updateDrawing);
     this.map.on("draw.update", this.updateDrawing);
@@ -79,16 +86,28 @@ export default class MapComponent extends React.Component<Props, State> {
 
     await new Promise<void>((resolve) => {
       this.map.once("styledata", () => {
-        this.map.addSource("parkingAreas", {
+        this.map.addSource(SURFACE_PARKING_SOURCE_ID, {
           type: "geojson",
         });
         this.map.addLayer({
-          id: "parkingAreas",
+          id: SURFACE_PARKING_SOURCE_ID,
           type: "fill",
-          source: "parkingAreas",
+          source: SURFACE_PARKING_SOURCE_ID,
           paint: {
             "fill-color": "red",
             "fill-opacity": 0.5,
+          },
+        });
+        this.map.addSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID, {
+          type: "geojson",
+        });
+        this.map.addLayer({
+          id: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
+          type: "fill",
+          source: UNCLIPPED_SURFACE_PARKING_SOURCE_ID,
+          paint: {
+            "fill-color": "red",
+            "fill-opacity": 0.2,
           },
         });
         resolve();
@@ -96,8 +115,8 @@ export default class MapComponent extends React.Component<Props, State> {
     });
   }
 
+  // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
   updateDrawing = async (e: { type: string }) => {
-    d(e);
     const data = this.drawControl.getAll();
     if (data.features.length > 0) {
       const area = turf.area(data);
@@ -109,16 +128,9 @@ export default class MapComponent extends React.Component<Props, State> {
           2
         )} km`
       );
-      // TODO: set a cap on the area before asking for overpass data.
-      const parkingAreas = await getParkingAreas(data as any);
-      d(parkingAreas);
-      // TODO
-      // Cut out parts of all the parking areas outside the drawn polygon with turf.difference
-      (this.map.getSource("parkingAreas") as GeoJSONSource).setData(
-        osmtogeojson(parkingAreas)
-      );
+      const parkingStats = await this.updateParkingFeatures(data, areaKm);
       this.setState({
-        polygonStats: {
+        stats: {
           area: {
             value: areaKm,
             units: "km²",
@@ -127,13 +139,46 @@ export default class MapComponent extends React.Component<Props, State> {
             value: perimeterKm,
             units: "km",
           },
+          ...parkingStats,
         },
       });
     }
   };
 
+  updateParkingFeatures = async (
+    data: FeatureCollection<Geometry, { [name: string]: any }>,
+    areaKm: number
+  ) => {
+    if (areaKm > OVERPASS_STATS_AREA_LIMIT_KM2) {
+      return {
+        parkingPlaces: OverpassAreaTooBigValue,
+      };
+    }
+    const parkingAreas = await getParkingAreas(data as any);
+    const clippedXmlObject = new DOMParser().parseFromString(parkingAreas.clippedXml, "text/xml");
+    const unclippedXmlObject = new DOMParser().parseFromString(parkingAreas.unclippedXml, "text/xml");
+    const clippedGeoJsonAreas = osmtogeojson(clippedXmlObject);
+    const unclippedGeoJsonAreas = osmtogeojson(unclippedXmlObject);
+    (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
+      clippedGeoJsonAreas
+    );
+    (this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData(
+      unclippedGeoJsonAreas
+    );
+    return {
+      parkingPlaces: {
+        value: clippedGeoJsonAreas.features.length,
+        units: "places",
+      },
+    };
+  };
+
   deleteFeatures = () => {
-    (this.map.getSource("parkingAreas") as GeoJSONSource).setData({
+    (this.map.getSource(SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData({
+      type: "FeatureCollection",
+      features: [],
+    });
+    (this.map.getSource(UNCLIPPED_SURFACE_PARKING_SOURCE_ID) as GeoJSONSource).setData({
       type: "FeatureCollection",
       features: [],
     });
@@ -156,7 +201,7 @@ export default class MapComponent extends React.Component<Props, State> {
     return (
       <div className="map-container-container">
         <div id="map-container" ref={this.mapDivRef} />
-        <MapStatsComponent {...this.state.polygonStats} />
+        <MapStatsComponent {...this.state.stats} />
       </div>
     );
   }

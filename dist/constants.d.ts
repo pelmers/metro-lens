@@ -2,6 +2,7 @@ export declare const DOMAIN = "devzone.pelmers.com";
 export declare const WS_DOMAIN_NAME: string;
 export declare const RPC_WS_PATH = "rpc";
 export declare const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
+export declare const OVERPASS_STATS_AREA_LIMIT_KM2 = 250;
 export declare const d: (...args: unknown[]) => void;
 export declare function getErrorMessage(e: unknown): string;
 /**

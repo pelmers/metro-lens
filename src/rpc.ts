@@ -13,6 +13,12 @@ function optional<X extends t.Mixed>(typ: X) {
   return t.union([t.null, t.undefined, typ]);
 }
 
+const ClippedAndUnclippedXml = t.type({
+  clippedXml: t.string,
+  unclippedXml: t.string,
+});
+export type TClippedAndUnclippedXml = t.TypeOf<typeof ClippedAndUnclippedXml>;
+
 export const ServerCalls = {
   GetMapboxApiKey: () => ({
     i: t.null,
@@ -20,7 +26,6 @@ export const ServerCalls = {
   }),
   GetParkingAreas: () => ({
     i: t.any,
-    // TODO: figure out what does this return
-    o: t.any,
+    o: ClippedAndUnclippedXml,
   }),
 };

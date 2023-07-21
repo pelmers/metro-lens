@@ -6,7 +6,7 @@
   \***************************************/
 /***/ (() => {
 
-throw new Error("Module parse failed: Shorthand property assignments are valid only in destructuring patterns (66:35)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n|                         }\n|                     },\n>                     deleteFeatures = () => {\n|                         this.map.getSource(\"parkingAreas\").setData({\n|                             type: \"FeatureCollection\",");
+throw new Error("Module parse failed: Identifier 'clippedGeoJsonAreas' has already been declared (81:18)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n|             const unclippedXmlObject = new DOMParser().parseFromString(parkingAreas.unclippedXml, \"text/xml\");\n|             const clippedGeoJsonAreas = osmtogeojson(xmlObject);\n>             const clippedGeoJsonAreas = osmtogeojson(xmlObject);\n|             // Cut out parts of all the parking areas outside the drawn polygon with turf.difference\n|             // TODO");
 
 /***/ })
 

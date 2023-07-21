@@ -16,6 +16,9 @@ TODO - short version and link to blog post
 
 TODO
 
+Install osmium
+Install osmconvert
+
 Data source: [WorldPop](https://www.worldpop.org)
 
 ### Future work

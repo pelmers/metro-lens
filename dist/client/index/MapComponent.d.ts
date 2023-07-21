@@ -6,13 +6,14 @@ import "./MapComponent.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { Props as MapStatsComponentProps } from "./MapStatsComponent";
+import { FeatureCollection, Geometry } from "geojson";
 type Props = {
     apiKey: string;
     initialState?: Partial<State>;
 };
 type State = {
     style: string;
-    polygonStats: MapStatsComponentProps;
+    stats: MapStatsComponentProps;
 };
 export default class MapComponent extends React.Component<Props, State> {
     map: mapboxgl.Map;
@@ -25,6 +26,11 @@ export default class MapComponent extends React.Component<Props, State> {
     updateDrawing: (e: {
         type: string;
     }) => Promise<void>;
+    updateParkingFeatures: (data: FeatureCollection<Geometry, {
+        [name: string]: any;
+    }>, areaKm: number) => Promise<{
+        parkingPlaces: import("./MapStatsComponent").StatValue;
+    }>;
     deleteFeatures: () => void;
     componentDidMount(): Promise<void>;
     componentWillUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): Promise<void>;

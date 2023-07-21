@@ -9,8 +9,10 @@ export type StatValue = {
 export type Props = {
     area: StatValue;
     perimeter: StatValue;
+    parkingPlaces: StatValue;
 };
-export declare const MissingValue: StatValue;
+export declare const NoPolygonValue: StatValue;
+export declare const OverpassAreaTooBigValue: StatValue;
 export declare class MapStatsComponent extends React.Component<Props> {
     render(): React.JSX.Element;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { d } from "../../constants";
+import { OVERPASS_STATS_AREA_LIMIT_KM2, d } from "../../constants";
 
 import "./MapStatsComponent.css";
 
@@ -16,14 +16,15 @@ export type StatValue =
 export type Props = {
   area: StatValue;
   perimeter: StatValue;
+  parkingPlaces: StatValue;
 };
 
 export const NoPolygonValue: StatValue = {
   missing: "Select a polygon",
 };
 
-export const AreaTooBigValue: StatValue = {
-  missing: "Area too large",
+export const OverpassAreaTooBigValue: StatValue = {
+  missing: `Area too large (${OVERPASS_STATS_AREA_LIMIT_KM2})`,
 };
 
 function valueToDisplay(value: StatValue): string {
@@ -43,6 +44,7 @@ export class MapStatsComponent extends React.Component<Props> {
         <ul>
           <li>Area: {valueToDisplay(this.props.area)}</li>
           <li>Perimeter: {valueToDisplay(this.props.area)}</li>
+          <li>Parking places: {valueToDisplay(this.props.parkingPlaces)}</li>
         </ul>
       </div>
     );
