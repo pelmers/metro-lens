@@ -152,7 +152,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(roots_rpc__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../rpc */ "./rpc.ts");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants */ "./constants.ts");
-/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @turf/turf */ "@turf/turf");
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_turf_turf__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -162,6 +164,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -177,7 +180,7 @@ function createRpcServer(socket) {
 function getParkingAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: remove cast if i make better io-ts typing for turf
-        const input = i;
+        const input = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.unkinkPolygon)(i);
         const polygon = input.features[0].geometry;
         const coords = polygon.coordinates[0].map(([lng, lat]) => `${lat} ${lng}`);
         const polyFilter = `poly:"${coords.join(" ")}"`;
@@ -188,8 +191,8 @@ function getParkingAreas(i) {
     );
       out body;
       >;
-      out skel qt;`;
-        const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_3__.queryOverpass)(overpassql);
+      out body qt;`;
+        const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_4__.queryOverpass)(overpassql);
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Received ${result.elements.length} results`);
         return result;
     });
@@ -216,6 +219,16 @@ __webpack_require__.r(__webpack_exports__);
 const repoRoot = path__WEBPACK_IMPORTED_MODULE_0___default().resolve(__filename, "..", "..");
 const r = (relative) => path__WEBPACK_IMPORTED_MODULE_0___default().resolve(repoRoot, relative);
 
+
+/***/ }),
+
+/***/ "@turf/turf":
+/*!*****************************!*\
+  !*** external "@turf/turf" ***!
+  \*****************************/
+/***/ ((module) => {
+
+module.exports = require("@turf/turf");
 
 /***/ }),
 

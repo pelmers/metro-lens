@@ -11,7 +11,7 @@ import { ServerCalls } from "../rpc";
 import { AnyJson, AsyncFN } from "roots-rpc/dist/rpcTypes";
 
 export let getMapboxKey: AsyncFN<null, string>;
-export let getParkingAreas: AsyncFN<AnyJson, null>;
+export let getParkingAreas: AsyncFN<AnyJson, AnyJson>;
 
 let alreadyConnected = false;
 

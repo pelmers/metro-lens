@@ -22,20 +22,57 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
   display: flex;
-  flex-direction: column;
   min-height: 480px;
   margin: auto;
   max-width: 100vw;
+  flex-flow: row wrap;
 }
 
 #map-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
+  min-width: calc(min(100vw, 600px));
   margin: auto;
   min-height: 600px;
   flex: 1;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,sBAAsB;EACtB,iBAAiB;EACjB,YAAY;EACZ,gBAAgB;AAClB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  flex-direction: column;\n  min-height: 480px;\n  margin: auto;\n  max-width: 100vw;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 800px;\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,iBAAiB;EACjB,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  min-height: 480px;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 900px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/cjs.js!./client/index/MapStatsComponent.css":
+/*!***********************************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!./client/index/MapStatsComponent.css ***!
+  \***********************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "../node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "../node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed width and light gray background */
+#map-stats-container {
+    width: 300px;
+    background-color: #f8f8f8;
+    padding: 4px;
+    margin-left: calc(min(2vw, 6px));
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 5px #ddd;
+}
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;IACI,YAAY;IACZ,yBAAyB;IACzB,YAAY;IACZ,gCAAgC;IAChC,kBAAkB;IAClB,sBAAsB;IACtB,wBAAwB;AAC5B","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n    width: 300px;\n    background-color: #f8f8f8;\n    padding: 4px;\n    margin-left: calc(min(2vw, 6px));\n    border-radius: 5px;\n    border: 1px solid #ddd;\n    box-shadow: 0 0 5px #ddd;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -96,6 +133,60 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./client/index/MapStatsComponent.css":
+/*!********************************************!*\
+  !*** ./client/index/MapStatsComponent.css ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "../node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "../node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "../node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "../node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js!./MapStatsComponent.css */ "../node_modules/css-loader/dist/cjs.js!./client/index/MapStatsComponent.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
 /***/ "./client/index/MapComponent.tsx":
 /*!***************************************!*\
   !*** ./client/index/MapComponent.tsx ***!
@@ -120,6 +211,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
 /* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! osmtogeojson */ "../node_modules/osmtogeojson/index.js");
 /* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(osmtogeojson__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -129,6 +221,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -158,6 +251,10 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         this.state = {
             // TODO: style selector
             style: "mapbox://styles/mapbox/streets-v11",
+            polygonStats: {
+                area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MissingValue,
+                perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MissingValue,
+            },
         };
         this.updateDrawing = (e) => __awaiter(this, void 0, void 0, function* () {
             (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(e);
@@ -168,12 +265,32 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 const perimeterKm = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.length(data, { units: "kilometers" });
                 // Print up to 2 decimal places.
                 (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(`Area: ${areaKm.toFixed(2)} km², Perimeter: ${perimeterKm.toFixed(2)} km`);
+                // TODO: set a cap on the area before asking for overpass data.
                 const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
                 (0,_constants__WEBPACK_IMPORTED_MODULE_7__.d)(parkingAreas);
-                // Render all of the type: "relation" areas on the map.
+                // TODO
+                // Cut out parts of all the parking areas outside the drawn polygon with turf.difference
                 this.map.getSource("parkingAreas").setData(osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(parkingAreas));
+                this.setState({
+                    polygonStats: {
+                        area: {
+                            value: areaKm,
+                            units: "km²",
+                        },
+                        perimeter: {
+                            value: perimeterKm,
+                            units: "km",
+                        },
+                    },
+                });
             }
         });
+        this.deleteFeatures = () => {
+            this.map.getSource("parkingAreas").setData({
+                type: "FeatureCollection",
+                features: [],
+            });
+        };
         if (props.initialState) {
             this.state = Object.assign(Object.assign({}, this.state), props.initialState);
         }
@@ -191,8 +308,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.map.addControl(this.drawControl);
             // Add a source for the parking areas in red.
             this.map.on("draw.create", this.updateDrawing);
-            this.map.on("draw.delete", this.updateDrawing);
             this.map.on("draw.update", this.updateDrawing);
+            this.map.on("draw.delete", this.deleteFeatures);
             yield new Promise((resolve) => {
                 this.map.once("styledata", () => {
                     this.map.addSource("parkingAreas", {
@@ -226,7 +343,55 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     }
     render() {
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef })));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MapStatsComponent, Object.assign({}, this.state.polygonStats))));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./client/index/MapStatsComponent.tsx":
+/*!********************************************!*\
+  !*** ./client/index/MapStatsComponent.tsx ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MapStatsComponent: () => (/* binding */ MapStatsComponent),
+/* harmony export */   MissingValue: () => (/* binding */ MissingValue)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../constants */ "./constants.ts");
+/* harmony import */ var _MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MapStatsComponent.css */ "./client/index/MapStatsComponent.css");
+
+
+
+const MissingValue = {
+    missing: "Select a polygon",
+};
+function valueToDisplay(value) {
+    if ("missing" in value) {
+        return value.missing;
+    }
+    else {
+        return `${value.value.toFixed(2)} ${value.units}`;
+    }
+}
+class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+    // Renders a div with unordered list of each stat
+    render() {
+        (0,_constants__WEBPACK_IMPORTED_MODULE_1__.d)(this.props);
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null,
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "Area: ",
+                    valueToDisplay(this.props.area)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "Perimeter: ",
+                    valueToDisplay(this.props.area)))));
     }
 }
 

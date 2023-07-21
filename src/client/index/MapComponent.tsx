@@ -11,6 +11,11 @@ import { d } from "../../constants";
 import { getParkingAreas } from "../rpcClient";
 
 import osmtogeojson from "osmtogeojson";
+import {
+  MapStatsComponent,
+  Props as MapStatsComponentProps,
+  NoPolygonValue,
+} from "./MapStatsComponent";
 
 type Props = {
   apiKey: string;
@@ -18,6 +23,7 @@ type Props = {
 };
 type State = {
   style: string;
+  polygonStats: MapStatsComponentProps;
 };
 
 export default class MapComponent extends React.Component<Props, State> {
@@ -38,9 +44,13 @@ export default class MapComponent extends React.Component<Props, State> {
 
   mapDivRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  state = {
+  state: State = {
     // TODO: style selector
     style: "mapbox://styles/mapbox/streets-v11",
+    polygonStats: {
+      area: NoPolygonValue,
+      perimeter: NoPolygonValue,
+    },
   };
 
   constructor(props: Props) {
@@ -64,8 +74,8 @@ export default class MapComponent extends React.Component<Props, State> {
     // Add a source for the parking areas in red.
 
     this.map.on("draw.create", this.updateDrawing);
-    this.map.on("draw.delete", this.updateDrawing);
     this.map.on("draw.update", this.updateDrawing);
+    this.map.on("draw.delete", this.deleteFeatures);
 
     await new Promise<void>((resolve) => {
       this.map.once("styledata", () => {
@@ -99,13 +109,34 @@ export default class MapComponent extends React.Component<Props, State> {
           2
         )} km`
       );
+      // TODO: set a cap on the area before asking for overpass data.
       const parkingAreas = await getParkingAreas(data as any);
       d(parkingAreas);
-      // Render all of the type: "relation" areas on the map.
+      // TODO
+      // Cut out parts of all the parking areas outside the drawn polygon with turf.difference
       (this.map.getSource("parkingAreas") as GeoJSONSource).setData(
         osmtogeojson(parkingAreas)
       );
+      this.setState({
+        polygonStats: {
+          area: {
+            value: areaKm,
+            units: "km²",
+          },
+          perimeter: {
+            value: perimeterKm,
+            units: "km",
+          },
+        },
+      });
     }
+  };
+
+  deleteFeatures = () => {
+    (this.map.getSource("parkingAreas") as GeoJSONSource).setData({
+      type: "FeatureCollection",
+      features: [],
+    });
   };
 
   async componentDidMount() {
@@ -125,6 +156,7 @@ export default class MapComponent extends React.Component<Props, State> {
     return (
       <div className="map-container-container">
         <div id="map-container" ref={this.mapDivRef} />
+        <MapStatsComponent {...this.state.polygonStats} />
       </div>
     );
   }
