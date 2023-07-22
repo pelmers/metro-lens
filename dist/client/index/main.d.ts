@@ -9,7 +9,7 @@
  * area of water
  * area of tree cover
  * number of bus stops
- * number of train stops
+ * number of rail stops
  * length of total bike paths
  * estimated population, population density
  * each of those can be layers that toggle and highlight on the map

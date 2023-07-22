@@ -41138,7 +41138,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   connectClient: () => (/* binding */ connectClient),
 /* harmony export */   getMapboxKey: () => (/* binding */ getMapboxKey),
-/* harmony export */   getParkingAreas: () => (/* binding */ getParkingAreas)
+/* harmony export */   getNatureAndParkAreas: () => (/* binding */ getNatureAndParkAreas),
+/* harmony export */   getParkingAreas: () => (/* binding */ getParkingAreas),
+/* harmony export */   getWateryAreas: () => (/* binding */ getWateryAreas)
 /* harmony export */ });
 /* harmony import */ var isomorphic_ws__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! isomorphic-ws */ "../node_modules/isomorphic-ws/browser.js");
 /* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! roots-rpc */ "../node_modules/roots-rpc/dist/index.js");
@@ -41151,6 +41153,8 @@ __webpack_require__.r(__webpack_exports__);
 
 let getMapboxKey;
 let getParkingAreas;
+let getNatureAndParkAreas;
+let getWateryAreas;
 let alreadyConnected = false;
 function connectClient() {
     if (alreadyConnected) {
@@ -41165,6 +41169,8 @@ function connectClient() {
     }
     getMapboxKey = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetMapboxApiKey);
     getParkingAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetParkingAreas);
+    getNatureAndParkAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetNatureAndParkAreas);
+    getWateryAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetWateryAreas);
     socket.onopen = () => {
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket opened`);
     };
@@ -41260,7 +41266,7 @@ function t(func, name) {
             return yield func(...args);
         }
         finally {
-            d(`Executing ${name || func.name} took ${Date.now() - start}ms`);
+            d(`${name || func.name}: ${Date.now() - start}ms`);
         }
     });
 }
@@ -41304,6 +41310,14 @@ const ServerCalls = {
         o: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
     }),
     GetParkingAreas: () => ({
+        i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        o: XmlResult,
+    }),
+    GetNatureAndParkAreas: () => ({
+        i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        o: XmlResult,
+    }),
+    GetWateryAreas: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
         o: XmlResult,
     }),
@@ -41616,7 +41630,7 @@ __webpack_require__.r(__webpack_exports__);
  * area of water
  * area of tree cover
  * number of bus stops
- * number of train stops
+ * number of rail stops
  * length of total bike paths
  * estimated population, population density
  * each of those can be layers that toggle and highlight on the map
@@ -41647,7 +41661,7 @@ function main() {
         (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox-gl_dist-ba298a"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--b91228"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
             (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
         ]);
         // render with createroot

@@ -1,12 +1,14 @@
 /// <reference types="mapbox__mapbox-gl-draw" />
+/// <reference types="mapbox__mapbox-gl-geocoder" />
 import React from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "./MapComponent.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { Props as MapStatsComponentProps } from "./MapStatsComponent";
-import { FeatureCollection, Geometry } from "geojson";
 type Props = {
     apiKey: string;
     initialState?: Partial<State>;
@@ -19,6 +21,7 @@ export default class MapComponent extends React.Component<Props, State> {
     map: mapboxgl.Map;
     drawControl: MapboxDraw;
     mapControl: mapboxgl.NavigationControl;
+    geocoderControl: MapboxGeocoder;
     mapDivRef: React.RefObject<HTMLDivElement>;
     state: State;
     constructor(props: Props);
@@ -26,11 +29,6 @@ export default class MapComponent extends React.Component<Props, State> {
     updateDrawing: (_evt: {
         type: string;
     }) => Promise<void>;
-    updateParkingFeatures: (data: FeatureCollection<Geometry, {
-        [name: string]: any;
-    }>, areaKm: number) => Promise<{
-        parkingArea: import("./MapStatsComponent").StatValue;
-    }>;
     deleteFeatures: () => void;
     componentDidMount(): Promise<void>;
     componentWillUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): Promise<void>;

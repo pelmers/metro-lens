@@ -21,5 +21,17 @@ export declare const ServerCalls: {
             xml: t.StringC;
         }>;
     };
+    GetNatureAndParkAreas: () => {
+        i: t.AnyC;
+        o: t.TypeC<{
+            xml: t.StringC;
+        }>;
+    };
+    GetWateryAreas: () => {
+        i: t.AnyC;
+        o: t.TypeC<{
+            xml: t.StringC;
+        }>;
+    };
 };
 export {};

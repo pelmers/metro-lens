@@ -63,15 +63,16 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed width and light gray background */
 #map-stats-container {
-  width: 300px;
+  width: 400px;
   background-color: #f8f8f8;
   padding: 4px;
   margin-left: calc(min(2vw, 6px));
   border-radius: 5px;
   border: 1px solid #ddd;
   box-shadow: 0 0 5px #ddd;
+  font-family: Consolas, Monaco, "Roboto Mono", monospace;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;AAC1B","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 300px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 400px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -202,15 +203,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mapbox_gl__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _mapbox_mapbox_gl_draw__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @mapbox/mapbox-gl-draw */ "../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js");
 /* harmony import */ var _mapbox_mapbox_gl_draw__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_mapbox_mapbox_gl_draw__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @turf/turf */ "../node_modules/@turf/turf/dist/es/index.js");
-/* harmony import */ var _MapComponent_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./MapComponent.css */ "./client/index/MapComponent.css");
-/* harmony import */ var mapbox_gl_dist_mapbox_gl_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! mapbox-gl/dist/mapbox-gl.css */ "../node_modules/mapbox-gl/dist/mapbox-gl.css");
-/* harmony import */ var _mapbox_mapbox_gl_draw_dist_mapbox_gl_draw_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css */ "../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../constants */ "./constants.ts");
-/* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
-/* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! osmtogeojson */ "../node_modules/osmtogeojson/index.js");
-/* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(osmtogeojson__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
+/* harmony import */ var _mapbox_mapbox_gl_geocoder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mapbox/mapbox-gl-geocoder */ "../node_modules/@mapbox/mapbox-gl-geocoder/lib/index.js");
+/* harmony import */ var _mapbox_mapbox_gl_geocoder__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_mapbox_mapbox_gl_geocoder__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @turf/turf */ "../node_modules/@turf/turf/dist/es/index.js");
+/* harmony import */ var _MapComponent_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./MapComponent.css */ "./client/index/MapComponent.css");
+/* harmony import */ var mapbox_gl_dist_mapbox_gl_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! mapbox-gl/dist/mapbox-gl.css */ "../node_modules/mapbox-gl/dist/mapbox-gl.css");
+/* harmony import */ var _mapbox_mapbox_gl_draw_dist_mapbox_gl_draw_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css */ "../node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css");
+/* harmony import */ var _mapbox_mapbox_gl_geocoder_dist_mapbox_gl_geocoder_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css */ "../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../constants */ "./constants.ts");
+/* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
+/* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! osmtogeojson */ "../node_modules/osmtogeojson/index.js");
+/* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(osmtogeojson__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -231,12 +235,16 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
+
 const EmptyFeatureCollection = {
     type: "FeatureCollection",
     features: [],
 };
+// TODO: create linestring versions of these layers
 const MapLayers = {
-    SURFACE_PARKING: {
+    SURFACE_PARKING_POLYGONS: {
         id: "surfaceParkingAreas",
         type: "fill",
         paint: {
@@ -244,7 +252,30 @@ const MapLayers = {
             "fill-opacity": 0.5,
         },
     },
+    NATURE_AND_PARKS_POLYGONS: {
+        id: "natureAndParks",
+        type: "fill",
+        paint: {
+            "fill-color": "green",
+            "fill-opacity": 0.5,
+        },
+    },
+    WATERY_FEATURES_POLYGONS: {
+        id: "wateryFeatures",
+        type: "fill",
+        paint: {
+            "fill-color": "blue",
+            "fill-opacity": 0.5,
+        },
+    },
 };
+// Clip polygons with the given border collection of polygons.
+// This is done by taking turf/intersect with each polygon against each border polygon
+function clipPolygonsAtBorder(polygons, border) {
+    const clippedPolygons = [];
+    return clippedPolygons;
+}
+// TODO: for linesegments, https://gis.stackexchange.com/questions/310453/clip-linesegment-at-a-polygon-boundary-using-turfjs
 // Take the union of all features with Polygon geometry in collection
 // Can be null if no features have Polygon geometry
 function unionPolygon(collection) {
@@ -252,7 +283,7 @@ function unionPolygon(collection) {
     for (const feature of collection.features) {
         if (feature.geometry.type === "Polygon") {
             if (union) {
-                union = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.union(union, feature);
+                union = _turf_turf__WEBPACK_IMPORTED_MODULE_4__.union(union, feature);
             }
             else {
                 union = feature;
@@ -276,70 +307,81 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             defaultMode: "draw_polygon",
         });
         this.mapControl = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().NavigationControl)({ visualizePitch: true });
+        this.geocoderControl = new (_mapbox_mapbox_gl_geocoder__WEBPACK_IMPORTED_MODULE_3___default())({
+            accessToken: this.props.apiKey,
+            mapboxgl: (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default()),
+        });
         this.mapDivRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
         this.state = {
             // use satellite style
-            style: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
-            stats: {
-                area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-                perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-                parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-            },
+            style: "mapbox://styles/mapbox/light-v11",
+            stats: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats,
         };
         // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
         this.updateDrawing = (_evt) => __awaiter(this, void 0, void 0, function* () {
             const data = this.drawControl.getAll();
-            if (data.features.length > 0) {
-                const area = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.area(data);
-                const areaKm = area / 1000000;
-                const perimeterKm = _turf_turf__WEBPACK_IMPORTED_MODULE_3__.length(data, { units: "kilometers" });
-                const parkingStats = yield this.updateParkingFeatures(data, areaKm);
-                // TODO: all the other stats too
-                this.setState({
-                    stats: Object.assign({ area: {
-                            value: areaKm,
-                            units: "km²",
-                        }, perimeter: {
-                            value: perimeterKm,
-                            units: "km",
-                        } }, parkingStats),
-                });
-            }
-            else {
+            if (data.features.length == 0) {
                 this.deleteFeatures();
+                return;
             }
-        });
-        this.updateParkingFeatures = (0,_constants__WEBPACK_IMPORTED_MODULE_7__.wrapWithDefault)({ parkingArea: { missing: "Error (see console)" } }, (data, areaKm) => __awaiter(this, void 0, void 0, function* () {
-            if (areaKm > _constants__WEBPACK_IMPORTED_MODULE_7__.OVERPASS_STATS_AREA_LIMIT_KM2) {
-                return {
-                    parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.OverpassAreaTooBigValue,
-                };
+            for (const polygon of data.features) {
+                polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_4__.unkinkPolygon)(polygon).features[0].geometry;
             }
-            const parkingAreas = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_8__.getParkingAreas)(data);
-            const xmlObject = new DOMParser().parseFromString(parkingAreas.xml, "text/xml");
-            const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_9___default()(xmlObject);
-            this.map.getSource(MapLayers.SURFACE_PARKING.id).setData(geoJsons);
-            // Calculate the total area of the parking lots by taking the union then using turf.area
-            // Note that we take the union first to avoid double counting accidentally overlapping parking lots
-            const parkingUnion = unionPolygon(geoJsons);
-            const parkingAreaValueM2 = parkingUnion ? _turf_turf__WEBPACK_IMPORTED_MODULE_3__.area(parkingUnion) : 0;
-            return {
-                parkingArea: {
-                    value: parkingAreaValueM2 / 1000000,
-                    units: "km²",
-                },
+            const area = {
+                value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.area(data) / 1000000,
+                units: "km²",
             };
-        }));
+            const perimeter = {
+                value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(data, { units: "kilometers" }),
+                units: "km",
+            };
+            this.setState({ stats: Object.assign(Object.assign({}, _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.AllLoadingStats), { area, perimeter }) });
+            const updateAreaFeature = (0,_constants__WEBPACK_IMPORTED_MODULE_9__.wrapWithDefault)(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.ErrorValue, (mapLayerId, overpassQueryFn) => __awaiter(this, void 0, void 0, function* () {
+                if (area.value > _constants__WEBPACK_IMPORTED_MODULE_9__.OVERPASS_STATS_AREA_LIMIT_KM2) {
+                    return _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.OverpassAreaTooBigValue;
+                }
+                const areas = yield overpassQueryFn(data);
+                const xmlObject = new DOMParser().parseFromString(areas.xml, "text/xml");
+                const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_11___default()(xmlObject);
+                this.map.getSource(mapLayerId).setData(geoJsons);
+                // Calculate the total area of the features by taking the union then using turf.area
+                // Note that we take the union first to avoid double counting accidentally overlapping features
+                const union = unionPolygon(geoJsons);
+                const areaValueM2 = union ? _turf_turf__WEBPACK_IMPORTED_MODULE_4__.area(union) : 0;
+                return {
+                    value: areaValueM2 / 1000000,
+                    units: "km²",
+                };
+            }));
+            const updatePromises = [];
+            updatePromises.push(...[
+                {
+                    key: "parkingArea",
+                    id: MapLayers.SURFACE_PARKING_POLYGONS.id,
+                    fn: _rpcClient__WEBPACK_IMPORTED_MODULE_10__.getParkingAreas,
+                },
+                {
+                    key: "natureArea",
+                    id: MapLayers.NATURE_AND_PARKS_POLYGONS.id,
+                    fn: _rpcClient__WEBPACK_IMPORTED_MODULE_10__.getNatureAndParkAreas,
+                },
+                {
+                    key: "wateryArea",
+                    id: MapLayers.WATERY_FEATURES_POLYGONS.id,
+                    fn: _rpcClient__WEBPACK_IMPORTED_MODULE_10__.getWateryAreas,
+                },
+            ].map(({ key, id, fn }) => __awaiter(this, void 0, void 0, function* () {
+                const value = yield updateAreaFeature(id, fn);
+                this.setState({ stats: Object.assign(Object.assign({}, this.state.stats), { [key]: value }) });
+            })));
+            yield Promise.all(updatePromises);
+        });
         this.deleteFeatures = () => {
             for (const layer of Object.values(MapLayers)) {
                 this.map.getSource(layer.id).setData(EmptyFeatureCollection);
             }
             this.setState({
-                stats: {
-                    area: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-                    perimeter: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-                    parkingArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.NoPolygonValue,
-                },
+                stats: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats,
             });
         };
         if (props.initialState) {
@@ -355,7 +397,15 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 center: [-95.3698, 29.7604],
                 zoom: 13,
             });
+            this.map.addControl(this.geocoderControl);
             this.map.addControl(this.mapControl);
+            // Add geolocate control
+            this.map.addControl(new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().GeolocateControl)({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+                trackUserLocation: true,
+            }));
             this.map.addControl(this.drawControl);
             this.map.on("draw.create", this.updateDrawing);
             this.map.on("draw.update", this.updateDrawing);
@@ -389,7 +439,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     render() {
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_10__.MapStatsComponent, Object.assign({}, this.state.stats))));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.MapStatsComponent, Object.assign({}, this.state.stats))));
     }
 }
 
@@ -404,6 +454,10 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AllLoadingStats: () => (/* binding */ AllLoadingStats),
+/* harmony export */   DefaultStats: () => (/* binding */ DefaultStats),
+/* harmony export */   ErrorValue: () => (/* binding */ ErrorValue),
+/* harmony export */   LoadingValue: () => (/* binding */ LoadingValue),
 /* harmony export */   MapStatsComponent: () => (/* binding */ MapStatsComponent),
 /* harmony export */   NoPolygonValue: () => (/* binding */ NoPolygonValue),
 /* harmony export */   OverpassAreaTooBigValue: () => (/* binding */ OverpassAreaTooBigValue)
@@ -418,6 +472,26 @@ __webpack_require__.r(__webpack_exports__);
 const NoPolygonValue = {
     missing: "Select a polygon",
 };
+const ErrorValue = {
+    missing: "Error (see console)",
+};
+const LoadingValue = {
+    missing: "Loading...",
+};
+const DefaultStats = {
+    area: NoPolygonValue,
+    perimeter: NoPolygonValue,
+    parkingArea: NoPolygonValue,
+    natureArea: NoPolygonValue,
+    wateryArea: NoPolygonValue,
+};
+const AllLoadingStats = {
+    area: LoadingValue,
+    perimeter: LoadingValue,
+    parkingArea: LoadingValue,
+    natureArea: LoadingValue,
+    wateryArea: LoadingValue,
+};
 const OverpassAreaTooBigValue = {
     missing: `Selection too large (${_constants__WEBPACK_IMPORTED_MODULE_1__.OVERPASS_STATS_AREA_LIMIT_KM2} km²)`,
 };
@@ -430,19 +504,31 @@ function valueToDisplay(value) {
     }
 }
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+    // TODO: a km/miles switch
     // Renders a div with unordered list of each stat
     render() {
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "Area: ",
+                    "\uD83D\uDDFA\uFE0F Area: ",
                     valueToDisplay(this.props.area)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "Perimeter: ",
+                    "\uD83D\uDCCF Perimeter: ",
                     valueToDisplay(this.props.perimeter)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "Parking Area: ",
-                    valueToDisplay(this.props.parkingArea)))));
+                    "\uD83C\uDD7F\uFE0F Parking Area: ",
+                    valueToDisplay(this.props.parkingArea)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDEE3\uFE0F\uFE0F Road Length: TODO"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDEB2\uFE0F\uFE0F Cycle Path Length: TODO"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83C\uDF33 Nature Area: ",
+                    valueToDisplay(this.props.natureArea)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE8C Bus Stops: TODO"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE83 Rail Stations: TODO"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE87 Transit Routes: TODO"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDCA6 Watery Area: ",
+                    valueToDisplay(this.props.wateryArea)))));
     }
 }
 

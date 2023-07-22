@@ -81,7 +81,7 @@ function t(func, name) {
             return yield func(...args);
         }
         finally {
-            d(`Executing ${name || func.name} took ${Date.now() - start}ms`);
+            d(`${name || func.name}: ${Date.now() - start}ms`);
         }
     });
 }
@@ -125,6 +125,14 @@ const ServerCalls = {
         o: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
     }),
     GetParkingAreas: () => ({
+        i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+        o: XmlResult,
+    }),
+    GetNatureAndParkAreas: () => ({
+        i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+        o: XmlResult,
+    }),
+    GetWateryAreas: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
         o: XmlResult,
     }),
@@ -223,11 +231,15 @@ function osmconvertMergeXmlResults(inputContentses) {
         if (inputContentses.length === 0) {
             return NoResultsOsmXML;
         }
+        if (inputContentses.length === 1) {
+            return inputContentses[0];
+        }
         return yield (0,_utils__WEBPACK_IMPORTED_MODULE_5__.withTempFolder)((tempFolder) => __awaiter(this, void 0, void 0, function* () {
             // Write each input to a file
             const inputFiles = yield Promise.all(inputContentses.map((contents, i) => __awaiter(this, void 0, void 0, function* () {
                 const filename = path__WEBPACK_IMPORTED_MODULE_3___default().join(tempFolder, `input${i}.xml`);
                 yield (0,util__WEBPACK_IMPORTED_MODULE_1__.promisify)((fs__WEBPACK_IMPORTED_MODULE_2___default().writeFile))(filename, contents);
+                yield osmiumSort(filename);
                 return filename;
             })));
             const outputFile = path__WEBPACK_IMPORTED_MODULE_3___default().join(tempFolder, "output.xml");
@@ -267,15 +279,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const OVERPASS_INSTANCE_URL = "https://overpass-api.de/api/interpreter";
-function queryOverpass(queryCode) {
-    return __awaiter(this, void 0, void 0, function* () {
-        (0,_constants__WEBPACK_IMPORTED_MODULE_1__.d)(`Querying overpass with query code:\n${queryCode}`);
-        const url = `${OVERPASS_INSTANCE_URL}?data=${encodeURIComponent(queryCode)}`;
-        const response = yield node_fetch__WEBPACK_IMPORTED_MODULE_0___default()(url);
-        const text = yield response.text();
-        return text;
-    });
-}
+const queryOverpass = (queryCode) => (0,_constants__WEBPACK_IMPORTED_MODULE_1__.t)(() => __awaiter(void 0, void 0, void 0, function* () {
+    (0,_constants__WEBPACK_IMPORTED_MODULE_1__.d)(`overpassql: ${queryCode}`);
+    const url = `${OVERPASS_INSTANCE_URL}?data=${encodeURIComponent(queryCode)}`;
+    const response = yield node_fetch__WEBPACK_IMPORTED_MODULE_0___default()(url);
+    const text = yield response.text();
+    return text;
+}), "queryOverpass")();
 
 
 /***/ }),
@@ -290,21 +300,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   createRpcServer: () => (/* binding */ createRpcServer)
 /* harmony export */ });
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! path */ "path");
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(path__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! fs */ "fs");
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! util */ "util");
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! roots-rpc */ "roots-rpc");
-/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(roots_rpc__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../rpc */ "./rpc.ts");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../constants */ "./constants.ts");
-/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @turf/turf */ "@turf/turf");
-/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_turf_turf__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils */ "./server/utils.ts");
-/* harmony import */ var _osmUtils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./osmUtils */ "./server/osmUtils.ts");
+/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! roots-rpc */ "roots-rpc");
+/* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(roots_rpc__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../rpc */ "./rpc.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants */ "./constants.ts");
+/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
+/* harmony import */ var _osmUtils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./osmUtils */ "./server/osmUtils.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -319,60 +320,78 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-
-
-
-
 const mapboxApiKey = process.env.MAPBOX_API_KEY;
 function createRpcServer(socket) {
-    const server = new roots_rpc__WEBPACK_IMPORTED_MODULE_3__.RpcServer(new roots_rpc__WEBPACK_IMPORTED_MODULE_3__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_5__.CLIENT_CALLS_SERVER_RPC_PREFIX));
-    (0,_rpc__WEBPACK_IMPORTED_MODULE_4__.wrapServerErrors)(server);
-    server.register(_rpc__WEBPACK_IMPORTED_MODULE_4__.ServerCalls.GetMapboxApiKey, () => __awaiter(this, void 0, void 0, function* () { return mapboxApiKey; }));
-    server.register(_rpc__WEBPACK_IMPORTED_MODULE_4__.ServerCalls.GetParkingAreas, getParkingAreas);
+    const server = new roots_rpc__WEBPACK_IMPORTED_MODULE_0__.RpcServer(new roots_rpc__WEBPACK_IMPORTED_MODULE_0__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_2__.CLIENT_CALLS_SERVER_RPC_PREFIX));
+    (0,_rpc__WEBPACK_IMPORTED_MODULE_1__.wrapServerErrors)(server);
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetMapboxApiKey, () => __awaiter(this, void 0, void 0, function* () { return mapboxApiKey; }));
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetParkingAreas, getParkingAreas);
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetNatureAndParkAreas, getNatureAndParkAreas);
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetWateryAreas, getWateryAreas);
     return server;
 }
 function getPolyFilter(coords) {
     return `poly:"${coords.map(([lng, lat]) => `${lat} ${lng}`).join(" ")}"`;
 }
-function getParkingAreas(i) {
+function getClippedAreasWithQueryBuilder(i, queryBuilder) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: remove cast if i make better io-ts typing for turf
         const input = i;
         const xmlResults = [];
         for (const polygon of input.features) {
-            const geo = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_6__.unkinkPolygon)(polygon).features[0].geometry;
-            const coords = geo.coordinates[0];
-            // Docs for osmconvert say the output should have:
-            // objects  ordered  by  their  type:  first, all nodes, next, all ways, followed by all
-            // relations. Within each of these sections, the objects section must be sorted by their id
-            // in ascending order.
-            const overpassql = `
+            const coords = polygon.geometry.coordinates[0];
+            const overpassql = queryBuilder(coords);
+            const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_3__.queryOverpass)(overpassql);
+            xmlResults.push(result);
+        }
+        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_4__.osmconvertMergeXmlResults)(xmlResults) };
+    });
+}
+function getParkingAreas(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return getClippedAreasWithQueryBuilder(i, (coords) => `
       [out:xml][timeout:30];
       (
         nwr["amenity"="parking"](${getPolyFilter(coords)});
       );
         out body;
         >;
+        out body qt;`);
+    });
+}
+function getNatureAndParkAreas(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return getClippedAreasWithQueryBuilder(i, (coords) => {
+            const filter = getPolyFilter(coords);
+            return `
+      [out:xml][timeout:30];
+      (
+nwr[leisure=park](${filter});
+nwr[natural=grassland](${filter});
+nwr[landuse=recreation_ground](${filter});
+nwr[boundary=national_park](${filter});
+nwr[boundary=protected_area](${filter});
+      );
+        out body;
+        >;
         out body qt;`;
-            const unclippedXml = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_7__.queryOverpass)(overpassql);
-            const result = yield (0,_utils__WEBPACK_IMPORTED_MODULE_8__.withTempFolder)((tempFolder) => __awaiter(this, void 0, void 0, function* () {
-                // Subtract 1 from number of points because the first and last point are the same
-                (0,_constants__WEBPACK_IMPORTED_MODULE_5__.d)(`Processing ${(unclippedXml.length / 1000).toFixed(2)} kb XML in ${tempFolder} with polygon of ${coords.length - 1} points...`);
-                const xmlFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "result.xml");
-                const polygonFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "polygon.poly");
-                const outputFile = path__WEBPACK_IMPORTED_MODULE_0___default().join(tempFolder, "output.xml");
-                yield util__WEBPACK_IMPORTED_MODULE_2___default().promisify((fs__WEBPACK_IMPORTED_MODULE_1___default().writeFile))(xmlFile, unclippedXml);
-                yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.savePolygonFormat)(coords, polygonFile);
-                yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmiumSort)(xmlFile);
-                yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmconvertFilterWithPolygon)(xmlFile, polygonFile, outputFile);
-                const result = yield util__WEBPACK_IMPORTED_MODULE_2___default().promisify((fs__WEBPACK_IMPORTED_MODULE_1___default().readFile))(outputFile, "utf-8");
-                // TODO: Print elapsed time
-                return result;
-            }));
-            xmlResults.push(result);
-        }
-        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_9__.osmconvertMergeXmlResults)(xmlResults) };
+        });
+    });
+}
+function getWateryAreas(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return getClippedAreasWithQueryBuilder(i, (coords) => {
+            const filter = getPolyFilter(coords);
+            return `
+      [out:xml][timeout:30];
+  (
+  nwr[waterway](${filter});
+  nwr[natural=water](${filter});
+  );
+        out body;
+        >;
+        out body qt;`;
+        });
     });
 }
 
@@ -436,21 +455,11 @@ function withTempFolder(fn) {
         }
         finally {
             // Delete the temporary folder
-            yield rmrf(tempDir.path);
+            // await rmrf(tempDir.path);
         }
     });
 }
 
-
-/***/ }),
-
-/***/ "@turf/turf":
-/*!*****************************!*\
-  !*** external "@turf/turf" ***!
-  \*****************************/
-/***/ ((module) => {
-
-module.exports = require("@turf/turf");
 
 /***/ }),
 
