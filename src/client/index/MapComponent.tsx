@@ -21,6 +21,7 @@ import {
 
 import osmtogeojson from "osmtogeojson";
 import {
+  AllLoadingStats,
   DefaultStats,
   ErrorValue,
   MapStatsComponent,
@@ -30,6 +31,7 @@ import {
 } from "./MapStatsComponent";
 import { FeatureCollection } from "geojson";
 import { TXmlResult } from "../../rpc";
+import { unkinkPolygon } from "@turf/turf";
 
 type Props = {
   apiKey: string;
@@ -45,8 +47,9 @@ const EmptyFeatureCollection: FeatureCollection = {
   features: [],
 };
 
+// TODO: create linestring versions of these layers
 const MapLayers = {
-  SURFACE_PARKING: {
+  SURFACE_PARKING_POLYGONS: {
     id: "surfaceParkingAreas",
     type: "fill" as const,
     paint: {
@@ -54,7 +57,7 @@ const MapLayers = {
       "fill-opacity": 0.5,
     },
   },
-  NATURE_AND_PARKS: {
+  NATURE_AND_PARKS_POLYGONS: {
     id: "natureAndParks",
     type: "fill" as const,
     paint: {
@@ -62,7 +65,7 @@ const MapLayers = {
       "fill-opacity": 0.5,
     },
   },
-  WATERY_FEATURES: {
+  WATERY_FEATURES_POLYGONS: {
     id: "wateryFeatures",
     type: "fill" as const,
     paint: {
@@ -71,6 +74,18 @@ const MapLayers = {
     },
   },
 };
+
+// Clip polygons with the given border collection of polygons.
+// This is done by taking turf/intersect with each polygon against each border polygon
+function clipPolygonsAtBorder(
+  polygons: turf.Feature<turf.Polygon | turf.MultiPolygon>[],
+  border: turf.FeatureCollection
+): turf.Feature<turf.Polygon | turf.MultiPolygon>[] {
+  const clippedPolygons: turf.Feature<turf.Polygon | turf.MultiPolygon>[] = [];
+  return clippedPolygons;
+}
+
+// TODO: for linesegments, https://gis.stackexchange.com/questions/310453/clip-linesegment-at-a-polygon-boundary-using-turfjs
 
 // Take the union of all features with Polygon geometry in collection
 // Can be null if no features have Polygon geometry
@@ -112,7 +127,7 @@ export default class MapComponent extends React.Component<Props, State> {
 
   state: State = {
     // use satellite style
-    style: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
+    style: "mapbox://styles/mapbox/light-v11",
     stats: DefaultStats,
   };
 
@@ -168,11 +183,15 @@ export default class MapComponent extends React.Component<Props, State> {
 
   // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
   updateDrawing = async (_evt: { type: string }) => {
-    const data = this.drawControl.getAll();
+    const data = this.drawControl.getAll() as FeatureCollection<turf.Polygon>;
     if (data.features.length == 0) {
       this.deleteFeatures();
       return;
     }
+    for (const polygon of data.features) {
+      polygon.geometry = unkinkPolygon(polygon).features[0].geometry;
+    }
+
     const area = {
       value: turf.area(data) / 1000000,
       units: "km²",
@@ -181,6 +200,7 @@ export default class MapComponent extends React.Component<Props, State> {
       value: turf.length(data, { units: "kilometers" }),
       units: "km",
     };
+    this.setState({ stats: { ...AllLoadingStats, area, perimeter } });
 
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
@@ -213,21 +233,30 @@ export default class MapComponent extends React.Component<Props, State> {
       }
     );
 
-    const [parkingArea, natureArea, wateryArea] = await Promise.all([
-      updateAreaFeature(MapLayers.SURFACE_PARKING.id, getParkingAreas),
-      updateAreaFeature(MapLayers.NATURE_AND_PARKS.id, getNatureAndParkAreas),
-      updateAreaFeature(MapLayers.WATERY_FEATURES.id, getWateryAreas),
-    ]);
-    // TODO: all the other stats too
-    this.setState({
-      stats: {
-        area,
-        perimeter,
-        natureArea,
-        parkingArea,
-        wateryArea,
-      },
-    });
+    const updatePromises = [];
+    updatePromises.push(
+      ...[
+        {
+          key: "parkingArea",
+          id: MapLayers.SURFACE_PARKING_POLYGONS.id,
+          fn: getParkingAreas,
+        },
+        {
+          key: "natureArea",
+          id: MapLayers.NATURE_AND_PARKS_POLYGONS.id,
+          fn: getNatureAndParkAreas,
+        },
+        {
+          key: "wateryArea",
+          id: MapLayers.WATERY_FEATURES_POLYGONS.id,
+          fn: getWateryAreas,
+        },
+      ].map(async ({ key, id, fn }) => {
+        const value = await updateAreaFeature(id, fn);
+        this.setState({ stats: { ...this.state.stats, [key]: value } });
+      })
+    );
+    await Promise.all(updatePromises);
   };
 
   deleteFeatures = () => {

@@ -11,7 +11,7 @@ import {
   unkinkPolygon,
 } from "@turf/turf";
 import { queryOverpass } from "./queryOverpass";
-import { clipOutputToPolygon, osmconvertMergeXmlResults } from "./osmUtils";
+import { osmconvertMergeXmlResults } from "./osmUtils";
 
 const mapboxApiKey = process.env.MAPBOX_API_KEY;
 
@@ -39,11 +39,9 @@ async function getClippedAreasWithQueryBuilder(
   const input = i as FeatureCollection<Polygon>;
   const xmlResults = [];
   for (const polygon of input.features) {
-    const geo = unkinkPolygon(polygon).features[0].geometry;
-    const coords = geo.coordinates[0] as Position[];
+    const coords = polygon.geometry.coordinates[0] as Position[];
     const overpassql = queryBuilder(coords);
-    let result = await queryOverpass(overpassql);
-    result = await clipOutputToPolygon(result, coords);
+    const result = await queryOverpass(overpassql);
     xmlResults.push(result);
   }
 
