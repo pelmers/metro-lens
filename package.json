@@ -28,6 +28,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/serve-favicon": "^2.5.4",
     "@types/ws": "^8.5.5",
+    "cheap-ruler": "^3.0.2",
     "css-loader": "^6.8.1",
     "mapbox-gl": "^2.10.0",
     "prettier": "^2.7.1",
