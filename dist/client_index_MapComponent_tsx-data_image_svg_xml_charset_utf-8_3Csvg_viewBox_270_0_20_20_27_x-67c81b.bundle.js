@@ -216,6 +216,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(osmtogeojson__WEBPACK_IMPORTED_MODULE_11__);
 /* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
 /* harmony import */ var _mapUtils__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../mapUtils */ "./client/mapUtils.tsx");
+/* harmony import */ var _fetchPopulation__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./fetchPopulation */ "./client/index/fetchPopulation.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -225,6 +226,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -289,6 +291,10 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             // The user does not have to click the polygon control button first.
             defaultMode: "draw_polygon",
         });
+        // TODO: add a circle drawing mode
+        // e.g. https://medium.com/nyc-planning-digital/building-a-custom-draw-mode-for-mapbox-gl-draw-1dab71d143ee
+        // code at https://gist.github.com/chriswhong/694779bc1f1e5d926e47bab7205fa559
+        // same dude also wrote: https://github.com/mapbox/geojson.io/pull/748
         this.mapControl = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().NavigationControl)({ visualizePitch: true });
         this.geocoderControl = new (_mapbox_mapbox_gl_geocoder__WEBPACK_IMPORTED_MODULE_3___default())({
             accessToken: this.props.apiKey,
@@ -298,9 +304,9 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         this.state = {
             // use satellite style
             style: "mapbox://styles/mapbox/light-v11",
-            stats: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats,
+            stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats)(),
         };
-        // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
+        // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
         this.updateDrawing = (_evt) => __awaiter(this, void 0, void 0, function* () {
             const data = this.drawControl.getAll();
             if (data.features.length == 0) {
@@ -310,6 +316,11 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             for (const polygon of data.features) {
                 polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_4__.unkinkPolygon)(polygon).features[0].geometry;
             }
+            // Since react batches state updates, if we updated with setstate many times,
+            // only the last one would be reflected. We don't know in advance the order and timing
+            // so we keep a batch object that contains all stats so far, and use it as the new state each time.
+            const currentBatchStats = (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.AllLoadingStats)();
+            this.setState({ stats: Object.assign({}, currentBatchStats) });
             const area = {
                 value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.area(data) / 1000000,
                 units: "km²",
@@ -318,9 +329,11 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(data, { units: "kilometers" }),
                 units: "km",
             };
-            this.setState({ stats: Object.assign(Object.assign({}, _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.AllLoadingStats), { area, perimeter }) });
+            currentBatchStats.area = area;
+            currentBatchStats.perimeter = perimeter;
+            this.setState({ stats: Object.assign({}, currentBatchStats) });
             const updateAreaFeature = (0,_constants__WEBPACK_IMPORTED_MODULE_9__.wrapWithDefault)(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.ErrorValue, (overpassQueryFn, polygonLayerId, lineLayerId) => __awaiter(this, void 0, void 0, function* () {
-                if (area.value > _constants__WEBPACK_IMPORTED_MODULE_9__.OVERPASS_STATS_AREA_LIMIT_KM2) {
+                if (area.value > _constants__WEBPACK_IMPORTED_MODULE_9__.OVERPASS_STATS_AREA_MAX_KM2) {
                     return _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.OverpassAreaTooBigValue;
                 }
                 const areas = yield overpassQueryFn(data);
@@ -362,16 +375,22 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 },
             ].map(({ key, id, fn, lineId }) => __awaiter(this, void 0, void 0, function* () {
                 const value = yield updateAreaFeature(fn, id, lineId);
-                this.setState({ stats: Object.assign(Object.assign({}, this.state.stats), { [key]: value }) });
+                currentBatchStats[key] = value;
+                this.setState({ stats: Object.assign({}, currentBatchStats) });
             })));
+            updatePromises.push((0,_fetchPopulation__WEBPACK_IMPORTED_MODULE_14__.fetchPopulation)(data, area.value).then((value) => {
+                currentBatchStats.population = value;
+                this.setState({ stats: Object.assign({}, currentBatchStats) });
+            }));
             yield Promise.all(updatePromises);
+            this.setState({ stats: Object.assign({}, currentBatchStats) });
         });
         this.deleteFeatures = () => {
             for (const layer of Object.values(MapLayers)) {
                 this.map.getSource(layer.id).setData((0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.EmptyFeatureCollection)());
             }
             this.setState({
-                stats: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats,
+                stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats)(),
             });
         };
         if (props.initialState) {
@@ -396,10 +415,13 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 },
                 trackUserLocation: true,
             }));
+            // TODO: add draw measurements for area and side lengths
+            // see: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
             this.map.addControl(this.drawControl);
             this.map.on("draw.create", this.updateDrawing);
             this.map.on("draw.update", this.updateDrawing);
             this.map.on("draw.delete", this.updateDrawing);
+            this.map.on("draw.render", () => (0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.renderDrawMeasurements)(this.map, this.drawControl.getAll()));
             yield new Promise((resolve) => {
                 this.map.once("styledata", () => {
                     for (const layer of Object.values(MapLayers)) {
@@ -409,6 +431,29 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                         });
                         this.map.addLayer(Object.assign(Object.assign({}, layer), { source: layer.id }));
                     }
+                    // Add layers for measurement rendering
+                    this.map.addSource("_measurements", {
+                        type: "geojson",
+                        data: {
+                            type: "FeatureCollection",
+                            features: [],
+                        },
+                    });
+                    // measurements layer
+                    this.map.addLayer({
+                        id: "_measurements",
+                        source: "_measurements",
+                        type: "symbol",
+                        paint: {
+                            "text-color": "hsl(234, 100%, 32%)",
+                            "text-halo-color": "hsl(0, 0%, 100%)",
+                            "text-halo-width": 2,
+                        },
+                        layout: {
+                            "text-field": "{label}",
+                            "text-size": 16,
+                        },
+                    });
                     resolve();
                 });
             });
@@ -450,7 +495,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   LoadingValue: () => (/* binding */ LoadingValue),
 /* harmony export */   MapStatsComponent: () => (/* binding */ MapStatsComponent),
 /* harmony export */   NoPolygonValue: () => (/* binding */ NoPolygonValue),
-/* harmony export */   OverpassAreaTooBigValue: () => (/* binding */ OverpassAreaTooBigValue)
+/* harmony export */   OverpassAreaTooBigValue: () => (/* binding */ OverpassAreaTooBigValue),
+/* harmony export */   PopulationAreaTooSmallValue: () => (/* binding */ PopulationAreaTooSmallValue)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
@@ -460,7 +506,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const NoPolygonValue = {
-    missing: "Select a polygon",
+    missing: "Draw a shape",
 };
 const ErrorValue = {
     missing: "Error (see console)",
@@ -468,59 +514,141 @@ const ErrorValue = {
 const LoadingValue = {
     missing: "Loading...",
 };
-const DefaultStats = {
+const DefaultStats = () => ({
     area: NoPolygonValue,
     perimeter: NoPolygonValue,
+    population: NoPolygonValue,
     parkingArea: NoPolygonValue,
     natureArea: NoPolygonValue,
     wateryArea: NoPolygonValue,
-};
-const AllLoadingStats = {
+});
+const AllLoadingStats = () => ({
     area: LoadingValue,
     perimeter: LoadingValue,
+    population: LoadingValue,
     parkingArea: LoadingValue,
     natureArea: LoadingValue,
     wateryArea: LoadingValue,
-};
+});
 const OverpassAreaTooBigValue = {
-    missing: `Selection too large (${_constants__WEBPACK_IMPORTED_MODULE_1__.OVERPASS_STATS_AREA_LIMIT_KM2} km²)`,
+    missing: `Selection too large (>${_constants__WEBPACK_IMPORTED_MODULE_1__.OVERPASS_STATS_AREA_MAX_KM2} km²)`,
+};
+const PopulationAreaTooSmallValue = {
+    missing: `Selection too small (<${_constants__WEBPACK_IMPORTED_MODULE_1__.WORLDPOP_AREA_MINIMUM_KM2} km²)`,
 };
 function valueToDisplay(value) {
     if ("missing" in value) {
         return value.missing;
     }
     else {
-        return `${value.value.toFixed(2)} ${value.units}`;
+        return `${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value.value)} ${value.units}`;
     }
 }
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     // TODO: a km/miles switch
     // Renders a div with unordered list of each stat
     render() {
+        const { props } = this;
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDDFA\uFE0F Area: ",
-                    valueToDisplay(this.props.area)),
+                    valueToDisplay(props.area)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDCCF Perimeter: ",
-                    valueToDisplay(this.props.perimeter)),
+                    valueToDisplay(props.perimeter)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDEBB\uFE0F\uFE0F Population: ",
+                    valueToDisplay(props.population)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83C\uDD7F\uFE0F Parking Area: ",
-                    valueToDisplay(this.props.parkingArea)),
+                    valueToDisplay(props.parkingArea)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDEE3\uFE0F\uFE0F Road Length: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDEB2\uFE0F\uFE0F Cycle Path Length: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83C\uDF33 Nature Area: ",
-                    valueToDisplay(this.props.natureArea)),
+                    valueToDisplay(props.natureArea)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE8C Bus Stops: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE83 Rail Stations: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE87 Transit Routes: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDCA6 Watery Area: ",
-                    valueToDisplay(this.props.wateryArea)))));
+                    valueToDisplay(props.wateryArea)))));
     }
 }
+
+
+/***/ }),
+
+/***/ "./client/index/fetchPopulation.tsx":
+/*!******************************************!*\
+  !*** ./client/index/fetchPopulation.tsx ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   fetchPopulation: () => (/* binding */ fetchPopulation),
+/* harmony export */   sleep: () => (/* binding */ sleep)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../constants */ "./constants.ts");
+/* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function sleep(ms) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    });
+}
+// Poll task id until it gives a result or given timeout is reached (in seconds)
+function pollTaskId(taskId, timeoutSeconds = 30) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const start = Date.now();
+        const taskUrl = "https://api.worldpop.org/v1/tasks/" + taskId;
+        while (true) {
+            const taskResponse = yield fetch(taskUrl);
+            const taskJson = (yield taskResponse.json());
+            if (taskJson.data && taskJson.data.total_population) {
+                return taskJson.data.total_population;
+            }
+            if (taskJson.error) {
+                throw new Error(taskJson.error_message);
+            }
+            yield sleep(300);
+            if (Date.now() - start > timeoutSeconds * 1000) {
+                throw new Error("timeout polling worldpop response");
+            }
+        }
+    });
+}
+const fetchPopulation = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.t)((0,_constants__WEBPACK_IMPORTED_MODULE_0__.wrapWithDefault)(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_1__.ErrorValue, (borders, areaKm2) => __awaiter(void 0, void 0, void 0, function* () {
+    if (areaKm2 < _constants__WEBPACK_IMPORTED_MODULE_0__.WORLDPOP_AREA_MINIMUM_KM2) {
+        return _MapStatsComponent__WEBPACK_IMPORTED_MODULE_1__.PopulationAreaTooSmallValue;
+    }
+    const baseUrl = "https://api.worldpop.org/v1/services/stats?dataset=wpgppop&year=2020";
+    const url = `${baseUrl}}&geojson=${JSON.stringify(borders)}`;
+    const response = yield fetch(url);
+    const json = (yield response.json());
+    if (json.error) {
+        throw new Error(json.error_message);
+    }
+    if (!json.taskid) {
+        throw new Error("no task id returned from population api");
+    }
+    return {
+        value: Math.round(yield pollTaskId(json.taskid)),
+        units: "peeps",
+    };
+})), "fetchPopulation");
 
 
 /***/ }),
@@ -536,10 +664,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   EmptyFeatureCollection: () => (/* binding */ EmptyFeatureCollection),
 /* harmony export */   clipLineSegmentsAtBorder: () => (/* binding */ clipLineSegmentsAtBorder),
 /* harmony export */   clipPolygonsAtBorder: () => (/* binding */ clipPolygonsAtBorder),
+/* harmony export */   renderDrawMeasurements: () => (/* binding */ renderDrawMeasurements),
 /* harmony export */   splitFeatureCollection: () => (/* binding */ splitFeatureCollection),
 /* harmony export */   unionPolygon: () => (/* binding */ unionPolygon)
 /* harmony export */ });
-/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @turf/turf */ "../node_modules/@turf/turf/dist/es/index.js");
+/* harmony import */ var cheap_ruler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! cheap-ruler */ "../node_modules/cheap-ruler/index.js");
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @turf/turf */ "../node_modules/@turf/turf/dist/es/index.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants */ "./constants.ts");
+
+
 
 // nb. it is really annoying that this FeatureCollection type is duplicated
 function EmptyFeatureCollection() {
@@ -582,7 +715,7 @@ function unionPolygon(collection) {
     for (const feature of collection.features) {
         if (feature) {
             if (union) {
-                union = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.union(union, feature);
+                union = _turf_turf__WEBPACK_IMPORTED_MODULE_1__.union(union, feature);
             }
             else {
                 union = feature;
@@ -598,7 +731,7 @@ function clipPolygonsAtBorder(featurePolygons, borders) {
     const clippedPolygons = EmptyFeatureCollection();
     for (const poly of featurePolygons.features) {
         const unionCollection = EmptyFeatureCollection();
-        unionCollection.features = borderPolygons.features.map((border) => _turf_turf__WEBPACK_IMPORTED_MODULE_0__.intersect(poly, border));
+        unionCollection.features = borderPolygons.features.map((border) => _turf_turf__WEBPACK_IMPORTED_MODULE_1__.intersect(poly, border));
         const clipped = unionPolygon(unionCollection);
         if (clipped) {
             clippedPolygons.features.push(clipped);
@@ -613,15 +746,15 @@ function clipLineSegmentsAtBorder(featureLineSegments, borders) {
     const { polygons: borderPolygons } = splitFeatureCollection(borders);
     const clippedLines = EmptyFeatureCollection();
     for (const lines of featureLineSegments.features) {
-        const flattened = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.flatten(lines);
+        const flattened = _turf_turf__WEBPACK_IMPORTED_MODULE_1__.flatten(lines);
         for (const line of flattened.features) {
             for (const border of borderPolygons.features) {
                 // split line by polygon
-                const split = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.lineSplit(line, border);
+                const split = _turf_turf__WEBPACK_IMPORTED_MODULE_1__.lineSplit(line, border);
                 for (const part of split.features) {
                     // check which parts have a start and end inside the polygon
-                    const start = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.booleanPointInPolygon(_turf_turf__WEBPACK_IMPORTED_MODULE_0__.point(part.geometry.coordinates[0]), border);
-                    const end = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.booleanPointInPolygon(_turf_turf__WEBPACK_IMPORTED_MODULE_0__.point(part.geometry.coordinates[part.geometry.coordinates.length - 1]), border);
+                    const start = _turf_turf__WEBPACK_IMPORTED_MODULE_1__.booleanPointInPolygon(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.point(part.geometry.coordinates[0]), border);
+                    const end = _turf_turf__WEBPACK_IMPORTED_MODULE_1__.booleanPointInPolygon(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.point(part.geometry.coordinates[part.geometry.coordinates.length - 1]), border);
                     if (start && end) {
                         clippedLines.features.push(part);
                     }
@@ -630,6 +763,72 @@ function clipLineSegmentsAtBorder(featureLineSegments, borders) {
         }
     }
     return clippedLines;
+}
+// Renders a label measuring the distance of every line segment and the area of every polygon
+// on the map, passed in as drawCollection. Lengths are placed on midpoints and areas at centroid.
+// Includes labeling the length of every edge of every polygon.
+// adapted from: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
+function renderDrawMeasurements(map, drawCollection) {
+    const ruler = new cheap_ruler__WEBPACK_IMPORTED_MODULE_0__["default"](map.getCenter().lat, "kilometers");
+    const labelFeatures = [];
+    // Extend features by adding a line-stringified version of all edges of all polygons
+    const extendedFeatures = [...drawCollection.features];
+    for (const feature of drawCollection.features) {
+        // TODO: skip 64-point polygons because we will use those for circles
+        if (feature.geometry.type === "Polygon" &&
+            feature.geometry.coordinates.length > 0) {
+            for (let i = 0; i < feature.geometry.coordinates[0].length - 1; i++) {
+                const cur = feature.geometry.coordinates[0][i];
+                const next = feature.geometry.coordinates[0][i + 1];
+                if (!cur || !next) {
+                    continue;
+                }
+                const line = _turf_turf__WEBPACK_IMPORTED_MODULE_1__.lineString([cur, next]);
+                extendedFeatures.push(line);
+            }
+        }
+    }
+    for (const feature of extendedFeatures) {
+        if (!("coordinates" in feature.geometry)) {
+            continue;
+        }
+        switch (_turf_turf__WEBPACK_IMPORTED_MODULE_1__.getType(feature)) {
+            case "LineString":
+                // label Lines
+                const lineCoords = feature.geometry.coordinates;
+                if (lineCoords.length > 1) {
+                    const length = ruler.lineDistance(lineCoords);
+                    const label = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.numberForDisplay)(length) + " km";
+                    const midpoint = ruler.along(lineCoords, length / 2);
+                    if (length < 0.001) {
+                        // A "line" is generated before a single point has been drawn by taking the current cursor position to itself,
+                        // so we filter that out here
+                        continue;
+                    }
+                    labelFeatures.push(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.point(midpoint, {
+                        type: "line",
+                        label,
+                    }));
+                }
+                break;
+            case "Polygon":
+                // label Polygons
+                const polyCoords = feature.geometry.coordinates;
+                if (polyCoords.length > 0 && polyCoords[0].length > 3) {
+                    const area = ruler.area(polyCoords);
+                    const label = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.numberForDisplay)(area) + " km²";
+                    labelFeatures.push(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.point(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.centroid(feature).geometry.coordinates, {
+                        type: "area",
+                        label,
+                    }));
+                }
+                break;
+        }
+    }
+    map.getSource("_measurements").setData({
+        type: "FeatureCollection",
+        features: labelFeatures,
+    });
 }
 
 

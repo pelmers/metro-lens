@@ -8,6 +8,7 @@ export type StatValue = {
 };
 export type Props = {
     area: StatValue;
+    population: StatValue;
     perimeter: StatValue;
     parkingArea: StatValue;
     natureArea: StatValue;
@@ -16,9 +17,10 @@ export type Props = {
 export declare const NoPolygonValue: StatValue;
 export declare const ErrorValue: StatValue;
 export declare const LoadingValue: StatValue;
-export declare const DefaultStats: Props;
-export declare const AllLoadingStats: Props;
+export declare const DefaultStats: () => Props;
+export declare const AllLoadingStats: () => Props;
 export declare const OverpassAreaTooBigValue: StatValue;
+export declare const PopulationAreaTooSmallValue: StatValue;
 export declare class MapStatsComponent extends React.Component<Props> {
     render(): React.JSX.Element;
 }

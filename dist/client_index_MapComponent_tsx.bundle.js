@@ -6,7 +6,7 @@
   \***************************************/
 /***/ (() => {
 
-throw new Error("Module parse failed: Unexpected token (150:52)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n|             })));\n|             yield Promise.all(updatePromises);\n>             console.log(\"done updating\", this.state.);\n|         });\n|         this.deleteFeatures = () => {");
+throw new Error("Module parse failed: 'super' keyword outside a method (97:4)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n| constructor(props, Props);\n| {\n>     super(props);\n|     if (props.initialState) {\n|         this.state = Object.assign(Object.assign({}, this.state), props.initialState);");
 
 /***/ })
 

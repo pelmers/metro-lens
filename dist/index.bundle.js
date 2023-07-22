@@ -41197,12 +41197,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CLIENT_CALLS_SERVER_RPC_PREFIX: () => (/* binding */ CLIENT_CALLS_SERVER_RPC_PREFIX),
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
-/* harmony export */   OVERPASS_STATS_AREA_LIMIT_KM2: () => (/* binding */ OVERPASS_STATS_AREA_LIMIT_KM2),
+/* harmony export */   OVERPASS_STATS_AREA_MAX_KM2: () => (/* binding */ OVERPASS_STATS_AREA_MAX_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
+/* harmony export */   WORLDPOP_AREA_MINIMUM_KM2: () => (/* binding */ WORLDPOP_AREA_MINIMUM_KM2),
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
 /* harmony export */   e: () => (/* binding */ e),
 /* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage),
+/* harmony export */   numberForDisplay: () => (/* binding */ numberForDisplay),
 /* harmony export */   t: () => (/* binding */ t),
 /* harmony export */   wrapWithDefault: () => (/* binding */ wrapWithDefault)
 /* harmony export */ });
@@ -41220,7 +41222,8 @@ const DOMAIN = "devzone.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
-const OVERPASS_STATS_AREA_LIMIT_KM2 = 250;
+const OVERPASS_STATS_AREA_MAX_KM2 = 250;
+const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 const DEBUG_LOG = true;
 const d = DEBUG_LOG
     ? (...args) => console.log(...args)
@@ -41269,6 +41272,11 @@ function t(func, name) {
             d(`${name || func.name}: ${Date.now() - start}ms`);
         }
     });
+}
+function numberForDisplay(value) {
+    return `${value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+    })}`;
 }
 
 
@@ -41652,7 +41660,7 @@ function TitleComponent() {
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Shitty World of Polygons");
 }
 function FooterComponent() {
-    // TODO: links to about, contact, etc.
+    // TODO: links to data sources, about, contact etc.
     return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Fancy Footer");
 }
 // Render react-root app
@@ -41661,7 +41669,7 @@ function main() {
         (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--b91228"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--c26d7b"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
             (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
         ]);
         // render with createroot

@@ -12,12 +12,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CLIENT_CALLS_SERVER_RPC_PREFIX: () => (/* binding */ CLIENT_CALLS_SERVER_RPC_PREFIX),
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
-/* harmony export */   OVERPASS_STATS_AREA_LIMIT_KM2: () => (/* binding */ OVERPASS_STATS_AREA_LIMIT_KM2),
+/* harmony export */   OVERPASS_STATS_AREA_MAX_KM2: () => (/* binding */ OVERPASS_STATS_AREA_MAX_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
+/* harmony export */   WORLDPOP_AREA_MINIMUM_KM2: () => (/* binding */ WORLDPOP_AREA_MINIMUM_KM2),
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
 /* harmony export */   e: () => (/* binding */ e),
 /* harmony export */   getErrorMessage: () => (/* binding */ getErrorMessage),
+/* harmony export */   numberForDisplay: () => (/* binding */ numberForDisplay),
 /* harmony export */   t: () => (/* binding */ t),
 /* harmony export */   wrapWithDefault: () => (/* binding */ wrapWithDefault)
 /* harmony export */ });
@@ -35,7 +37,8 @@ const DOMAIN = "devzone.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
-const OVERPASS_STATS_AREA_LIMIT_KM2 = 250;
+const OVERPASS_STATS_AREA_MAX_KM2 = 250;
+const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 const DEBUG_LOG = true;
 const d = DEBUG_LOG
     ? (...args) => console.log(...args)
@@ -84,6 +87,11 @@ function t(func, name) {
             d(`${name || func.name}: ${Date.now() - start}ms`);
         }
     });
+}
+function numberForDisplay(value) {
+    return `${value.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+    })}`;
 }
 
 

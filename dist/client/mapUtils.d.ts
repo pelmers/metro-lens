@@ -1,3 +1,4 @@
+/// <reference types="mapbox-gl" />
 import { FeatureCollection } from "geojson";
 import * as turf from "@turf/turf";
 type PolyFC = turf.FeatureCollection<turf.Polygon | turf.MultiPolygon>;
@@ -12,4 +13,5 @@ export declare function unionPolygon(collection: FeatureCollection): turf.helper
 }>;
 export declare function clipPolygonsAtBorder(featurePolygons: PolyFC, borders: turf.FeatureCollection): PolyFC;
 export declare function clipLineSegmentsAtBorder(featureLineSegments: turf.FeatureCollection, borders: turf.FeatureCollection): turf.FeatureCollection<turf.LineString | turf.MultiLineString>;
+export declare function renderDrawMeasurements(map: mapboxgl.Map, drawCollection: FeatureCollection): void;
 export {};

@@ -1,7 +1,4 @@
 import type { Position } from "@turf/turf";
-/**
- * Sort the given osm file in place using osmium
- */
 export declare function osmiumSort(inputFile: string): Promise<void>;
 /**
  * Save the given polygon coordinates to the given filename in Polygon Filter Format
@@ -13,7 +10,4 @@ export declare function savePolygonFormat(coords: Position[], filename: string):
  * saves the output to the given output file
  */
 export declare function osmconvertFilterWithPolygon(inputFile: string, polygonFile: string, outputFile: string): Promise<void>;
-/**
- * Merge the contents of multiple osm xml files using osmconvert, returns the result as a string
- */
 export declare function osmconvertMergeXmlResults(inputContentses: string[]): Promise<string>;
