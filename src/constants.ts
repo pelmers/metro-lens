@@ -71,3 +71,9 @@ export function t<TInput extends any[], TOutput>(
     }
   };
 }
+
+export function numberForDisplay(value: number) {
+  return `${value.toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })}`;
+}

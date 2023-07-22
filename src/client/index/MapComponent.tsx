@@ -33,6 +33,7 @@ import {
   EmptyFeatureCollection,
   clipLineSegmentsAtBorder,
   clipPolygonsAtBorder,
+  renderDrawMeasurements,
   splitFeatureCollection,
   unionPolygon,
 } from "../mapUtils";
@@ -96,6 +97,10 @@ export default class MapComponent extends React.Component<Props, State> {
     // The user does not have to click the polygon control button first.
     defaultMode: "draw_polygon",
   });
+  // TODO: add a circle drawing mode
+  // e.g. https://medium.com/nyc-planning-digital/building-a-custom-draw-mode-for-mapbox-gl-draw-1dab71d143ee
+  // code at https://gist.github.com/chriswhong/694779bc1f1e5d926e47bab7205fa559
+  // same dude also wrote: https://github.com/mapbox/geojson.io/pull/748
 
   mapControl = new mapboxgl.NavigationControl({ visualizePitch: true });
   geocoderControl = new MapboxGeocoder({
@@ -138,11 +143,16 @@ export default class MapComponent extends React.Component<Props, State> {
         trackUserLocation: true,
       })
     );
+    // TODO: add draw measurements for area and side lengths
+    // see: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
     this.map.addControl(this.drawControl);
 
     this.map.on("draw.create", this.updateDrawing);
     this.map.on("draw.update", this.updateDrawing);
     this.map.on("draw.delete", this.updateDrawing);
+    this.map.on("draw.render", () =>
+      renderDrawMeasurements(this.map, this.drawControl.getAll())
+    );
 
     await new Promise<void>((resolve) => {
       this.map.once("styledata", () => {
@@ -156,6 +166,30 @@ export default class MapComponent extends React.Component<Props, State> {
             source: layer.id,
           });
         }
+        // Add layers for measurement rendering
+        this.map.addSource("_measurements", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
+        });
+
+        // measurements layer
+        this.map.addLayer({
+          id: "_measurements",
+          source: "_measurements",
+          type: "symbol",
+          paint: {
+            "text-color": "hsl(234, 100%, 32%)",
+            "text-halo-color": "hsl(0, 0%, 100%)",
+            "text-halo-width": 2,
+          },
+          layout: {
+            "text-field": "{label}",
+            "text-size": 16,
+          },
+        });
         resolve();
       });
     });
@@ -175,7 +209,7 @@ export default class MapComponent extends React.Component<Props, State> {
     // only the last one would be reflected. We don't know in advance the order and timing
     // so we keep a batch object that contains all stats so far, and use it as the new state each time.
     const currentBatchStats = AllLoadingStats();
-    this.setState({ stats: {...currentBatchStats} });
+    this.setState({ stats: { ...currentBatchStats } });
 
     const area = {
       value: turf.area(data) / 1000000,
@@ -187,7 +221,7 @@ export default class MapComponent extends React.Component<Props, State> {
     };
     currentBatchStats.area = area;
     currentBatchStats.perimeter = perimeter;
-    this.setState({ stats: {...currentBatchStats} });
+    this.setState({ stats: { ...currentBatchStats } });
 
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
@@ -253,17 +287,17 @@ export default class MapComponent extends React.Component<Props, State> {
       ].map(async ({ key, id, fn, lineId }) => {
         const value = await updateAreaFeature(fn, id, lineId);
         currentBatchStats[key] = value;
-        this.setState({ stats: {...currentBatchStats} });
+        this.setState({ stats: { ...currentBatchStats } });
       })
     );
     updatePromises.push(
       fetchPopulation(data, area.value).then((value) => {
         currentBatchStats.population = value;
-        this.setState({ stats: {...currentBatchStats} });
+        this.setState({ stats: { ...currentBatchStats } });
       })
     );
     await Promise.all(updatePromises);
-    this.setState({ stats: {...currentBatchStats} });
+    this.setState({ stats: { ...currentBatchStats } });
   };
 
   deleteFeatures = () => {

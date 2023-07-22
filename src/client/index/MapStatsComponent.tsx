@@ -2,6 +2,7 @@ import React from "react";
 import {
   OVERPASS_STATS_AREA_MAX_KM2,
   WORLDPOP_AREA_MINIMUM_KM2,
+  numberForDisplay,
 } from "../../constants";
 
 import "./MapStatsComponent.css";
@@ -26,7 +27,7 @@ export type Props = {
 };
 
 export const NoPolygonValue: StatValue = {
-  missing: "Select a polygon",
+  missing: "Draw a shape",
 };
 
 export const ErrorValue: StatValue = {
@@ -67,9 +68,7 @@ function valueToDisplay(value: StatValue): string {
   if ("missing" in value) {
     return value.missing;
   } else {
-    return `${value.value.toLocaleString(undefined, {
-      maximumFractionDigits: 2,
-    })} ${value.units}`;
+    return `${numberForDisplay(value.value)} ${value.units}`;
   }
 }
 

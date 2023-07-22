@@ -1,6 +1,9 @@
-import { FeatureCollection } from "geojson";
+import { FeatureCollection, Geometry, Position } from "geojson";
+import cheap_ruler, { Points } from "cheap-ruler";
 
 import * as turf from "@turf/turf";
+import { GeoJSONSource } from "mapbox-gl";
+import { numberForDisplay } from "../constants";
 
 type PolyFC = turf.FeatureCollection<turf.Polygon | turf.MultiPolygon>;
 
@@ -132,4 +135,84 @@ export function clipLineSegmentsAtBorder(
     }
   }
   return clippedLines;
+}
+
+// Renders a label measuring the distance of every line segment and the area of every polygon
+// on the map, passed in as drawCollection. Lengths are placed on midpoints and areas at centroid.
+// Includes labeling the length of every edge of every polygon.
+// adapted from: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
+export function renderDrawMeasurements(
+  map: mapboxgl.Map,
+  drawCollection: FeatureCollection
+) {
+  const ruler = new cheap_ruler(map.getCenter().lat, "kilometers");
+  const labelFeatures = [];
+  // Extend features by adding a line-stringified version of all edges of all polygons
+  const extendedFeatures = [...drawCollection.features];
+  for (const feature of drawCollection.features) {
+    // TODO: skip 64-point polygons because we will use those for circles
+    if (
+      feature.geometry.type === "Polygon" &&
+      feature.geometry.coordinates.length > 0
+    ) {
+      for (let i = 0; i < feature.geometry.coordinates[0].length - 1; i++) {
+        const cur = feature.geometry.coordinates[0][i];
+        const next = feature.geometry.coordinates[0][i + 1];
+        if (!cur || !next) {
+          continue;
+        }
+        const line = turf.lineString([cur, next]);
+        extendedFeatures.push(line);
+      }
+    }
+  }
+
+  for (const feature of extendedFeatures) {
+    if (!("coordinates" in feature.geometry)) {
+      continue;
+    }
+    switch (turf.getType(feature)) {
+      case "LineString":
+        // label Lines
+        const lineCoords = feature.geometry.coordinates as Points;
+        if (lineCoords.length > 1) {
+          const length = ruler.lineDistance(lineCoords);
+          const label = numberForDisplay(length) + " km";
+          const midpoint = ruler.along(lineCoords, length / 2);
+          if (length < 0.001) {
+            // A "line" is generated before a single point has been drawn by taking the current cursor position to itself,
+            // so we filter that out here
+            continue;
+          }
+          labelFeatures.push(
+            turf.point(midpoint, {
+              type: "line",
+              label,
+            })
+          );
+        }
+        break;
+      case "Polygon":
+        // label Polygons
+        const polyCoords = feature.geometry.coordinates as Points[];
+        if (polyCoords.length > 0 && polyCoords[0].length > 3) {
+          const area = ruler.area(polyCoords);
+          const label = numberForDisplay(area) + " km²";
+          labelFeatures.push(
+            turf.point(
+              turf.centroid(feature as turf.Feature).geometry.coordinates,
+              {
+                type: "area",
+                label,
+              }
+            )
+          );
+        }
+        break;
+    }
+  }
+  (map.getSource("_measurements") as GeoJSONSource).setData({
+    type: "FeatureCollection",
+    features: labelFeatures,
+  });
 }
