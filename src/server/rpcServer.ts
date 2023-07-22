@@ -1,15 +1,7 @@
 import ws from "ws";
-import path from "path";
-import fs from "fs";
-import util from "util";
 
 import { RpcServer, WebsocketTransport } from "roots-rpc";
-import {
-  ServerCalls,
-  TClippedAndUnclippedXml,
-  TXmlResult,
-  wrapServerErrors,
-} from "../rpc";
+import { ServerCalls, TXmlResult, wrapServerErrors } from "../rpc";
 import { CLIENT_CALLS_SERVER_RPC_PREFIX, d } from "../constants";
 import {
   FeatureCollection,
@@ -31,6 +23,7 @@ export function createRpcServer(socket: ws) {
   server.register(ServerCalls.GetMapboxApiKey, async () => mapboxApiKey);
   server.register(ServerCalls.GetParkingAreas, getParkingAreas);
   server.register(ServerCalls.GetNatureAndParkAreas, getNatureAndParkAreas);
+  server.register(ServerCalls.GetWateryAreas, getWateryAreas);
   return server;
 }
 
@@ -83,6 +76,21 @@ nwr[landuse=recreation_ground](${filter});
 nwr[boundary=national_park](${filter});
 nwr[boundary=protected_area](${filter});
       );
+        out body;
+        >;
+        out body qt;`;
+  });
+}
+
+async function getWateryAreas(i: any): Promise<TXmlResult> {
+  return getClippedAreasWithQueryBuilder(i, (coords) => {
+    const filter = getPolyFilter(coords);
+    return `
+      [out:xml][timeout:30];
+  (
+  nwr[waterway](${filter});
+  nwr[natural=water](${filter});
+  );
         out body;
         >;
         out body qt;`;

@@ -37,4 +37,8 @@ export const ServerCalls = {
     i: t.any,
     o: XmlResult,
   }),
+  GetWateryAreas: () => ({
+    i: t.any,
+    o: XmlResult,
+  }),
 };

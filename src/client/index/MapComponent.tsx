@@ -13,7 +13,11 @@ import {
   OVERPASS_STATS_AREA_LIMIT_KM2,
   wrapWithDefault,
 } from "../../constants";
-import { getNatureAndParkAreas, getParkingAreas } from "../rpcClient";
+import {
+  getNatureAndParkAreas,
+  getParkingAreas,
+  getWateryAreas,
+} from "../rpcClient";
 
 import osmtogeojson from "osmtogeojson";
 import {
@@ -24,7 +28,7 @@ import {
   OverpassAreaTooBigValue,
   StatValue,
 } from "./MapStatsComponent";
-import { FeatureCollection, Geometry } from "geojson";
+import { FeatureCollection } from "geojson";
 import { TXmlResult } from "../../rpc";
 
 type Props = {
@@ -55,6 +59,14 @@ const MapLayers = {
     type: "fill" as const,
     paint: {
       "fill-color": "green",
+      "fill-opacity": 0.5,
+    },
+  },
+  WATERY_FEATURES: {
+    id: "wateryFeatures",
+    type: "fill" as const,
+    paint: {
+      "fill-color": "blue",
       "fill-opacity": 0.5,
     },
   },
@@ -201,9 +213,10 @@ export default class MapComponent extends React.Component<Props, State> {
       }
     );
 
-    const [parkingArea, natureArea] = await Promise.all([
+    const [parkingArea, natureArea, wateryArea] = await Promise.all([
       updateAreaFeature(MapLayers.SURFACE_PARKING.id, getParkingAreas),
       updateAreaFeature(MapLayers.NATURE_AND_PARKS.id, getNatureAndParkAreas),
+      updateAreaFeature(MapLayers.WATERY_FEATURES.id, getWateryAreas),
     ]);
     // TODO: all the other stats too
     this.setState({
@@ -212,6 +225,7 @@ export default class MapComponent extends React.Component<Props, State> {
         perimeter,
         natureArea,
         parkingArea,
+        wateryArea,
       },
     });
   };
