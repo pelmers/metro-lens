@@ -29,9 +29,16 @@ import {
   OverpassAreaTooBigValue,
   StatValue,
 } from "./MapStatsComponent";
-import { FeatureCollection } from "geojson";
+import { FeatureCollection } from "@turf/turf";
 import { TXmlResult } from "../../rpc";
 import { unkinkPolygon } from "@turf/turf";
+import {
+  EmptyFeatureCollection,
+  clipLineSegmentsAtBorder,
+  clipPolygonsAtBorder,
+  splitFeatureCollection,
+  unionPolygon,
+} from "../mapUtils";
 
 type Props = {
   apiKey: string;
@@ -40,11 +47,6 @@ type Props = {
 type State = {
   style: string;
   stats: MapStatsComponentProps;
-};
-
-const EmptyFeatureCollection: FeatureCollection = {
-  type: "FeatureCollection",
-  features: [],
 };
 
 // TODO: create linestring versions of these layers
@@ -73,35 +75,15 @@ const MapLayers = {
       "fill-opacity": 0.5,
     },
   },
+  WATERY_FEATURES_LINES: {
+    id: "wateryFeaturesLines",
+    type: "line" as const,
+    paint: {
+      "line-color": "blue",
+      "line-width": 2,
+    },
+  },
 };
-
-// Clip polygons with the given border collection of polygons.
-// This is done by taking turf/intersect with each polygon against each border polygon
-function clipPolygonsAtBorder(
-  polygons: turf.Feature<turf.Polygon | turf.MultiPolygon>[],
-  border: turf.FeatureCollection
-): turf.Feature<turf.Polygon | turf.MultiPolygon>[] {
-  const clippedPolygons: turf.Feature<turf.Polygon | turf.MultiPolygon>[] = [];
-  return clippedPolygons;
-}
-
-// TODO: for linesegments, https://gis.stackexchange.com/questions/310453/clip-linesegment-at-a-polygon-boundary-using-turfjs
-
-// Take the union of all features with Polygon geometry in collection
-// Can be null if no features have Polygon geometry
-function unionPolygon(collection: FeatureCollection) {
-  let union: turf.Feature<turf.Polygon | turf.MultiPolygon> | null = null;
-  for (const feature of collection.features) {
-    if (feature.geometry.type === "Polygon") {
-      if (union) {
-        union = turf.union(union, feature as turf.Feature<turf.Polygon>);
-      } else {
-        union = feature as turf.Feature<turf.Polygon>;
-      }
-    }
-  }
-  return union;
-}
 
 export default class MapComponent extends React.Component<Props, State> {
   map: mapboxgl.Map;
@@ -169,7 +151,7 @@ export default class MapComponent extends React.Component<Props, State> {
         for (const layer of Object.values(MapLayers)) {
           this.map.addSource(layer.id, {
             type: "geojson",
-            data: EmptyFeatureCollection,
+            data: EmptyFeatureCollection(),
           });
           this.map.addLayer({
             ...layer,
@@ -205,8 +187,9 @@ export default class MapComponent extends React.Component<Props, State> {
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
       async (
-        mapLayerId: string,
-        overpassQueryFn: (data: any) => Promise<TXmlResult>
+        overpassQueryFn: (data: any) => Promise<TXmlResult>,
+        polygonLayerId: string,
+        lineLayerId?: string
       ): Promise<StatValue> => {
         if (area.value > OVERPASS_STATS_AREA_LIMIT_KM2) {
           return OverpassAreaTooBigValue;
@@ -218,12 +201,22 @@ export default class MapComponent extends React.Component<Props, State> {
           "text/xml"
         );
         const geoJsons = osmtogeojson(xmlObject);
+        let { polygons, linestrings } = splitFeatureCollection(
+          geoJsons as turf.FeatureCollection
+        );
+        polygons = clipPolygonsAtBorder(polygons, data);
 
-        (this.map.getSource(mapLayerId) as GeoJSONSource).setData(geoJsons);
+        (this.map.getSource(polygonLayerId) as GeoJSONSource).setData(polygons);
+        if (lineLayerId) {
+          linestrings = clipLineSegmentsAtBorder(linestrings, data);
+          (this.map.getSource(lineLayerId) as GeoJSONSource).setData(
+            linestrings
+          );
+        }
 
         // Calculate the total area of the features by taking the union then using turf.area
         // Note that we take the union first to avoid double counting accidentally overlapping features
-        const union = unionPolygon(geoJsons);
+        const union = unionPolygon(polygons);
         const areaValueM2 = union ? turf.area(union) : 0;
 
         return {
@@ -249,10 +242,11 @@ export default class MapComponent extends React.Component<Props, State> {
         {
           key: "wateryArea",
           id: MapLayers.WATERY_FEATURES_POLYGONS.id,
+          lineId: MapLayers.WATERY_FEATURES_LINES.id,
           fn: getWateryAreas,
         },
-      ].map(async ({ key, id, fn }) => {
-        const value = await updateAreaFeature(id, fn);
+      ].map(async ({ key, id, fn, lineId }) => {
+        const value = await updateAreaFeature(fn, id, lineId);
         this.setState({ stats: { ...this.state.stats, [key]: value } });
       })
     );
@@ -262,7 +256,7 @@ export default class MapComponent extends React.Component<Props, State> {
   deleteFeatures = () => {
     for (const layer of Object.values(MapLayers)) {
       (this.map.getSource(layer.id) as GeoJSONSource).setData(
-        EmptyFeatureCollection
+        EmptyFeatureCollection()
       );
     }
     this.setState({

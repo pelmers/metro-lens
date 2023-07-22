@@ -215,6 +215,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! osmtogeojson */ "../node_modules/osmtogeojson/index.js");
 /* harmony import */ var osmtogeojson__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(osmtogeojson__WEBPACK_IMPORTED_MODULE_11__);
 /* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
+/* harmony import */ var _mapUtils__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../mapUtils */ "./client/mapUtils.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -238,10 +239,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const EmptyFeatureCollection = {
-    type: "FeatureCollection",
-    features: [],
-};
+
 // TODO: create linestring versions of these layers
 const MapLayers = {
     SURFACE_PARKING_POLYGONS: {
@@ -268,30 +266,15 @@ const MapLayers = {
             "fill-opacity": 0.5,
         },
     },
+    WATERY_FEATURES_LINES: {
+        id: "wateryFeaturesLines",
+        type: "line",
+        paint: {
+            "line-color": "blue",
+            "line-width": 2,
+        },
+    },
 };
-// Clip polygons with the given border collection of polygons.
-// This is done by taking turf/intersect with each polygon against each border polygon
-function clipPolygonsAtBorder(polygons, border) {
-    const clippedPolygons = [];
-    return clippedPolygons;
-}
-// TODO: for linesegments, https://gis.stackexchange.com/questions/310453/clip-linesegment-at-a-polygon-boundary-using-turfjs
-// Take the union of all features with Polygon geometry in collection
-// Can be null if no features have Polygon geometry
-function unionPolygon(collection) {
-    let union = null;
-    for (const feature of collection.features) {
-        if (feature.geometry.type === "Polygon") {
-            if (union) {
-                union = _turf_turf__WEBPACK_IMPORTED_MODULE_4__.union(union, feature);
-            }
-            else {
-                union = feature;
-            }
-        }
-    }
-    return union;
-}
 class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor(props) {
         super(props);
@@ -336,17 +319,23 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 units: "km",
             };
             this.setState({ stats: Object.assign(Object.assign({}, _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.AllLoadingStats), { area, perimeter }) });
-            const updateAreaFeature = (0,_constants__WEBPACK_IMPORTED_MODULE_9__.wrapWithDefault)(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.ErrorValue, (mapLayerId, overpassQueryFn) => __awaiter(this, void 0, void 0, function* () {
+            const updateAreaFeature = (0,_constants__WEBPACK_IMPORTED_MODULE_9__.wrapWithDefault)(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.ErrorValue, (overpassQueryFn, polygonLayerId, lineLayerId) => __awaiter(this, void 0, void 0, function* () {
                 if (area.value > _constants__WEBPACK_IMPORTED_MODULE_9__.OVERPASS_STATS_AREA_LIMIT_KM2) {
                     return _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.OverpassAreaTooBigValue;
                 }
                 const areas = yield overpassQueryFn(data);
                 const xmlObject = new DOMParser().parseFromString(areas.xml, "text/xml");
                 const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_11___default()(xmlObject);
-                this.map.getSource(mapLayerId).setData(geoJsons);
+                let { polygons, linestrings } = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.splitFeatureCollection)(geoJsons);
+                polygons = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.clipPolygonsAtBorder)(polygons, data);
+                this.map.getSource(polygonLayerId).setData(polygons);
+                if (lineLayerId) {
+                    linestrings = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.clipLineSegmentsAtBorder)(linestrings, data);
+                    this.map.getSource(lineLayerId).setData(linestrings);
+                }
                 // Calculate the total area of the features by taking the union then using turf.area
                 // Note that we take the union first to avoid double counting accidentally overlapping features
-                const union = unionPolygon(geoJsons);
+                const union = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.unionPolygon)(polygons);
                 const areaValueM2 = union ? _turf_turf__WEBPACK_IMPORTED_MODULE_4__.area(union) : 0;
                 return {
                     value: areaValueM2 / 1000000,
@@ -368,17 +357,18 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 {
                     key: "wateryArea",
                     id: MapLayers.WATERY_FEATURES_POLYGONS.id,
+                    lineId: MapLayers.WATERY_FEATURES_LINES.id,
                     fn: _rpcClient__WEBPACK_IMPORTED_MODULE_10__.getWateryAreas,
                 },
-            ].map(({ key, id, fn }) => __awaiter(this, void 0, void 0, function* () {
-                const value = yield updateAreaFeature(id, fn);
+            ].map(({ key, id, fn, lineId }) => __awaiter(this, void 0, void 0, function* () {
+                const value = yield updateAreaFeature(fn, id, lineId);
                 this.setState({ stats: Object.assign(Object.assign({}, this.state.stats), { [key]: value }) });
             })));
             yield Promise.all(updatePromises);
         });
         this.deleteFeatures = () => {
             for (const layer of Object.values(MapLayers)) {
-                this.map.getSource(layer.id).setData(EmptyFeatureCollection);
+                this.map.getSource(layer.id).setData((0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.EmptyFeatureCollection)());
             }
             this.setState({
                 stats: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_12__.DefaultStats,
@@ -415,7 +405,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                     for (const layer of Object.values(MapLayers)) {
                         this.map.addSource(layer.id, {
                             type: "geojson",
-                            data: EmptyFeatureCollection,
+                            data: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_13__.EmptyFeatureCollection)(),
                         });
                         this.map.addLayer(Object.assign(Object.assign({}, layer), { source: layer.id }));
                     }
@@ -530,6 +520,116 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     "\uD83D\uDCA6 Watery Area: ",
                     valueToDisplay(this.props.wateryArea)))));
     }
+}
+
+
+/***/ }),
+
+/***/ "./client/mapUtils.tsx":
+/*!*****************************!*\
+  !*** ./client/mapUtils.tsx ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EmptyFeatureCollection: () => (/* binding */ EmptyFeatureCollection),
+/* harmony export */   clipLineSegmentsAtBorder: () => (/* binding */ clipLineSegmentsAtBorder),
+/* harmony export */   clipPolygonsAtBorder: () => (/* binding */ clipPolygonsAtBorder),
+/* harmony export */   splitFeatureCollection: () => (/* binding */ splitFeatureCollection),
+/* harmony export */   unionPolygon: () => (/* binding */ unionPolygon)
+/* harmony export */ });
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @turf/turf */ "../node_modules/@turf/turf/dist/es/index.js");
+
+// nb. it is really annoying that this FeatureCollection type is duplicated
+function EmptyFeatureCollection() {
+    return {
+        type: "FeatureCollection",
+        features: [],
+    };
+}
+// Split 1 feature collection into 3: polygons, linestrings, and points
+function splitFeatureCollection(collection) {
+    const polygons = EmptyFeatureCollection();
+    const linestrings = EmptyFeatureCollection();
+    const points = EmptyFeatureCollection();
+    for (const feature of collection.features) {
+        switch (feature.geometry.type) {
+            case "Polygon":
+            case "MultiPolygon":
+                polygons.features.push(feature);
+                break;
+            case "LineString":
+            case "MultiLineString":
+                linestrings.features.push(feature);
+                break;
+            case "Point":
+            case "MultiPoint":
+                points.features.push(feature);
+                break;
+        }
+    }
+    return {
+        polygons,
+        linestrings,
+        points,
+    };
+}
+// Take the union of all features with Polygon geometry in collection
+// Can be null if no features have Polygon geometry
+function unionPolygon(collection) {
+    let union = null;
+    for (const feature of collection.features) {
+        if (feature) {
+            if (union) {
+                union = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.union(union, feature);
+            }
+            else {
+                union = feature;
+            }
+        }
+    }
+    return union;
+}
+// Clip polygons with the given border collection of polygons.
+// This is done by taking turf/intersect with each polygon against each border polygon
+function clipPolygonsAtBorder(featurePolygons, borders) {
+    const { polygons: borderPolygons } = splitFeatureCollection(borders);
+    const clippedPolygons = EmptyFeatureCollection();
+    for (const poly of featurePolygons.features) {
+        const unionCollection = EmptyFeatureCollection();
+        unionCollection.features = borderPolygons.features.map((border) => _turf_turf__WEBPACK_IMPORTED_MODULE_0__.intersect(poly, border));
+        const clipped = unionPolygon(unionCollection);
+        if (clipped) {
+            clippedPolygons.features.push(clipped);
+        }
+    }
+    return clippedPolygons;
+}
+// Clip line strings at given border polygons and return a collection of line strings
+// fully contained in at least one border polygon
+// Slightly modified from https://gis.stackexchange.com/a/459122/227981 (added end check)
+function clipLineSegmentsAtBorder(featureLineSegments, borders) {
+    const { polygons: borderPolygons } = splitFeatureCollection(borders);
+    const clippedLines = EmptyFeatureCollection();
+    for (const lines of featureLineSegments.features) {
+        const flattened = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.flatten(lines);
+        for (const line of flattened.features) {
+            for (const border of borderPolygons.features) {
+                // split line by polygon
+                const split = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.lineSplit(line, border);
+                for (const part of split.features) {
+                    // check which parts have a start and end inside the polygon
+                    const start = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.booleanPointInPolygon(_turf_turf__WEBPACK_IMPORTED_MODULE_0__.point(part.geometry.coordinates[0]), border);
+                    const end = _turf_turf__WEBPACK_IMPORTED_MODULE_0__.booleanPointInPolygon(_turf_turf__WEBPACK_IMPORTED_MODULE_0__.point(part.geometry.coordinates[part.geometry.coordinates.length - 1]), border);
+                    if (start && end) {
+                        clippedLines.features.push(part);
+                    }
+                }
+            }
+        }
+    }
+    return clippedLines;
 }
 
 
