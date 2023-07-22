@@ -9,10 +9,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-import {
-  OVERPASS_STATS_AREA_LIMIT_KM2,
-  wrapWithDefault,
-} from "../../constants";
+import { OVERPASS_STATS_AREA_MAX_KM2, wrapWithDefault } from "../../constants";
 import {
   getNatureAndParkAreas,
   getParkingAreas,
@@ -39,6 +36,7 @@ import {
   splitFeatureCollection,
   unionPolygon,
 } from "../mapUtils";
+import { fetchPopulation } from "./fetchPopulation";
 
 type Props = {
   apiKey: string;
@@ -110,7 +108,7 @@ export default class MapComponent extends React.Component<Props, State> {
   state: State = {
     // use satellite style
     style: "mapbox://styles/mapbox/light-v11",
-    stats: DefaultStats,
+    stats: DefaultStats(),
   };
 
   constructor(props: Props) {
@@ -163,7 +161,7 @@ export default class MapComponent extends React.Component<Props, State> {
     });
   }
 
-  // TODO: put up a loading spinner and set up some kind of debounce in case user moves around the drawing quickly
+  // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
   updateDrawing = async (_evt: { type: string }) => {
     const data = this.drawControl.getAll() as FeatureCollection<turf.Polygon>;
     if (data.features.length == 0) {
@@ -173,6 +171,11 @@ export default class MapComponent extends React.Component<Props, State> {
     for (const polygon of data.features) {
       polygon.geometry = unkinkPolygon(polygon).features[0].geometry;
     }
+    // Since react batches state updates, if we updated with setstate many times,
+    // only the last one would be reflected. We don't know in advance the order and timing
+    // so we keep a batch object that contains all stats so far, and use it as the new state each time.
+    const currentBatchStats = AllLoadingStats();
+    this.setState({ stats: {...currentBatchStats} });
 
     const area = {
       value: turf.area(data) / 1000000,
@@ -182,7 +185,9 @@ export default class MapComponent extends React.Component<Props, State> {
       value: turf.length(data, { units: "kilometers" }),
       units: "km",
     };
-    this.setState({ stats: { ...AllLoadingStats, area, perimeter } });
+    currentBatchStats.area = area;
+    currentBatchStats.perimeter = perimeter;
+    this.setState({ stats: {...currentBatchStats} });
 
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
@@ -191,7 +196,7 @@ export default class MapComponent extends React.Component<Props, State> {
         polygonLayerId: string,
         lineLayerId?: string
       ): Promise<StatValue> => {
-        if (area.value > OVERPASS_STATS_AREA_LIMIT_KM2) {
+        if (area.value > OVERPASS_STATS_AREA_MAX_KM2) {
           return OverpassAreaTooBigValue;
         }
 
@@ -230,27 +235,35 @@ export default class MapComponent extends React.Component<Props, State> {
     updatePromises.push(
       ...[
         {
-          key: "parkingArea",
+          key: "parkingArea" as const,
           id: MapLayers.SURFACE_PARKING_POLYGONS.id,
           fn: getParkingAreas,
         },
         {
-          key: "natureArea",
+          key: "natureArea" as const,
           id: MapLayers.NATURE_AND_PARKS_POLYGONS.id,
           fn: getNatureAndParkAreas,
         },
         {
-          key: "wateryArea",
+          key: "wateryArea" as const,
           id: MapLayers.WATERY_FEATURES_POLYGONS.id,
           lineId: MapLayers.WATERY_FEATURES_LINES.id,
           fn: getWateryAreas,
         },
       ].map(async ({ key, id, fn, lineId }) => {
         const value = await updateAreaFeature(fn, id, lineId);
-        this.setState({ stats: { ...this.state.stats, [key]: value } });
+        currentBatchStats[key] = value;
+        this.setState({ stats: {...currentBatchStats} });
+      })
+    );
+    updatePromises.push(
+      fetchPopulation(data, area.value).then((value) => {
+        currentBatchStats.population = value;
+        this.setState({ stats: {...currentBatchStats} });
       })
     );
     await Promise.all(updatePromises);
+    this.setState({ stats: {...currentBatchStats} });
   };
 
   deleteFeatures = () => {
@@ -260,7 +273,7 @@ export default class MapComponent extends React.Component<Props, State> {
       );
     }
     this.setState({
-      stats: DefaultStats,
+      stats: DefaultStats(),
     });
   };
 

@@ -25,7 +25,7 @@ function TitleComponent() {
 }
 
 function FooterComponent() {
-  // TODO: links to about, contact, etc.
+  // TODO: links to data sources, about, contact etc.
   return <h1>Fancy Footer</h1>;
 }
 
