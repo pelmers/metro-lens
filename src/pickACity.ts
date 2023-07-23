@@ -165,6 +165,28 @@ export function randomCityCenter(): [number, number] {
     [117.1201, 36.6512],
     // Guadalajara
     [-103.344, 20.6597],
+    // Amsterdam
+    [4.8952, 52.3702],
+    // Stockholm
+    [18.0686, 59.3293],
+    // Copenhagen
+    [12.5683, 55.6761],
+    // Oslo
+    [10.7522, 59.9139],
+    // Taipei
+    [121.5654, 25.0329],
+    // Berlin
+    [13.4049, 52.520],
+    // Rome
+    [12.4964, 41.9028],
+    // Vienna
+    [16.3738, 48.2082],
+    // Busan
+    [129.0756, 35.1796],
+    // Seattle
+    [-122.3321, 47.6062],
+    // San fran
+    [-122.4194, 37.7749],
   ];
   return cities[Math.floor(Math.random() * cities.length)];
 }

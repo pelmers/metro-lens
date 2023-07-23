@@ -40,6 +40,7 @@ export declare class MapStatsComponent extends React.Component<Props, State> {
     valueToDisplay(value: StatValue, options?: {
         isEstimate: boolean;
     }): React.JSX.Element;
+    componentDidUpdate(prevProps: Props, prevState: State): void;
     render(): React.JSX.Element;
 }
 export {};

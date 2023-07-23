@@ -41139,22 +41139,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "../node_modules/react-dom/client.js");
 /* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
-/**
- * Starting plan: show a map and a way to draw polygons
- * once a polygon is drawn let's show the following statistics:
- * area, perimeter
- * area of parks/green space
- * length + area of roads/highways (issue: osm does not have a width for roads, but sometimes a lane count)
- * area of parking spaces
- * area of buildings
- * area of water
- * area of tree cover
- * number of bus stops
- * number of rail stops
- * length of total bike paths
- * estimated population, population density
- * each of those can be layers that toggle and highlight on the map
- */
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {

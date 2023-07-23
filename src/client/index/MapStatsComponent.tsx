@@ -105,10 +105,47 @@ export class MapStatsComponent extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (prevState.inline === this.state.inline) {
+      return;
+    }
+    // First remove from DOM
+    if (this.containerRef.current?.parentElement) {
+      // this.containerRef.current.parentElement.removeChild(
+      //   this.containerRef.current
+      // );
+    }
+    // If it is now inline, then move the container div to be a child of the bottom-left map control
+    if (this.state.inline) {
+      const mapControlContainer = document.querySelector(
+        ".mapboxgl-ctrl-bottom-left > .mapboxgl-ctrl"
+      );
+      if (mapControlContainer) {
+        // Insert as first child
+        mapControlContainer.insertBefore(
+          this.containerRef.current!,
+          mapControlContainer.firstChild
+        );
+      }
+    } else {
+      // Otherwise, move it to a sibling of the map container (child of map container container)
+      const mapContainerContainer = document.querySelector(
+        ".map-container-container"
+      );
+      if (mapContainerContainer) {
+        mapContainerContainer.appendChild(this.containerRef.current!);
+      }
+    }
+  }
+
   render() {
     const { props } = this;
     return (
-      <div id="map-stats-container" ref={this.containerRef}>
+      <div
+        id="map-stats-container"
+        ref={this.containerRef}
+        className={this.state.inline ? "map-stats-container-inline" : ""}
+      >
         <table>
           <colgroup>
             <col style={{ width: "163px" }} />
@@ -220,6 +257,27 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
           </tbody>
         </table>
+
+        <div id="map-stats-controls">
+          <input
+            type="checkbox"
+            checked={this.state.inline}
+            onChange={(e) => this.setState({ inline: e.target.checked })}
+          />
+          <label>Inline</label>
+          <input
+            type="checkbox"
+            checked={this.state.metric}
+            onChange={(e) => this.setState({ metric: e.target.checked })}
+          />
+          <label>Metric</label>
+          <input
+            type="checkbox"
+            checked={this.state.density}
+            onChange={(e) => this.setState({ density: e.target.checked })}
+          />
+          <label>Density</label>
+        </div>
       </div>
     );
   }

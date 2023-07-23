@@ -10,7 +10,11 @@
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
 }
 
-/* TODO set inlined props (position absoluate, width 325px) etc */
+/* inline class is set when the stats are put inside of the map container */
+#map-stats-container.map-stats-container-inline {
+  width: 325px;
+  background-color: rgba(248, 248, 248, 0.5);
+}
 
 /* add a border, bold the values in the second column of the table */
 #map-stats-container table tr td:nth-of-type(2) {
@@ -28,7 +32,7 @@
   color: #0d4069;
   cursor: pointer;
   font-weight: bold;
-  text-decoration: none
+  text-decoration: none;
 }
 
 #map-stats-container .map-stats-linked-value:hover {
@@ -40,4 +44,12 @@
 #map-stats-container .map-stats-unlinked-value {
   color: #303030;
   font-weight: bold;
+}
+
+/* style the control area*/
+#map-stats-container #map-stats-controls {
+  margin-top: 8px;
+}
+#map-stats-container #map-stats-controls label:not(:last-of-type) {
+  margin-right: 12px;
 }
