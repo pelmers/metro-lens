@@ -255,7 +255,12 @@ export default class MapComponent extends React.Component<Props, State> {
           );
         }
 
-        const areaValueM2 = turf.area(polygons);
+        // TODO: for correctness we should take the union of all polygons before calculating area
+        // otherwise we would double count the area of overlapping polygons
+        // but this method is super super slow, there should be some faster way
+        // const union = unionPolygon(polygons);
+        const union = polygons;
+        const areaValueM2 = turf.area(union ? union : polygons);
 
         return {
           value: areaValueM2 / 1000000,
