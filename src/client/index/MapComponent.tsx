@@ -40,6 +40,7 @@ import {
   addDrawControlButton,
   clipLineSegmentsAtBorder,
   clipPolygonsAtBorder,
+  estimateHighwayFeatureWidth,
   renderDrawMeasurements,
   splitFeatureCollection,
   unionPolygon,
@@ -165,6 +166,13 @@ const HighwayAreaTooBigValue: StatValue = {
   missing: `Selection too large (>${HIGHWAY_STATS_AREA_MAX_KM2} km²)`,
 };
 
+type HighwayStatsType = {
+  highwayLength: StatValue;
+  cyclewayLength: StatValue;
+  highwayArea: StatValue;
+  cyclewayArea: StatValue;
+};
+
 const fetchAndClassifyHighways = async (
   borders: FeatureCollection
 ): Promise<{
@@ -206,6 +214,7 @@ const fetchAndClassifyHighways = async (
       case "service":
       case "tertiary":
       case "unclassified":
+      case "living_street":
       case "residential":
       case "primary_link":
       case "secondary_link":
@@ -276,7 +285,7 @@ export default class MapComponent extends React.Component<Props, State> {
       zoom: 13,
     });
 
-    this.map.addControl(this.geocoderControl);
+    this.map.addControl(this.geocoderControl, "top-left");
     this.map.addControl(this.mapControl);
     // Add geolocate control
     this.map.addControl(
@@ -342,15 +351,22 @@ export default class MapComponent extends React.Component<Props, State> {
   }
 
   updateHighwayMapAndGetStats = wrapWithDefault(
-    { highwayLength: ErrorValue, cyclewayLength: ErrorValue },
+    {
+      highwayLength: ErrorValue,
+      cyclewayLength: ErrorValue,
+      highwayArea: ErrorValue,
+      cyclewayArea: ErrorValue,
+    },
     async (
       borders: FeatureCollection,
       areaKm2: number
-    ): Promise<{ highwayLength: StatValue; cyclewayLength: StatValue }> => {
+    ): Promise<HighwayStatsType> => {
       if (areaKm2 > HIGHWAY_STATS_AREA_MAX_KM2) {
         return {
           highwayLength: HighwayAreaTooBigValue,
           cyclewayLength: HighwayAreaTooBigValue,
+          highwayArea: HighwayAreaTooBigValue,
+          cyclewayArea: HighwayAreaTooBigValue,
         };
       }
       const { streets, roads, highways, cycleways } =
@@ -371,24 +387,47 @@ export default class MapComponent extends React.Component<Props, State> {
           MapLayers.CYCLEWAYS_FEATURES_LINES.id
         ) as GeoJSONSource
       ).setData(cycleways);
-      const cyclewayLength = {
-        value: turf.length(cycleways, { units: "kilometers" }),
-        units: "km",
+      const stats = {
+        cyclewayLength: {
+          value: 0,
+          units: "km",
+        },
+        cyclewayArea: {
+          value: 0,
+          units: "km²",
+        },
+        highwayLength: {
+          value: 0,
+          units: "km",
+        },
+        highwayArea: {
+          value: 0,
+          units: "km²",
+        },
       };
-      const highwayLength = {
-        value:
-          turf.length(highways, { units: "kilometers" }) +
-          turf.length(roads, { units: "kilometers" }) +
-          turf.length(streets, { units: "kilometers" }),
-        units: "km",
-      };
-      // TODO: get area by estimating width for each way
-      return { cyclewayLength, highwayLength };
+      for (const cycleway of cycleways.features) {
+        const wayLength = turf.length(cycleway, { units: "kilometers" });
+        stats.cyclewayLength.value += wayLength;
+        stats.cyclewayArea.value +=
+          (wayLength * estimateHighwayFeatureWidth(cycleway as turf.Feature)) /
+          1000;
+      }
+      for (const highway of highways.features
+        .concat(roads.features)
+        .concat(streets.features)) {
+        const wayLength = turf.length(highway, { units: "kilometers" });
+        stats.highwayLength.value += wayLength;
+        stats.highwayArea.value +=
+          (wayLength * estimateHighwayFeatureWidth(highway as turf.Feature)) /
+          1000;
+      }
+      return { ...stats };
     }
   );
 
   // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
   updateDrawing = async (_evt: { type: string }) => {
+    // TODO: if there are multiple polygons only update the one that was changed
     const data = this.drawControl.getAll() as FeatureCollection<turf.Polygon>;
     if (data.features.length == 0) {
       this.deleteFeatures();
@@ -488,13 +527,12 @@ export default class MapComponent extends React.Component<Props, State> {
       })
     );
     updatePromises.push(
-      this.updateHighwayMapAndGetStats(data, area.value).then(
-        ({ highwayLength, cyclewayLength }) => {
-          currentBatchStats.highwayLength = highwayLength;
-          currentBatchStats.cyclewayLength = cyclewayLength;
-          this.setState({ stats: { ...currentBatchStats } });
+      this.updateHighwayMapAndGetStats(data, area.value).then((stats) => {
+        for (const [key, value] of Object.entries(stats)) {
+          currentBatchStats[key as keyof typeof stats] = value;
         }
-      )
+        this.setState({ stats: { ...currentBatchStats } });
+      })
     );
     try {
       await Promise.all(updatePromises);

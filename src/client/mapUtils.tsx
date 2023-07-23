@@ -151,6 +151,7 @@ export function clipLineSegmentsAtBorder(
 export function renderDrawMeasurements(
   map: mapboxgl.Map,
   drawCollection: FeatureCollection
+  // TODO: option to render miles
 ) {
   const ruler = new cheap_ruler(map.getCenter().lat, "kilometers");
   const labelFeatures = [];
@@ -175,6 +176,11 @@ export function renderDrawMeasurements(
       }
     }
   }
+  // If there are multiple polygons, label the center of each with its number
+  const numberOfPolygons = extendedFeatures.filter(
+    (f) => turf.getType(f) === "Polygon"
+  ).length;
+  let seenPolygons = 0;
 
   for (const feature of extendedFeatures) {
     if (!("coordinates" in feature.geometry)) {
@@ -206,7 +212,8 @@ export function renderDrawMeasurements(
         const polyCoords = feature.geometry.coordinates as Points[];
         if (polyCoords.length > 0 && polyCoords[0].length > 3) {
           const area = ruler.area(polyCoords);
-          const label = numberForDisplay(area) + " km²";
+          const prefix = numberOfPolygons > 1 ? `${seenPolygons + 1}: ` : "";
+          const label = prefix + numberForDisplay(area) + " km²";
           labelFeatures.push(
             turf.point(
               turf.centroid(feature as turf.Feature).geometry.coordinates,
@@ -217,6 +224,7 @@ export function renderDrawMeasurements(
             )
           );
         }
+        seenPolygons++;
         break;
     }
   }
@@ -250,7 +258,7 @@ export function addDrawControlButton(iconPath: string, onClick: () => unknown) {
 // Parse a length-type field from OSM into a meters number. If not possible return NaN.
 // This includes formats such as 7'6", 8 km, 16 ft, etc.
 // see: https://wiki.openstreetmap.org/wiki/Key:width
-function parseOsmLengthField(length: string): number {
+export function parseOsmLengthField(length: string): number {
   // TODO: actually check the uncommon length formats
   try {
     return Number.parseFloat(length);
@@ -262,8 +270,9 @@ function parseOsmLengthField(length: string): number {
 // Given a feature with property highway set, estimate a width for it in meters.
 // This will use the width property if it's available, otherwise we will multiply the lanes
 // property by a heuristic value depending on the type of highway.
-// nb. This estimation is VERY ROUGH.
-function estimateHighwayFeatureWidth(feature: turf.Feature): number {
+// nb. This estimation is VERY ROUGH, mostly derived from https://en.wikipedia.org/wiki/Lane#Lane_width.
+// e.g. it may underestimate in the U.S. and overestimate in Europe.
+export function estimateHighwayFeatureWidth(feature: turf.Feature): number {
   // TODO return a number in meters
   if (!Number.isNaN(parseOsmLengthField(feature.properties.width))) {
     return parseOsmLengthField(feature.properties.width);
@@ -279,6 +288,44 @@ function estimateHighwayFeatureWidth(feature: turf.Feature): number {
       console.warn("could not parse lanes property", feature.properties.lanes);
     }
   }
+  let laneWidth = 3.5;
+  let buffer = 0.5;
+  switch (feature.properties.highway) {
+    case "cycleway":
+      laneWidth = 1.8;
+      buffer = 0;
+      break;
+    case "trunk":
+    case "motorway":
+      laneWidth = 3.75;
+      buffer = 3.3;
+      break;
+    case "primary":
+      laneWidth = 3.5;
+      buffer = 2;
+      break;
+    case "secondary":
+    case "motorway_link":
+    case "trunk_link":
+      laneWidth = 3.35;
+      buffer = 0.8;
+      break;
+    case "service":
+    case "tertiary":
+    case "residential":
+    case "primary_link":
+    case "secondary_link":
+    case "tertiary_link":
+      laneWidth = 3.1;
+      buffer = 0.5;
+      break;
+    case "unclassified":
+    case "living_street":
+      laneWidth = 2.6;
+      buffer = 0.1;
+      break;
+  }
+
   // Heuristic for the width of a lane, plus some buffer, depending on highway type
-  return 0;
+  return buffer + lanes * laneWidth;
 }

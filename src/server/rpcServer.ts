@@ -17,6 +17,7 @@ import { osmconvertMergeXmlResults } from "./osmUtils";
 
 const mapboxApiKey = process.env.MAPBOX_API_KEY;
 
+// TODO Question: do we even need the server? all these queries can be fetched on client side
 export function createRpcServer(socket: ws) {
   const server = new RpcServer(
     new WebsocketTransport(socket, CLIENT_CALLS_SERVER_RPC_PREFIX)
@@ -119,20 +120,6 @@ async function getHighways(i: any): Promise<TXmlResult> {
       [out:xml][timeout:30];
   (
   way[highway](${filter});
-  );
-        out body;
-        >;
-        out body qt;`;
-  });
-}
-
-async function getCycleways(i: any): Promise<TXmlResult> {
-  return getOsmResultsWithQueryBuilder(i, (coords) => {
-    const filter = getPolyFilter(coords);
-    return `
-      [out:xml][timeout:30];
-  (
-  way[highway="cycleway"](${filter});
   );
         out body;
         >;

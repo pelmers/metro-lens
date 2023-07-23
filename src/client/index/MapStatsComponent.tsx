@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  OVERPASS_STATS_AREA_MAX_KM2,
-  WORLDPOP_AREA_MINIMUM_KM2,
-  numberForDisplay,
-} from "../../constants";
+import { numberForDisplay } from "../../constants";
 
 import "./MapStatsComponent.css";
 
@@ -12,22 +8,11 @@ export type StatValue =
   | {
       value: number;
       units: string;
+      documentation?: string;
     }
   | {
       missing: string;
     };
-
-export type Props = {
-  area: StatValue;
-  population: StatValue;
-  perimeter: StatValue;
-  parkingArea: StatValue;
-  natureArea: StatValue;
-  wateryArea: StatValue;
-  highwayLength: StatValue;
-  cyclewayLength: StatValue;
-  // TODO: normalized density, i.e. population / (area - watery - nature)
-};
 
 export const NoPolygonValue: StatValue = {
   missing: "Draw a shape",
@@ -41,38 +26,44 @@ export const LoadingValue: StatValue = {
   missing: "Loading...",
 };
 
-export const DefaultStats: () => Props = () => ({
-  area: NoPolygonValue,
-  perimeter: NoPolygonValue,
-  population: NoPolygonValue,
-  parkingArea: NoPolygonValue,
-  natureArea: NoPolygonValue,
-  wateryArea: NoPolygonValue,
-  highwayLength: NoPolygonValue,
-  cyclewayLength: NoPolygonValue,
-});
-
-export const AllLoadingStats: () => Props = () => ({
-  area: LoadingValue,
-  perimeter: LoadingValue,
-  population: LoadingValue,
-  parkingArea: LoadingValue,
-  natureArea: LoadingValue,
-  wateryArea: LoadingValue,
-  highwayLength: LoadingValue,
-  cyclewayLength: LoadingValue,
-});
-
-function valueToDisplay(value: StatValue): string {
-  if ("missing" in value) {
-    return value.missing;
-  } else {
-    return `${numberForDisplay(value.value)} ${value.units}`;
-  }
+class DefaultProps {
+  area = NoPolygonValue;
+  perimeter = NoPolygonValue;
+  population = NoPolygonValue;
+  parkingArea = NoPolygonValue;
+  natureArea = NoPolygonValue;
+  wateryArea = NoPolygonValue;
+  highwayLength = NoPolygonValue;
+  cyclewayLength = NoPolygonValue;
+  highwayArea = NoPolygonValue;
+  cyclewayArea = NoPolygonValue;
 }
 
+export interface Props extends DefaultProps {}
+
+export const DefaultStats: () => Props = () => new DefaultProps();
+
+export const AllLoadingStats: () => Props = () => {
+  const props = new DefaultProps();
+  for (const key of Object.keys(props)) {
+    props[key as keyof Props] = LoadingValue;
+  }
+  return props;
+};
+
 // TODO: add a stats compare mode if multiple polygons are selected
+// TODO: add a density toggle that changes all stats to per km2
 export class MapStatsComponent extends React.Component<Props> {
+  valueToDisplay(value: StatValue, options?: { isEstimate: boolean }): string {
+    const isEstimate = options?.isEstimate ?? false;
+    if ("missing" in value) {
+      return value.missing;
+    } else {
+      return `${isEstimate ? "~" : ""}${numberForDisplay(value.value)} ${
+        value.units
+      }`;
+    }
+  }
   // TODO: a km/miles switch
   // Renders a div with unordered list of each stat
   render() {
@@ -80,17 +71,25 @@ export class MapStatsComponent extends React.Component<Props> {
     return (
       <div id="map-stats-container">
         <ul>
-          <li>🗺️ Area: {valueToDisplay(props.area)}</li>
-          <li>📏 Perimeter: {valueToDisplay(props.perimeter)}</li>
-          <li>🚻️️ Population: {valueToDisplay(props.population)}</li>
-          <li>🅿️ Parking Area: {valueToDisplay(props.parkingArea)}</li>
-          <li>🛣️️ Road Length: {valueToDisplay(props.highwayLength)}</li>
-          <li>🚲️️ Cycle Paths: {valueToDisplay(props.cyclewayLength)}</li>
-          <li>🌳 Nature Area: {valueToDisplay(props.natureArea)}</li>
+          <li>🗺️ Area: {this.valueToDisplay(props.area)}</li>
+          <li>📏 Perimeter: {this.valueToDisplay(props.perimeter)}</li>
+          <li>🚻️️ Population: {this.valueToDisplay(props.population)}</li>
+          <li>🅿️ Parking Area: {this.valueToDisplay(props.parkingArea)}</li>
+          <li>🛣️️ Road Length: {this.valueToDisplay(props.highwayLength)}</li>
+          <li>
+            🚙️️ Road Area:{" "}
+            {this.valueToDisplay(props.highwayArea, { isEstimate: true })}
+          </li>
+          <li>🚴‍♂️️️ Cycle Paths: {this.valueToDisplay(props.cyclewayLength)}</li>
+          <li>
+            🚲️️ Cycle Area:{" "}
+            {this.valueToDisplay(props.cyclewayArea, { isEstimate: true })}
+          </li>
+          <li>🌳 Nature Area: {this.valueToDisplay(props.natureArea)}</li>
           <li>🚌 Bus Stops: TODO</li>
           <li>🚃 Rail Stations: TODO</li>
           <li>🚇 Transit Routes: TODO</li>
-          <li>💦 Watery Area: {valueToDisplay(props.wateryArea)}</li>
+          <li>💦 Watery Area: {this.valueToDisplay(props.wateryArea)}</li>
         </ul>
       </div>
     );

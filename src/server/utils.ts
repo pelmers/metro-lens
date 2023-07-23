@@ -25,6 +25,6 @@ export async function withTempFolder<O>(
     })(tempDir.path);
   } finally {
     // Delete the temporary folder
-    // await rmrf(tempDir.path);
+    await rmrf(tempDir.path);
   }
 }
