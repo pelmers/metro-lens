@@ -32,6 +32,8 @@ export default class MapComponent extends React.Component<Props, State> {
     }>, areaKm2: number) => Promise<{
         highwayLength: StatValue;
         cyclewayLength: StatValue;
+        highwayArea: StatValue;
+        cyclewayArea: StatValue;
     }>;
     updateDrawing: (_evt: {
         type: string;

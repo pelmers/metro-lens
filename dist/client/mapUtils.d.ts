@@ -15,4 +15,6 @@ export declare function clipPolygonsAtBorder(featurePolygons: PolyFC, borders: t
 export declare function clipLineSegmentsAtBorder(featureLineSegments: turf.FeatureCollection, borders: turf.FeatureCollection): turf.FeatureCollection<turf.LineString | turf.MultiLineString>;
 export declare function renderDrawMeasurements(map: mapboxgl.Map, drawCollection: FeatureCollection): void;
 export declare function addDrawControlButton(iconPath: string, onClick: () => unknown): void;
+export declare function parseOsmLengthField(length: string): number;
+export declare function estimateHighwayFeatureWidth(feature: turf.Feature): number;
 export {};

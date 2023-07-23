@@ -6,7 +6,7 @@
   \***************************************/
 /***/ (() => {
 
-throw new Error("Module parse failed: 'return' outside of function (298:0)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n| }\n| console.log('cyclc counters', counter);\n> return { cyclewayLength, highwayLength };\n| ;\n| // TODO: put up a loading spinner that blocks the map while we wait for the stats to load");
+throw new Error("Module parse failed: 'return' outside of function (436:4)\nFile was processed with these loaders:\n * ../node_modules/ts-loader/index.js\n * ../node_modules/tslint-loader/index.js\nYou may need an additional loader to handle the result of these loaders.\n| render();\n| {\n>     return (React.createElement(\"div\", { className: \"map-container-container\" },\n|         React.createElement(\"div\", { id: \"map-container\", ref: this.mapDivRef }),\n|         React.createElement(MapStatsComponent, Object.assign({}, this.state.stats))));");
 
 /***/ })
 

@@ -349,6 +349,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const mapboxApiKey = process.env.MAPBOX_API_KEY;
+// TODO Question: do we even need the server? all these queries can be fetched on client side
 function createRpcServer(socket) {
     const server = new roots_rpc__WEBPACK_IMPORTED_MODULE_0__.RpcServer(new roots_rpc__WEBPACK_IMPORTED_MODULE_0__.WebsocketTransport(socket, _constants__WEBPACK_IMPORTED_MODULE_2__.CLIENT_CALLS_SERVER_RPC_PREFIX));
     (0,_rpc__WEBPACK_IMPORTED_MODULE_1__.wrapServerErrors)(server);
@@ -447,21 +448,6 @@ function getHighways(i) {
         });
     });
 }
-function getCycleways(i) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return getOsmResultsWithQueryBuilder(i, (coords) => {
-            const filter = getPolyFilter(coords);
-            return `
-      [out:xml][timeout:30];
-  (
-  way[highway="cycleway"](${filter});
-  );
-        out body;
-        >;
-        out body qt;`;
-        });
-    });
-}
 
 
 /***/ }),
@@ -523,7 +509,7 @@ function withTempFolder(fn) {
         }
         finally {
             // Delete the temporary folder
-            // await rmrf(tempDir.path);
+            yield rmrf(tempDir.path);
         }
     });
 }

@@ -384,6 +384,7 @@ const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, 
             case "service":
             case "tertiary":
             case "unclassified":
+            case "living_street":
             case "residential":
             case "primary_link":
             case "secondary_link":
@@ -426,11 +427,18 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             style: "mapbox://styles/mapbox/light-v11",
             stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.DefaultStats)(),
         };
-        this.updateHighwayMapAndGetStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ highwayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, cyclewayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders, areaKm2) => __awaiter(this, void 0, void 0, function* () {
+        this.updateHighwayMapAndGetStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({
+            highwayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
+            cyclewayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
+            highwayArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
+            cyclewayArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
+        }, (borders, areaKm2) => __awaiter(this, void 0, void 0, function* () {
             if (areaKm2 > _constants__WEBPACK_IMPORTED_MODULE_10__.HIGHWAY_STATS_AREA_MAX_KM2) {
                 return {
                     highwayLength: HighwayAreaTooBigValue,
                     cyclewayLength: HighwayAreaTooBigValue,
+                    highwayArea: HighwayAreaTooBigValue,
+                    cyclewayArea: HighwayAreaTooBigValue,
                 };
             }
             const { streets, roads, highways, cycleways } = yield fetchAndClassifyHighways(borders);
@@ -438,21 +446,45 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.map.getSource(MapLayers.ROADS_FEATURES_LINES.id).setData(roads);
             this.map.getSource(MapLayers.HIGHWAYS_FEATURES_LINES.id).setData(highways);
             this.map.getSource(MapLayers.CYCLEWAYS_FEATURES_LINES.id).setData(cycleways);
-            const cyclewayLength = {
-                value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(cycleways, { units: "kilometers" }),
-                units: "km",
+            const stats = {
+                cyclewayLength: {
+                    value: 0,
+                    units: "km",
+                },
+                cyclewayArea: {
+                    value: 0,
+                    units: "km²",
+                },
+                highwayLength: {
+                    value: 0,
+                    units: "km",
+                },
+                highwayArea: {
+                    value: 0,
+                    units: "km²",
+                },
             };
-            const highwayLength = {
-                value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(highways, { units: "kilometers" }) +
-                    _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(roads, { units: "kilometers" }) +
-                    _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(streets, { units: "kilometers" }),
-                units: "km",
-            };
-            // TODO: get area by estimating width for each way
-            return { cyclewayLength, highwayLength };
+            for (const cycleway of cycleways.features) {
+                const wayLength = _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(cycleway, { units: "kilometers" });
+                stats.cyclewayLength.value += wayLength;
+                stats.cyclewayArea.value +=
+                    (wayLength * (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.estimateHighwayFeatureWidth)(cycleway)) /
+                        1000;
+            }
+            for (const highway of highways.features
+                .concat(roads.features)
+                .concat(streets.features)) {
+                const wayLength = _turf_turf__WEBPACK_IMPORTED_MODULE_4__.length(highway, { units: "kilometers" });
+                stats.highwayLength.value += wayLength;
+                stats.highwayArea.value +=
+                    (wayLength * (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.estimateHighwayFeatureWidth)(highway)) /
+                        1000;
+            }
+            return Object.assign({}, stats);
         }));
         // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
         this.updateDrawing = (_evt) => __awaiter(this, void 0, void 0, function* () {
+            // TODO: if there are multiple polygons only update the one that was changed
             const data = this.drawControl.getAll();
             if (data.features.length == 0) {
                 this.deleteFeatures();
@@ -526,9 +558,10 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 currentBatchStats.population = value;
                 this.setState({ stats: Object.assign({}, currentBatchStats) });
             }));
-            updatePromises.push(this.updateHighwayMapAndGetStats(data, area.value).then(({ highwayLength, cyclewayLength }) => {
-                currentBatchStats.highwayLength = highwayLength;
-                currentBatchStats.cyclewayLength = cyclewayLength;
+            updatePromises.push(this.updateHighwayMapAndGetStats(data, area.value).then((stats) => {
+                for (const [key, value] of Object.entries(stats)) {
+                    currentBatchStats[key] = value;
+                }
                 this.setState({ stats: Object.assign({}, currentBatchStats) });
             }));
             try {
@@ -561,7 +594,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 center: [-95.3698, 29.7604],
                 zoom: 13,
             });
-            this.map.addControl(this.geocoderControl);
+            this.map.addControl(this.geocoderControl, "top-left");
             this.map.addControl(this.mapControl);
             // Add geolocate control
             this.map.addControl(new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().GeolocateControl)({
@@ -672,36 +705,41 @@ const ErrorValue = {
 const LoadingValue = {
     missing: "Loading...",
 };
-const DefaultStats = () => ({
-    area: NoPolygonValue,
-    perimeter: NoPolygonValue,
-    population: NoPolygonValue,
-    parkingArea: NoPolygonValue,
-    natureArea: NoPolygonValue,
-    wateryArea: NoPolygonValue,
-    highwayLength: NoPolygonValue,
-    cyclewayLength: NoPolygonValue,
-});
-const AllLoadingStats = () => ({
-    area: LoadingValue,
-    perimeter: LoadingValue,
-    population: LoadingValue,
-    parkingArea: LoadingValue,
-    natureArea: LoadingValue,
-    wateryArea: LoadingValue,
-    highwayLength: LoadingValue,
-    cyclewayLength: LoadingValue,
-});
-function valueToDisplay(value) {
-    if ("missing" in value) {
-        return value.missing;
-    }
-    else {
-        return `${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value.value)} ${value.units}`;
+class DefaultProps {
+    constructor() {
+        this.area = NoPolygonValue;
+        this.perimeter = NoPolygonValue;
+        this.population = NoPolygonValue;
+        this.parkingArea = NoPolygonValue;
+        this.natureArea = NoPolygonValue;
+        this.wateryArea = NoPolygonValue;
+        this.highwayLength = NoPolygonValue;
+        this.cyclewayLength = NoPolygonValue;
+        this.highwayArea = NoPolygonValue;
+        this.cyclewayArea = NoPolygonValue;
     }
 }
+const DefaultStats = () => new DefaultProps();
+const AllLoadingStats = () => {
+    const props = new DefaultProps();
+    for (const key of Object.keys(props)) {
+        props[key] = LoadingValue;
+    }
+    return props;
+};
 // TODO: add a stats compare mode if multiple polygons are selected
+// TODO: add a density toggle that changes all stats to per km2
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+    valueToDisplay(value, options) {
+        var _a;
+        const isEstimate = (_a = options === null || options === void 0 ? void 0 : options.isEstimate) !== null && _a !== void 0 ? _a : false;
+        if ("missing" in value) {
+            return value.missing;
+        }
+        else {
+            return `${isEstimate ? "~" : ""}${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value.value)} ${value.units}`;
+        }
+    }
     // TODO: a km/miles switch
     // Renders a div with unordered list of each stat
     render() {
@@ -710,31 +748,39 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDDFA\uFE0F Area: ",
-                    valueToDisplay(props.area)),
+                    this.valueToDisplay(props.area)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDCCF Perimeter: ",
-                    valueToDisplay(props.perimeter)),
+                    this.valueToDisplay(props.perimeter)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDEBB\uFE0F\uFE0F Population: ",
-                    valueToDisplay(props.population)),
+                    this.valueToDisplay(props.population)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83C\uDD7F\uFE0F Parking Area: ",
-                    valueToDisplay(props.parkingArea)),
+                    this.valueToDisplay(props.parkingArea)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDEE3\uFE0F\uFE0F Road Length: ",
-                    valueToDisplay(props.highwayLength)),
+                    this.valueToDisplay(props.highwayLength)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDEB2\uFE0F\uFE0F Cycle Paths: ",
-                    valueToDisplay(props.cyclewayLength)),
+                    "\uD83D\uDE99\uFE0F\uFE0F Road Area:",
+                    " ",
+                    this.valueToDisplay(props.highwayArea, { isEstimate: true })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDEB4\u200D\u2642\uFE0F\uFE0F\uFE0F Cycle Paths: ",
+                    this.valueToDisplay(props.cyclewayLength)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDEB2\uFE0F\uFE0F Cycle Area:",
+                    " ",
+                    this.valueToDisplay(props.cyclewayArea, { isEstimate: true })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83C\uDF33 Nature Area: ",
-                    valueToDisplay(props.natureArea)),
+                    this.valueToDisplay(props.natureArea)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE8C Bus Stops: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE83 Rail Stations: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE87 Transit Routes: TODO"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDCA6 Watery Area: ",
-                    valueToDisplay(props.wateryArea)))));
+                    this.valueToDisplay(props.wateryArea)))));
     }
 }
 
@@ -837,6 +883,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   addDrawControlButton: () => (/* binding */ addDrawControlButton),
 /* harmony export */   clipLineSegmentsAtBorder: () => (/* binding */ clipLineSegmentsAtBorder),
 /* harmony export */   clipPolygonsAtBorder: () => (/* binding */ clipPolygonsAtBorder),
+/* harmony export */   estimateHighwayFeatureWidth: () => (/* binding */ estimateHighwayFeatureWidth),
+/* harmony export */   parseOsmLengthField: () => (/* binding */ parseOsmLengthField),
 /* harmony export */   renderDrawMeasurements: () => (/* binding */ renderDrawMeasurements),
 /* harmony export */   splitFeatureCollection: () => (/* binding */ splitFeatureCollection),
 /* harmony export */   unionPolygon: () => (/* binding */ unionPolygon)
@@ -958,7 +1006,9 @@ function clipLineSegmentsAtBorder(featureLineSegments, borders) {
 // on the map, passed in as drawCollection. Lengths are placed on midpoints and areas at centroid.
 // Includes labeling the length of every edge of every polygon.
 // adapted from: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
-function renderDrawMeasurements(map, drawCollection) {
+function renderDrawMeasurements(map, drawCollection
+// TODO: option to render miles
+) {
     const ruler = new cheap_ruler__WEBPACK_IMPORTED_MODULE_0__["default"](map.getCenter().lat, "kilometers");
     const labelFeatures = [];
     // Extend features by adding a line-stringified version of all edges of all polygons
@@ -980,6 +1030,9 @@ function renderDrawMeasurements(map, drawCollection) {
             }
         }
     }
+    // If there are multiple polygons, label the center of each with its number
+    const numberOfPolygons = extendedFeatures.filter((f) => _turf_turf__WEBPACK_IMPORTED_MODULE_1__.getType(f) === "Polygon").length;
+    let seenPolygons = 0;
     for (const feature of extendedFeatures) {
         if (!("coordinates" in feature.geometry)) {
             continue;
@@ -1008,12 +1061,14 @@ function renderDrawMeasurements(map, drawCollection) {
                 const polyCoords = feature.geometry.coordinates;
                 if (polyCoords.length > 0 && polyCoords[0].length > 3) {
                     const area = ruler.area(polyCoords);
-                    const label = (0,_constants__WEBPACK_IMPORTED_MODULE_2__.numberForDisplay)(area) + " km²";
+                    const prefix = numberOfPolygons > 1 ? `${seenPolygons + 1}: ` : "";
+                    const label = prefix + (0,_constants__WEBPACK_IMPORTED_MODULE_2__.numberForDisplay)(area) + " km²";
                     labelFeatures.push(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.point(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.centroid(feature).geometry.coordinates, {
                         type: "area",
                         label,
                     }));
                 }
+                seenPolygons++;
                 break;
         }
     }
@@ -1058,7 +1113,8 @@ function parseOsmLengthField(length) {
 // Given a feature with property highway set, estimate a width for it in meters.
 // This will use the width property if it's available, otherwise we will multiply the lanes
 // property by a heuristic value depending on the type of highway.
-// nb. This estimation is VERY ROUGH.
+// nb. This estimation is VERY ROUGH, mostly derived from https://en.wikipedia.org/wiki/Lane#Lane_width.
+// e.g. it may underestimate in the U.S. and overestimate in Europe.
 function estimateHighwayFeatureWidth(feature) {
     // TODO return a number in meters
     if (!Number.isNaN(parseOsmLengthField(feature.properties.width))) {
@@ -1076,8 +1132,45 @@ function estimateHighwayFeatureWidth(feature) {
             console.warn("could not parse lanes property", feature.properties.lanes);
         }
     }
+    let laneWidth = 3.5;
+    let buffer = 0.5;
+    switch (feature.properties.highway) {
+        case "cycleway":
+            laneWidth = 1.8;
+            buffer = 0;
+            break;
+        case "trunk":
+        case "motorway":
+            laneWidth = 3.75;
+            buffer = 3.3;
+            break;
+        case "primary":
+            laneWidth = 3.5;
+            buffer = 2;
+            break;
+        case "secondary":
+        case "motorway_link":
+        case "trunk_link":
+            laneWidth = 3.35;
+            buffer = 0.8;
+            break;
+        case "service":
+        case "tertiary":
+        case "residential":
+        case "primary_link":
+        case "secondary_link":
+        case "tertiary_link":
+            laneWidth = 3.1;
+            buffer = 0.5;
+            break;
+        case "unclassified":
+        case "living_street":
+            laneWidth = 2.6;
+            buffer = 0.1;
+            break;
+    }
     // Heuristic for the width of a lane, plus some buffer, depending on highway type
-    return 0;
+    return buffer + lanes * laneWidth;
 }
 
 
