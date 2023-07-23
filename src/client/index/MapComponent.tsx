@@ -4,6 +4,9 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import * as turf from "@turf/turf";
 
+// @ts-ignore untyped module
+import { DragCircleMode } from "mapbox-gl-draw-circle";
+
 import "./MapComponent.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -31,6 +34,7 @@ import { TXmlResult } from "../../rpc";
 import { unkinkPolygon } from "@turf/turf";
 import {
   EmptyFeatureCollection,
+  addDrawControlButton,
   clipLineSegmentsAtBorder,
   clipPolygonsAtBorder,
   renderDrawMeasurements,
@@ -93,14 +97,11 @@ export default class MapComponent extends React.Component<Props, State> {
       polygon: true,
       trash: true,
     },
-    // Set mapbox-gl-draw to draw by default.
-    // The user does not have to click the polygon control button first.
-    defaultMode: "draw_polygon",
+    modes: {
+      ...MapboxDraw.modes,
+      drag_circle: DragCircleMode,
+    },
   });
-  // TODO: add a circle drawing mode
-  // e.g. https://medium.com/nyc-planning-digital/building-a-custom-draw-mode-for-mapbox-gl-draw-1dab71d143ee
-  // code at https://gist.github.com/chriswhong/694779bc1f1e5d926e47bab7205fa559
-  // same dude also wrote: https://github.com/mapbox/geojson.io/pull/748
 
   mapControl = new mapboxgl.NavigationControl({ visualizePitch: true });
   geocoderControl = new MapboxGeocoder({
@@ -146,6 +147,10 @@ export default class MapComponent extends React.Component<Props, State> {
     // TODO: add draw measurements for area and side lengths
     // see: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
     this.map.addControl(this.drawControl);
+    // TODO: the correct button isn't highlighted as active when clicked
+    addDrawControlButton("/static/icons/circle.svg", () => {
+      this.drawControl.changeMode("drag_circle");
+    });
 
     this.map.on("draw.create", this.updateDrawing);
     this.map.on("draw.update", this.updateDrawing);
@@ -202,10 +207,7 @@ export default class MapComponent extends React.Component<Props, State> {
       this.deleteFeatures();
       return;
     }
-    for (const polygon of data.features) {
-      polygon.geometry = unkinkPolygon(polygon).features[0].geometry;
-    }
-    // Since react batches state updates, if we updated with setstate many times,
+    // Since react batches state updates, if we updated with setState many times,
     // only the last one would be reflected. We don't know in advance the order and timing
     // so we keep a batch object that contains all stats so far, and use it as the new state each time.
     const currentBatchStats = AllLoadingStats();
@@ -253,10 +255,7 @@ export default class MapComponent extends React.Component<Props, State> {
           );
         }
 
-        // Calculate the total area of the features by taking the union then using turf.area
-        // Note that we take the union first to avoid double counting accidentally overlapping features
-        const union = unionPolygon(polygons);
-        const areaValueM2 = union ? turf.area(union) : 0;
+        const areaValueM2 = turf.area(polygons);
 
         return {
           value: areaValueM2 / 1000000,
@@ -313,6 +312,8 @@ export default class MapComponent extends React.Component<Props, State> {
 
   async componentDidMount() {
     await this.constructMap();
+    // TODO: on first mount show an info message that fades away or disappears on click
+    // "Draw a circle by clicking and dragging" and point at draw controls
   }
 
   async componentWillUpdate(

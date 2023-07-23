@@ -14,6 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
 /* harmony export */   OVERPASS_STATS_AREA_MAX_KM2: () => (/* binding */ OVERPASS_STATS_AREA_MAX_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
+/* harmony export */   WORLDPOP_AREA_MAX_KM2: () => (/* binding */ WORLDPOP_AREA_MAX_KM2),
 /* harmony export */   WORLDPOP_AREA_MINIMUM_KM2: () => (/* binding */ WORLDPOP_AREA_MINIMUM_KM2),
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
@@ -37,8 +38,9 @@ const DOMAIN = "devzone.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
-const OVERPASS_STATS_AREA_MAX_KM2 = 250;
+const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
 const WORLDPOP_AREA_MINIMUM_KM2 = 4;
+const WORLDPOP_AREA_MAX_KM2 = 100000;
 const DEBUG_LOG = true;
 const d = DEBUG_LOG
     ? (...args) => console.log(...args)
@@ -312,8 +314,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var roots_rpc__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(roots_rpc__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../rpc */ "./rpc.ts");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../constants */ "./constants.ts");
-/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
-/* harmony import */ var _osmUtils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./osmUtils */ "./server/osmUtils.ts");
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @turf/turf */ "@turf/turf");
+/* harmony import */ var _turf_turf__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_turf_turf__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _queryOverpass__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./queryOverpass */ "./server/queryOverpass.ts");
+/* harmony import */ var _osmUtils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./osmUtils */ "./server/osmUtils.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -323,6 +327,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -341,23 +346,32 @@ function createRpcServer(socket) {
 function getPolyFilter(coords) {
     return `poly:"${coords.map(([lng, lat]) => `${lat} ${lng}`).join(" ")}"`;
 }
-function getClippedAreasWithQueryBuilder(i, queryBuilder) {
+function getAreasWithQueryBuilder(i, queryBuilder) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: remove cast if i make better io-ts typing for turf
         const input = i;
+        // Pre-process the input polygons
+        for (const polygon of input.features) {
+            polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.unkinkPolygon)(polygon).features[0].geometry;
+            // Simplify circles to 16 points for querying overpass to improve performance
+            // overpass also has a low limit on the request length
+            if (polygon.properties.isCircle === true) {
+                polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.circle)((0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.centroid)(polygon), polygon.properties.radiusInKm, { steps: 16 }).geometry;
+            }
+        }
         const xmlResults = [];
         for (const polygon of input.features) {
             const coords = polygon.geometry.coordinates[0];
             const overpassql = queryBuilder(coords);
-            const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_3__.queryOverpass)(overpassql);
+            const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_4__.queryOverpass)(overpassql);
             xmlResults.push(result);
         }
-        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_4__.osmconvertMergeXmlResults)(xmlResults) };
+        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_5__.osmconvertMergeXmlResults)(xmlResults) };
     });
 }
 function getParkingAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
-        return getClippedAreasWithQueryBuilder(i, (coords) => `
+        return getAreasWithQueryBuilder(i, (coords) => `
       [out:xml][timeout:30];
       (
         nwr["amenity"="parking"](${getPolyFilter(coords)});
@@ -369,7 +383,7 @@ function getParkingAreas(i) {
 }
 function getNatureAndParkAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
-        return getClippedAreasWithQueryBuilder(i, (coords) => {
+        return getAreasWithQueryBuilder(i, (coords) => {
             const filter = getPolyFilter(coords);
             return `
       [out:xml][timeout:30];
@@ -388,7 +402,7 @@ nwr[boundary=protected_area](${filter});
 }
 function getWateryAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
-        return getClippedAreasWithQueryBuilder(i, (coords) => {
+        return getAreasWithQueryBuilder(i, (coords) => {
             const filter = getPolyFilter(coords);
             return `
       [out:xml][timeout:30];
@@ -468,6 +482,16 @@ function withTempFolder(fn) {
     });
 }
 
+
+/***/ }),
+
+/***/ "@turf/turf":
+/*!*****************************!*\
+  !*** external "@turf/turf" ***!
+  \*****************************/
+/***/ ((module) => {
+
+module.exports = require("@turf/turf");
 
 /***/ }),
 

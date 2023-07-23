@@ -9,6 +9,8 @@ import {
   Polygon,
   Position,
   unkinkPolygon,
+  circle,
+  centroid,
 } from "@turf/turf";
 import { queryOverpass } from "./queryOverpass";
 import { osmconvertMergeXmlResults } from "./osmUtils";
@@ -31,12 +33,26 @@ function getPolyFilter(coords: Position[]): string {
   return `poly:"${coords.map(([lng, lat]) => `${lat} ${lng}`).join(" ")}"`;
 }
 
-async function getClippedAreasWithQueryBuilder(
+async function getAreasWithQueryBuilder(
   i: any,
   queryBuilder: (coords: Position[]) => string
 ): Promise<TXmlResult> {
   // TODO: remove cast if i make better io-ts typing for turf
   const input = i as FeatureCollection<Polygon>;
+  // Pre-process the input polygons
+  for (const polygon of input.features) {
+    polygon.geometry = unkinkPolygon(polygon).features[0].geometry;
+    // Simplify circles to 16 points for querying overpass to improve performance
+    // overpass also has a low limit on the request length
+    if (polygon.properties.isCircle === true) {
+      polygon.geometry = circle(
+        centroid(polygon),
+        polygon.properties.radiusInKm,
+        { steps: 16 }
+      ).geometry;
+    }
+  }
+
   const xmlResults = [];
   for (const polygon of input.features) {
     const coords = polygon.geometry.coordinates[0] as Position[];
@@ -49,7 +65,7 @@ async function getClippedAreasWithQueryBuilder(
 }
 
 async function getParkingAreas(i: any): Promise<TXmlResult> {
-  return getClippedAreasWithQueryBuilder(
+  return getAreasWithQueryBuilder(
     i,
     (coords) => `
       [out:xml][timeout:30];
@@ -63,7 +79,7 @@ async function getParkingAreas(i: any): Promise<TXmlResult> {
 }
 
 async function getNatureAndParkAreas(i: any): Promise<TXmlResult> {
-  return getClippedAreasWithQueryBuilder(i, (coords) => {
+  return getAreasWithQueryBuilder(i, (coords) => {
     const filter = getPolyFilter(coords);
     return `
       [out:xml][timeout:30];
@@ -81,7 +97,7 @@ nwr[boundary=protected_area](${filter});
 }
 
 async function getWateryAreas(i: any): Promise<TXmlResult> {
-  return getClippedAreasWithQueryBuilder(i, (coords) => {
+  return getAreasWithQueryBuilder(i, (coords) => {
     const filter = getPolyFilter(coords);
     return `
       [out:xml][timeout:30];

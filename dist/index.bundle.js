@@ -41127,6 +41127,75 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./client/index/main.tsx":
+/*!*******************************!*\
+  !*** ./client/index/main.tsx ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "../node_modules/react-dom/client.js");
+/* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
+/**
+ * Starting plan: show a map and a way to draw polygons
+ * once a polygon is drawn let's show the following statistics:
+ * area, perimeter
+ * area of parks/green space
+ * length + area of roads/highways (issue: osm does not have a width for roads, but sometimes a lane count)
+ * area of parking spaces
+ * area of buildings
+ * area of water
+ * area of tree cover
+ * number of bus stops
+ * number of rail stops
+ * length of total bike paths
+ * estimated population, population density
+ * each of those can be layers that toggle and highlight on the map
+ */
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function TitleComponent() {
+    // TODO: add logo, intro, etc.
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Shitty World");
+}
+function FooterComponent() {
+    // TODO: links to data sources, about, contact etc.
+    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Fancy Footer");
+}
+// Render react-root app
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
+        // Import MapComponent dynamically for code splitting
+        const [mapComponent, apiKey] = yield Promise.all([
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--c8ff88"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
+        ]);
+        // render with createroot
+        (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(document.getElementById("react-root")).render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(TitleComponent, null),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(mapComponent.default, { apiKey: apiKey }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FooterComponent, null)));
+    });
+}
+main();
+
+
+/***/ }),
+
 /***/ "./client/rpcClient.ts":
 /*!*****************************!*\
   !*** ./client/rpcClient.ts ***!
@@ -41199,6 +41268,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
 /* harmony export */   OVERPASS_STATS_AREA_MAX_KM2: () => (/* binding */ OVERPASS_STATS_AREA_MAX_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
+/* harmony export */   WORLDPOP_AREA_MAX_KM2: () => (/* binding */ WORLDPOP_AREA_MAX_KM2),
 /* harmony export */   WORLDPOP_AREA_MINIMUM_KM2: () => (/* binding */ WORLDPOP_AREA_MINIMUM_KM2),
 /* harmony export */   WS_DOMAIN_NAME: () => (/* binding */ WS_DOMAIN_NAME),
 /* harmony export */   d: () => (/* binding */ d),
@@ -41222,8 +41292,9 @@ const DOMAIN = "devzone.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
-const OVERPASS_STATS_AREA_MAX_KM2 = 250;
+const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
 const WORLDPOP_AREA_MINIMUM_KM2 = 4;
+const WORLDPOP_AREA_MAX_KM2 = 100000;
 const DEBUG_LOG = true;
 const d = DEBUG_LOG
     ? (...args) => console.log(...args)
@@ -41365,6 +41436,9 @@ const ServerCalls = {
 /******/ 	
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = __webpack_module_cache__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
@@ -41615,74 +41689,12 @@ const ServerCalls = {
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-/*!*******************************!*\
-  !*** ./client/index/main.tsx ***!
-  \*******************************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "../node_modules/react-dom/client.js");
-/* harmony import */ var _rpcClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../rpcClient */ "./client/rpcClient.ts");
-/**
- * Starting plan: show a map and a way to draw polygons
- * once a polygon is drawn let's show the following statistics:
- * area, perimeter
- * area of parks/green space
- * length + area of roads/highways (issue: osm does not have a width for roads, but sometimes a lane count)
- * area of parking spaces
- * area of buildings
- * area of water
- * area of tree cover
- * number of bus stops
- * number of rail stops
- * length of total bike paths
- * estimated population, population density
- * each of those can be layers that toggle and highlight on the map
- */
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-function TitleComponent() {
-    // TODO: add logo, intro, etc.
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Shitty World of Polygons");
-}
-function FooterComponent() {
-    // TODO: links to data sources, about, contact etc.
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Fancy Footer");
-}
-// Render react-root app
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
-        // Import MapComponent dynamically for code splitting
-        const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--c26d7b"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
-            (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
-        ]);
-        // render with createroot
-        (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(document.getElementById("react-root")).render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(TitleComponent, null),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(mapComponent.default, { apiKey: apiKey }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(FooterComponent, null)));
-    });
-}
-main();
-
-})();
-
+/******/ 	
+/******/ 	// module cache are used so entry inlining is disabled
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	var __webpack_exports__ = __webpack_require__(__webpack_require__.s = "./client/index/main.tsx");
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.bundle.js.map

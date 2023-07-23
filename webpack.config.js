@@ -20,6 +20,7 @@ const clientConfig = {
   resolve: {
     extensions: [".ts", ".js", ".tsx"],
     modules: [ROOT, "node_modules"],
+    fallback: { path: false, fs: false },
   },
 
   module: {
@@ -56,6 +57,7 @@ const clientConfig = {
 
   devtool: "cheap-module-source-map",
   devServer: {},
+  // resolve.fallback: { "path": false },
 };
 
 const serverConfig = {

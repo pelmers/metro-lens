@@ -20,7 +20,6 @@ export declare const LoadingValue: StatValue;
 export declare const DefaultStats: () => Props;
 export declare const AllLoadingStats: () => Props;
 export declare const OverpassAreaTooBigValue: StatValue;
-export declare const PopulationAreaTooSmallValue: StatValue;
 export declare class MapStatsComponent extends React.Component<Props> {
     render(): React.JSX.Element;
 }

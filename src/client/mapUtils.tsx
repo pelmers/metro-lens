@@ -1,4 +1,4 @@
-import { FeatureCollection, Geometry, Position } from "geojson";
+import { FeatureCollection } from "geojson";
 import cheap_ruler, { Points } from "cheap-ruler";
 
 import * as turf from "@turf/turf";
@@ -150,10 +150,12 @@ export function renderDrawMeasurements(
   // Extend features by adding a line-stringified version of all edges of all polygons
   const extendedFeatures = [...drawCollection.features];
   for (const feature of drawCollection.features) {
-    // TODO: skip 64-point polygons because we will use those for circles
     if (
       feature.geometry.type === "Polygon" &&
-      feature.geometry.coordinates.length > 0
+      feature.geometry.coordinates.length > 0 &&
+      feature.geometry.coordinates[0].length >= 2 &&
+      // For circles we only show the area in the middle, since it is drawn with a lot of short line segments
+      feature.properties.isCircle !== true
     ) {
       for (let i = 0; i < feature.geometry.coordinates[0].length - 1; i++) {
         const cur = feature.geometry.coordinates[0][i];
@@ -215,4 +217,25 @@ export function renderDrawMeasurements(
     type: "FeatureCollection",
     features: labelFeatures,
   });
+}
+
+export function addDrawControlButton(iconPath: string, onClick: () => unknown) {
+  const siblingSelector =
+    ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon";
+  // Create a button with the given icon as a sibling of the selected polygon button
+  const button = document.createElement("button");
+  button.className = "mapbox-gl-draw_ctrl-draw-btn";
+  // Set padding: 3px on the button
+  button.style.padding = "3px";
+  button.innerHTML = `<span class="mapbox-gl-draw_icon"><img src="${iconPath}"></span>`;
+  button.onclick = async () => {
+    button.classList.add("active");
+    await onClick();
+  };
+  const sibling = document.querySelector(siblingSelector);
+  if (sibling) {
+    sibling.parentElement?.insertBefore(button, sibling.nextSibling);
+  } else {
+    console.warn("Could not find sibling for draw control button");
+  }
 }

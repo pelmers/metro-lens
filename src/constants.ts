@@ -6,8 +6,9 @@ export const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 export const RPC_WS_PATH = "rpc";
 export const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 
-export const OVERPASS_STATS_AREA_MAX_KM2 = 250;
+export const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
 export const WORLDPOP_AREA_MINIMUM_KM2 = 4;
+export const WORLDPOP_AREA_MAX_KM2 = 100000;
 
 const DEBUG_LOG = true;
 

@@ -21,7 +21,7 @@ import { connectClient, getMapboxKey } from "../rpcClient";
 
 function TitleComponent() {
   // TODO: add logo, intro, etc.
-  return <h1>Shitty World of Polygons</h1>;
+  return <h1>Shitty World</h1>;
 }
 
 function FooterComponent() {

@@ -1,10 +1,11 @@
 import { FeatureCollection } from "@turf/turf";
-import { wrapWithDefault, t, WORLDPOP_AREA_MINIMUM_KM2 } from "../../constants";
 import {
-  ErrorValue,
-  PopulationAreaTooSmallValue,
-  StatValue,
-} from "./MapStatsComponent";
+  wrapWithDefault,
+  t,
+  WORLDPOP_AREA_MINIMUM_KM2,
+  WORLDPOP_AREA_MAX_KM2,
+} from "../../constants";
+import { ErrorValue, StatValue } from "./MapStatsComponent";
 
 type WorldPopResponse = {
   error: boolean;
@@ -49,12 +50,23 @@ async function pollTaskId(
   }
 }
 
+const PopulationAreaTooSmallValue: StatValue = {
+  missing: `Selection too small (<${WORLDPOP_AREA_MINIMUM_KM2} km²)`,
+};
+
+const PopulationAreaTooLargeValue: StatValue = {
+  missing: `Selection too large (<${WORLDPOP_AREA_MAX_KM2} km²)`,
+};
+
 export const fetchPopulation = t(
   wrapWithDefault(
     ErrorValue,
     async (borders: FeatureCollection, areaKm2: number): Promise<StatValue> => {
       if (areaKm2 < WORLDPOP_AREA_MINIMUM_KM2) {
         return PopulationAreaTooSmallValue;
+      }
+      if (areaKm2 > WORLDPOP_AREA_MAX_KM2) {
+        return PopulationAreaTooLargeValue;
       }
       const baseUrl =
         "https://api.worldpop.org/v1/services/stats?dataset=wpgppop&year=2020";

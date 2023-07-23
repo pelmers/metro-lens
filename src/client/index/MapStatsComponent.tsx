@@ -24,6 +24,7 @@ export type Props = {
   parkingArea: StatValue;
   natureArea: StatValue;
   wateryArea: StatValue;
+  // TODO: normalized density, i.e. population / (area - watery - nature)
 };
 
 export const NoPolygonValue: StatValue = {
@@ -60,10 +61,6 @@ export const OverpassAreaTooBigValue: StatValue = {
   missing: `Selection too large (>${OVERPASS_STATS_AREA_MAX_KM2} km²)`,
 };
 
-export const PopulationAreaTooSmallValue: StatValue = {
-  missing: `Selection too small (<${WORLDPOP_AREA_MINIMUM_KM2} km²)`,
-};
-
 function valueToDisplay(value: StatValue): string {
   if ("missing" in value) {
     return value.missing;
@@ -72,6 +69,7 @@ function valueToDisplay(value: StatValue): string {
   }
 }
 
+// TODO: add a stats compare mode if multiple polygons are selected
 export class MapStatsComponent extends React.Component<Props> {
   // TODO: a km/miles switch
   // Renders a div with unordered list of each stat

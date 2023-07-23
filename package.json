@@ -31,6 +31,7 @@
     "cheap-ruler": "^3.0.2",
     "css-loader": "^6.8.1",
     "mapbox-gl": "^2.10.0",
+    "mapbox-gl-draw-circle": "^1.1.2",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
