@@ -81,7 +81,7 @@ export const fetchPopulation = t(
       }
       return {
         value: Math.round(await pollTaskId(json.taskid)),
-        units: "peeps",
+        units: "people",
       };
     }
   ),

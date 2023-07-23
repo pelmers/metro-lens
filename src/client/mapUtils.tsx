@@ -273,7 +273,6 @@ export function parseOsmLengthField(length: string): number {
 // nb. This estimation is VERY ROUGH, mostly derived from https://en.wikipedia.org/wiki/Lane#Lane_width.
 // e.g. it may underestimate in the U.S. and overestimate in Europe.
 export function estimateHighwayFeatureWidth(feature: turf.Feature): number {
-  // TODO return a number in meters
   if (!Number.isNaN(parseOsmLengthField(feature.properties.width))) {
     return parseOsmLengthField(feature.properties.width);
   }
@@ -281,18 +280,13 @@ export function estimateHighwayFeatureWidth(feature: turf.Feature): number {
     return parseOsmLengthField(feature.properties.est_width);
   }
   let lanes = 2;
-  if (feature.properties.lanes) {
-    try {
-      lanes = parseInt(feature.properties.lanes);
-    } catch (e) {
-      console.warn("could not parse lanes property", feature.properties.lanes);
-    }
-  }
   let laneWidth = 3.5;
   let buffer = 0.5;
   switch (feature.properties.highway) {
     case "cycleway":
-      laneWidth = 1.8;
+      lanes = 1;
+      // average cycle path width globally: https://overpass-turbo.eu/s/1xSP
+      laneWidth = 1.881;
       buffer = 0;
       break;
     case "trunk":
@@ -324,6 +318,13 @@ export function estimateHighwayFeatureWidth(feature: turf.Feature): number {
       laneWidth = 2.6;
       buffer = 0.1;
       break;
+  }
+  if (feature.properties.lanes) {
+    try {
+      lanes = parseInt(feature.properties.lanes);
+    } catch (e) {
+      console.warn("could not parse lanes property", feature.properties);
+    }
   }
 
   // Heuristic for the width of a lane, plus some buffer, depending on highway type

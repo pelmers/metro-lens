@@ -35,6 +35,7 @@
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-markdown": "^8.0.7",
     "roots-rpc": "^2.0.1",
     "source-map-loader": "^4.0.0",
     "style-loader": "^3.3.3",

@@ -3,7 +3,7 @@ import "./MapStatsComponent.css";
 export type StatValue = {
     value: number;
     units: string;
-    documentation?: string;
+    query?: string;
 } | {
     missing: string;
 };
@@ -29,10 +29,17 @@ export interface Props extends DefaultProps {
 }
 export declare const DefaultStats: () => Props;
 export declare const AllLoadingStats: () => Props;
-export declare class MapStatsComponent extends React.Component<Props> {
+type State = {
+    inline: boolean;
+    metric: boolean;
+    density: boolean;
+};
+export declare class MapStatsComponent extends React.Component<Props, State> {
+    containerRef: React.RefObject<HTMLDivElement>;
+    state: State;
     valueToDisplay(value: StatValue, options?: {
         isEstimate: boolean;
-    }): string;
+    }): React.JSX.Element;
     render(): React.JSX.Element;
 }
 export {};

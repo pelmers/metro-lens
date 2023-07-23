@@ -64,7 +64,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed width and light gray background */
 #map-stats-container {
-  width: 400px;
+  width: 460px;
   background-color: #f8f8f8;
   padding: 4px;
   margin-left: calc(min(2vw, 6px));
@@ -73,7 +73,79 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
   box-shadow: 0 0 5px #ddd;
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 400px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n"],"sourceRoot":""}]);
+
+/* TODO set inlined props (position absoluate, width 325px) etc */
+
+/* add a border, bold the values in the second column of the table */
+#map-stats-container table tr td:nth-of-type(2) {
+  border-left: 1px solid #ddd;
+}
+
+/* render missing values in a light orange color in italics */
+#map-stats-container .map-stats-missing-value {
+  color: #ff8a80;
+  font-style: italic;
+}
+
+/* render linked values with bolded dark blue font */
+#map-stats-container .map-stats-linked-value {
+  color: #2196f3;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* render unlinked values with a bolded dark gray font */
+#map-stats-container .map-stats-unlinked-value {
+  color: #303030;
+  font-weight: bold;
+}
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA,iEAAiE;;AAEjE,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,oDAAoD;AACpD;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;AACnB;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 460px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n/* TODO set inlined props (position absoluate, width 325px) etc */\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font */\n#map-stats-container .map-stats-linked-value {\n  color: #2196f3;\n  cursor: pointer;\n  font-weight: bold;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "../node_modules/css-loader/dist/cjs.js!./client/index/components/ExpandableTableRow.css":
+/*!***********************************************************************************************!*\
+  !*** ../node_modules/css-loader/dist/cjs.js!./client/index/components/ExpandableTableRow.css ***!
+  \***********************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "../node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "../node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquote blue border on the left and sans-serif font */
+.expandable-table-row.row-description td {
+  border-left: 4px solid #2196f3;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  padding-left: 8px;
+  padding-bottom: 5px;
+}
+
+/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */
+.expandable-table-row.row-label > td:nth-child(1):hover {
+  cursor: pointer;
+  color: #2196f3;
+}
+
+/* when not hovered add a very light blue underline */
+.expandable-table-row.row-label > td:nth-child(1) > span {
+  border-bottom: 1px solid #b8e8ff;
+}`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B;;cAEY;EACZ,iBAAiB;EACjB,mBAAmB;AACrB;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n    Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  padding-left: 8px;\n  padding-bottom: 5px;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -186,6 +258,61 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
        /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./client/index/components/ExpandableTableRow.css":
+/*!********************************************************!*\
+  !*** ./client/index/components/ExpandableTableRow.css ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "../node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "../node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "../node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "../node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_ExpandableTableRow_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../node_modules/css-loader/dist/cjs.js!./ExpandableTableRow.css */ "../node_modules/css-loader/dist/cjs.js!./client/index/components/ExpandableTableRow.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_ExpandableTableRow_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_ExpandableTableRow_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_ExpandableTableRow_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_ExpandableTableRow_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
@@ -713,8 +840,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_markdown__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-markdown */ "../node_modules/react-markdown/lib/react-markdown.js");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../constants */ "./constants.ts");
 /* harmony import */ var _MapStatsComponent_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MapStatsComponent.css */ "./client/index/MapStatsComponent.css");
+/* harmony import */ var _components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/ExpandableTableRow */ "./client/index/components/ExpandableTableRow.tsx");
+
+
 
 
 
@@ -754,64 +885,97 @@ const AllLoadingStats = () => {
 };
 // TODO: add a stats compare mode if multiple polygons are selected
 // TODO: add a density toggle that changes all stats to per km2
+// TODO: add a inline toggle that moves the stats to the map and makes the background slightly transparent
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+    constructor() {
+        super(...arguments);
+        this.containerRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+        this.state = {
+            inline: false,
+            metric: true,
+            density: false,
+        };
+    }
     valueToDisplay(value, options) {
         var _a;
         const isEstimate = (_a = options === null || options === void 0 ? void 0 : options.isEstimate) !== null && _a !== void 0 ? _a : false;
         if ("missing" in value) {
-            return value.missing;
+            return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-missing-value" }, value.missing);
         }
         else {
-            return `${isEstimate ? "~" : ""}${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value.value)} ${value.units}`;
+            // TODO: convert to metric/imperial based on state
+            // TODO: convert to density based on state
+            const text = `${isEstimate ? "~" : ""}${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value.value)} ${value.units}`;
+            return value.query ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { className: "map-stats-linked-value", href: `https://overpass-turbo.eu/?Q=${encodeURIComponent(value.query)}`, target: "_blank", rel: "noopener noreferrer" }, text)) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-unlinked-value" }, text));
         }
     }
-    // TODO: a km/miles switch
-    // Renders a div with unordered list of each stat
     render() {
         const { props } = this;
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDDFA\uFE0F Area: ",
-                    this.valueToDisplay(props.area)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDCCF Perimeter: ",
-                    this.valueToDisplay(props.perimeter)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDEBB\uFE0F\uFE0F Population: ",
-                    this.valueToDisplay(props.population, { isEstimate: true })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83C\uDD7F\uFE0F Parking Area: ",
-                    this.valueToDisplay(props.parkingArea)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDEE3\uFE0F\uFE0F Road Length: ",
-                    this.valueToDisplay(props.highwayLength)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDE99\uFE0F\uFE0F Road Area:",
-                    " ",
-                    this.valueToDisplay(props.highwayArea, { isEstimate: true })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDEB4\u200D\u2642\uFE0F\uFE0F\uFE0F Cycle Paths: ",
-                    this.valueToDisplay(props.cyclewayLength)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDEB2\uFE0F\uFE0F Cycle Area:",
-                    " ",
-                    this.valueToDisplay(props.cyclewayArea, { isEstimate: true })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83C\uDF33 Nature Area: ",
-                    this.valueToDisplay(props.natureArea)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDE8C Bus Stops: ",
-                    this.valueToDisplay(props.busStops)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDE83 Rail Stations: ",
-                    this.valueToDisplay(props.railStops)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDE87 Transit Routes: ",
-                    this.valueToDisplay(props.totalTransitLines)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
-                    "\uD83D\uDCA6 Watery Area: ",
-                    this.valueToDisplay(props.wateryArea)))));
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container", ref: this.containerRef },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("table", null,
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("colgroup", null,
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", { style: { width: "163px" } }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", { style: { width: "calc(100% - 163px)" } })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tbody", null,
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDDFA\uFE0F Area", value: this.valueToDisplay(props.area), description: "Area of the drawn shape." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCCF Perimeter", value: this.valueToDisplay(props.perimeter), description: "Perimeter of the drawn shape." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDC65 Population", value: this.valueToDisplay(props.population, {
+                            isEstimate: true,
+                        }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated population within the drawn shape. Data source: [WorldPop 2020](https://www.worldpop.org/).") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDD7F\uFE0F Parking Area", value: this.valueToDisplay(props.parkingArea), description: "Total area of all dedicated parking amenities within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEE3\uFE0F\uFE0F Road Length", value: this.valueToDisplay(props.highwayLength), description: "Total length of all vehicle-accessible roads within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE99\uFE0F\uFE0F Road Area", value: this.valueToDisplay(props.highwayArea, {
+                            isEstimate: true,
+                        }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total area of all vehicle-accessible roads within the shape. Estimate based on lane data of roads and [heuristics for road width](https://en.wikipedia.org/wiki/Lane#Lane_width).") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB4\u200D\u2642\uFE0F\uFE0F\uFE0F Cycle Paths", value: this.valueToDisplay(props.cyclewayLength), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total length of all [dedicated cycle paths](https://wiki.openstreetmap.org/wiki/Key:highway#When_cycleway_is_drawn_as_its_own_way_(see_Bicycle)) within the shape, does not include shared lanes on roads. Click number for data source.") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB2\uFE0F\uFE0F Cycle Area", value: this.valueToDisplay(props.cyclewayArea, {
+                            isEstimate: true,
+                        }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated total area of all dedicated cycle paths, not including shared lanes on roads. Estimate based on [average width of all labeled cycle paths](https://taginfo.openstreetmap.org/keys/cycleway%3Awidth#overview).") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDF33 Nature Area", value: this.valueToDisplay(props.natureArea), description: "Total area of all natural features such as parks, forests, and recreation areas within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE8C Bus Stops", value: this.valueToDisplay(props.busStops), description: "Total number of bus stops within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE83 Rail Stations", value: this.valueToDisplay(props.railStops), description: "Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE87 Transit Routes", value: this.valueToDisplay(props.totalTransitLines), description: "Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCA6 Watery Area", value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans. Click number for data source." })))));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./client/index/components/ExpandableTableRow.tsx":
+/*!********************************************************!*\
+  !*** ./client/index/components/ExpandableTableRow.tsx ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ExpandableTableRow: () => (/* binding */ ExpandableTableRow)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ExpandableTableRow_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExpandableTableRow.css */ "./client/index/components/ExpandableTableRow.css");
+
+
+// Defines a 2-column table row class that can be expanded when the user clicks the label
+// Expanding a row adds a second row that shows the description for the label and takes the whole width of the table
+class ExpandableTableRow extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
+    constructor() {
+        super(...arguments);
+        this.state = { expanded: false };
+    }
+    render() {
+        const { label, value, description } = this.props;
+        const { expanded } = this.state;
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tr", { className: "expandable-table-row row-label" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", { onClick: () => this.setState({ expanded: !expanded }) },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, label)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", null, value)),
+            expanded && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tr", { className: "expandable-table-row row-description" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("td", { colSpan: 2 },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", null, description))))));
     }
 }
 
@@ -894,7 +1058,7 @@ const fetchPopulation = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.t)((0,_consta
     }
     return {
         value: Math.round(yield pollTaskId(json.taskid)),
-        units: "peeps",
+        units: "people",
     };
 })), "fetchPopulation");
 
@@ -1147,7 +1311,6 @@ function parseOsmLengthField(length) {
 // nb. This estimation is VERY ROUGH, mostly derived from https://en.wikipedia.org/wiki/Lane#Lane_width.
 // e.g. it may underestimate in the U.S. and overestimate in Europe.
 function estimateHighwayFeatureWidth(feature) {
-    // TODO return a number in meters
     if (!Number.isNaN(parseOsmLengthField(feature.properties.width))) {
         return parseOsmLengthField(feature.properties.width);
     }
@@ -1155,19 +1318,13 @@ function estimateHighwayFeatureWidth(feature) {
         return parseOsmLengthField(feature.properties.est_width);
     }
     let lanes = 2;
-    if (feature.properties.lanes) {
-        try {
-            lanes = parseInt(feature.properties.lanes);
-        }
-        catch (e) {
-            console.warn("could not parse lanes property", feature.properties.lanes);
-        }
-    }
     let laneWidth = 3.5;
     let buffer = 0.5;
     switch (feature.properties.highway) {
         case "cycleway":
-            laneWidth = 1.8;
+            lanes = 1;
+            // average cycle path width globally: https://overpass-turbo.eu/s/1xSP
+            laneWidth = 1.881;
             buffer = 0;
             break;
         case "trunk":
@@ -1199,6 +1356,14 @@ function estimateHighwayFeatureWidth(feature) {
             laneWidth = 2.6;
             buffer = 0.1;
             break;
+    }
+    if (feature.properties.lanes) {
+        try {
+            lanes = parseInt(feature.properties.lanes);
+        }
+        catch (e) {
+            console.warn("could not parse lanes property", feature.properties);
+        }
     }
     // Heuristic for the width of a lane, plus some buffer, depending on highway type
     return buffer + lanes * laneWidth;

@@ -1,6 +1,6 @@
 /* create stats container with fixed width and light gray background */
 #map-stats-container {
-  width: 400px;
+  width: 460px;
   background-color: #f8f8f8;
   padding: 4px;
   margin-left: calc(min(2vw, 6px));
@@ -8,4 +8,30 @@
   border: 1px solid #ddd;
   box-shadow: 0 0 5px #ddd;
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
+}
+
+/* TODO set inlined props (position absoluate, width 325px) etc */
+
+/* add a border, bold the values in the second column of the table */
+#map-stats-container table tr td:nth-of-type(2) {
+  border-left: 1px solid #ddd;
+}
+
+/* render missing values in a light orange color in italics */
+#map-stats-container .map-stats-missing-value {
+  color: #ff8a80;
+  font-style: italic;
+}
+
+/* render linked values with bolded dark blue font */
+#map-stats-container .map-stats-linked-value {
+  color: #2196f3;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* render unlinked values with a bolded dark gray font */
+#map-stats-container .map-stats-unlinked-value {
+  color: #303030;
+  font-weight: bold;
 }

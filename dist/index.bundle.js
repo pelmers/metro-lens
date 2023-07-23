@@ -41181,7 +41181,7 @@ function main() {
         (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--eecba2"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--fdb0f4"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
             (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
         ]);
         // render with createroot
