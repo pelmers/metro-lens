@@ -197,7 +197,7 @@ export function renderDrawMeasurements(
           if (length < 0.001) {
             // A "line" is generated before a single point has been drawn by taking the current cursor position to itself,
             // so we filter that out here
-            continue;
+            break;
           }
           labelFeatures.push(
             turf.point(midpoint, {

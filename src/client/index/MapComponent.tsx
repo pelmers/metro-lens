@@ -47,6 +47,7 @@ import {
   unionPolygon,
 } from "../mapUtils";
 import { fetchPopulation } from "./fetchPopulation";
+import { randomCityCenter } from "../../pickACity";
 
 type Props = {
   apiKey: string;
@@ -87,7 +88,16 @@ const MapLayers = {
     type: "line" as const,
     paint: {
       "line-color": "blue",
-      "line-width": 2,
+      "line-opacity": 0.2,
+      "line-width": {
+        type: "exponential" as const,
+        base: 1.5,
+        stops: [
+          [14, 1],
+          [18, 15],
+          [22, 130],
+        ],
+      },
     },
   },
   STREETS_FEATURES_LINES: {
@@ -178,12 +188,21 @@ type HighwayStatsType = {
 const getTransitCountsStats = wrapWithDefault(
   { railStops: ErrorValue, totalTransitLines: ErrorValue },
   async (
-    borders: FeatureCollection
+    borders: FeatureCollection,
+    areaKm2: number
   ): Promise<{ railStops: StatValue; totalTransitLines: StatValue }> => {
-    const { railStops, totalLines } = await getTransitCounts(borders as any);
+    if (areaKm2 > OVERPASS_STATS_AREA_MAX_KM2) {
+      return {
+        railStops: OverpassAreaTooBigValue,
+        totalTransitLines: OverpassAreaTooBigValue,
+      };
+    }
+    const { railStops, totalLines, query } = await getTransitCounts(
+      borders as any
+    );
     return {
-      railStops: { value: railStops, units: "" },
-      totalTransitLines: { value: totalLines, units: "" },
+      railStops: { value: railStops, units: "", query },
+      totalTransitLines: { value: totalLines, units: "", query },
     };
   }
 );
@@ -196,6 +215,7 @@ const fetchAndClassifyHighways = async (
   roads: FeatureCollection;
   highways: FeatureCollection;
   cycleways: FeatureCollection;
+  query: string;
 }> => {
   const allHighways = await getHighways(borders as any);
   const xmlObject = new DOMParser().parseFromString(
@@ -207,15 +227,11 @@ const fetchAndClassifyHighways = async (
     geoJsons as turf.FeatureCollection
   );
   const result = {
-    busStops: EmptyFeatureCollection(),
     streets: EmptyFeatureCollection(),
     roads: EmptyFeatureCollection(),
     highways: EmptyFeatureCollection(),
     cycleways: EmptyFeatureCollection(),
   };
-  result.busStops.features = points.features.filter(
-    (p) => p.properties.highway === "bus_stop"
-  );
   for (const linestring of linestrings.features) {
     switch (linestring.properties.highway) {
       case "cycleway":
@@ -258,7 +274,14 @@ const fetchAndClassifyHighways = async (
       borders as turf.FeatureCollection
     );
   }
-  return result;
+  const busFeatures = points.features.filter(
+    (p) => p.properties.highway === "bus_stop"
+  );
+  return {
+    ...result,
+    busStops: turf.featureCollection(busFeatures),
+    query: allHighways.query,
+  };
 };
 
 export default class MapComponent extends React.Component<Props, State> {
@@ -302,8 +325,8 @@ export default class MapComponent extends React.Component<Props, State> {
       container: this.mapDivRef.current,
       style: this.state.style,
       accessToken: this.props.apiKey,
-      center: [-95.3698, 29.7604],
-      zoom: 13,
+      center: randomCityCenter(),
+      zoom: 12,
     });
 
     this.map.addControl(this.geocoderControl, "top-left");
@@ -392,7 +415,7 @@ export default class MapComponent extends React.Component<Props, State> {
           cyclewayArea: HighwayAreaTooBigValue,
         };
       }
-      const { streets, roads, highways, cycleways, busStops } =
+      const { streets, roads, highways, cycleways, busStops, query } =
         await fetchAndClassifyHighways(borders);
       (
         this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id) as GeoJSONSource
@@ -414,22 +437,27 @@ export default class MapComponent extends React.Component<Props, State> {
         cyclewayLength: {
           value: 0,
           units: "km",
+          query,
         },
         cyclewayArea: {
           value: 0,
           units: "km²",
+          query,
         },
         highwayLength: {
           value: 0,
           units: "km",
+          query,
         },
         highwayArea: {
           value: 0,
           units: "km²",
+          query,
         },
         busStops: {
           value: busStops.features.length,
           units: "",
+          query,
         },
       };
       for (const cycleway of cycleways.features) {
@@ -518,6 +546,7 @@ export default class MapComponent extends React.Component<Props, State> {
         return {
           value: areaValueM2 / 1000000,
           units: "km²",
+          query: areas.query,
         };
       }
     );
@@ -529,6 +558,8 @@ export default class MapComponent extends React.Component<Props, State> {
           key: "parkingArea" as const,
           id: MapLayers.SURFACE_PARKING_POLYGONS.id,
           fn: getParkingAreas,
+          // TODO: include on-street parking in calculation
+          // https://wiki.openstreetmap.org/wiki/Street_parking#Physical_properties
         },
         {
           key: "natureArea" as const,
@@ -562,7 +593,7 @@ export default class MapComponent extends React.Component<Props, State> {
       })
     );
     updatePromises.push(
-      getTransitCountsStats(data as any).then(
+      getTransitCountsStats(data as any, area.value).then(
         ({ railStops, totalTransitLines }) => {
           currentBatchStats.railStops = railStops;
           currentBatchStats.totalTransitLines = totalTransitLines;

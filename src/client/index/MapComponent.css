@@ -7,7 +7,7 @@
 
 #map-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 950px;
   min-width: calc(min(100vw, 600px));
   margin: auto;
   min-height: 600px;

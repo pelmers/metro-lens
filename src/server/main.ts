@@ -19,7 +19,7 @@ const port = 4041;
 
 async function main() {
   app.use(compression());
-  app.use(favicon(r("static/favicon.ico")));
+  app.use(favicon(r("favicon.ico")));
   app.use("/dist", express.static(r("dist")));
   app.use("/static", express.static(r("static")));
   app.get("/", (_, res) => res.sendFile(r("index.html")));

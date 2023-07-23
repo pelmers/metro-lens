@@ -40,7 +40,7 @@ const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
-const HIGHWAY_STATS_AREA_MAX_KM2 = 150;
+const HIGHWAY_STATS_AREA_MAX_KM2 = 300;
 const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 const WORLDPOP_AREA_MAX_KM2 = 100000;
 const DEBUG_LOG = true;
@@ -131,10 +131,12 @@ const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
 const PolygonCollectionInput = io_ts__WEBPACK_IMPORTED_MODULE_0__.any;
 const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
     xml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
+    query: optional(io_ts__WEBPACK_IMPORTED_MODULE_0__.string),
 });
 const TransitCounts = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
     railStops: io_ts__WEBPACK_IMPORTED_MODULE_0__.number,
     totalLines: io_ts__WEBPACK_IMPORTED_MODULE_0__.number,
+    query: optional(io_ts__WEBPACK_IMPORTED_MODULE_0__.string),
 });
 const ServerCalls = {
     GetMapboxApiKey: () => ({
@@ -382,13 +384,15 @@ function getOsmResultsWithQueryBuilder(i, queryBuilder) {
         const input = i;
         prepareInput(input);
         const xmlResults = [];
+        let query;
         for (const polygon of input.features) {
             const coords = polygon.geometry.coordinates[0];
             const overpassql = queryBuilder(coords);
+            query = overpassql;
             const result = yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_4__.queryOverpass)(overpassql);
             xmlResults.push(result);
         }
-        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_5__.osmconvertMergeXmlResults)(xmlResults) };
+        return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_5__.osmconvertMergeXmlResults)(xmlResults), query };
     });
 }
 function getOsmCountResultWithQueryBuilder(i, queryBuilder) {
@@ -397,13 +401,15 @@ function getOsmCountResultWithQueryBuilder(i, queryBuilder) {
         const input = i;
         prepareInput(input);
         const jsonResults = [];
+        let query;
         for (const polygon of input.features) {
             const coords = polygon.geometry.coordinates[0];
             const overpassql = queryBuilder(coords);
             const result = JSON.parse(yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_4__.queryOverpass)(overpassql));
+            query = overpassql;
             jsonResults.push(result);
         }
-        const result = { nodes: 0, ways: 0, relations: 0 };
+        const result = { nodes: 0, ways: 0, relations: 0, query };
         for (const res of jsonResults) {
             const countElement = res.elements[0];
             result.nodes += Number.parseInt(countElement.tags.nodes);
@@ -436,7 +442,7 @@ nwr[leisure=park](${filter});
 nwr[natural=grassland](${filter});
 nwr[landuse=recreation_ground](${filter});
 nwr[boundary=national_park](${filter});
-nwr[boundary=protected_area](${filter});
+nwr[leisure=nature_reserve](${filter});
       );
         out body;
         >;
@@ -499,6 +505,7 @@ function getTransitCounts(i) {
         return {
             totalLines: transitCounts.relations,
             railStops: transitCounts.nodes + transitCounts.ways,
+            query: transitCounts.query,
         };
     });
 }
@@ -823,7 +830,7 @@ const port = 4041;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         app.use(compression__WEBPACK_IMPORTED_MODULE_1___default()());
-        app.use(serve_favicon__WEBPACK_IMPORTED_MODULE_2___default()((0,_utils__WEBPACK_IMPORTED_MODULE_6__.r)("static/favicon.ico")));
+        app.use(serve_favicon__WEBPACK_IMPORTED_MODULE_2___default()((0,_utils__WEBPACK_IMPORTED_MODULE_6__.r)("favicon.ico")));
         app.use("/dist", express__WEBPACK_IMPORTED_MODULE_0___default()["static"]((0,_utils__WEBPACK_IMPORTED_MODULE_6__.r)("dist")));
         app.use("/static", express__WEBPACK_IMPORTED_MODULE_0___default()["static"]((0,_utils__WEBPACK_IMPORTED_MODULE_6__.r)("static")));
         app.get("/", (_, res) => res.sendFile((0,_utils__WEBPACK_IMPORTED_MODULE_6__.r)("index.html")));

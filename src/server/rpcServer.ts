@@ -10,7 +10,6 @@ import {
 import { CLIENT_CALLS_SERVER_RPC_PREFIX, d } from "../constants";
 import {
   FeatureCollection,
-  Geometry,
   Polygon,
   Position,
   unkinkPolygon,
@@ -66,20 +65,23 @@ async function getOsmResultsWithQueryBuilder(
   const input = i as FeatureCollection<Polygon>;
   prepareInput(input);
   const xmlResults = [];
+  let query;
   for (const polygon of input.features) {
     const coords = polygon.geometry.coordinates[0] as Position[];
     const overpassql = queryBuilder(coords);
+    query = overpassql;
     const result = await queryOverpass(overpassql);
     xmlResults.push(result);
   }
 
-  return { xml: await osmconvertMergeXmlResults(xmlResults) };
+  return { xml: await osmconvertMergeXmlResults(xmlResults), query };
 }
 
 type TNWRCounts = {
   nodes: number;
   ways: number;
   relations: number;
+  query?: string;
 };
 
 async function getOsmCountResultWithQueryBuilder(
@@ -91,13 +93,15 @@ async function getOsmCountResultWithQueryBuilder(
   prepareInput(input);
 
   const jsonResults = [];
+  let query;
   for (const polygon of input.features) {
     const coords = polygon.geometry.coordinates[0] as Position[];
     const overpassql = queryBuilder(coords);
     const result = JSON.parse(await queryOverpass(overpassql));
+    query = overpassql;
     jsonResults.push(result);
   }
-  const result = { nodes: 0, ways: 0, relations: 0 };
+  const result = { nodes: 0, ways: 0, relations: 0, query };
   for (const res of jsonResults) {
     const countElement = res.elements[0];
     result.nodes += Number.parseInt(countElement.tags.nodes);
@@ -131,7 +135,7 @@ nwr[leisure=park](${filter});
 nwr[natural=grassland](${filter});
 nwr[landuse=recreation_ground](${filter});
 nwr[boundary=national_park](${filter});
-nwr[boundary=protected_area](${filter});
+nwr[leisure=nature_reserve](${filter});
       );
         out body;
         >;
@@ -191,5 +195,6 @@ async function getTransitCounts(i: any): Promise<TTransitCounts> {
   return {
     totalLines: transitCounts.relations,
     railStops: transitCounts.nodes + transitCounts.ways,
+    query: transitCounts.query,
   };
 }

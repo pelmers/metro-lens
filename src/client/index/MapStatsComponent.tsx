@@ -140,12 +140,19 @@ export class MapStatsComponent extends React.Component<Props, State> {
             <ExpandableTableRow
               label="🅿️ Parking Area"
               value={this.valueToDisplay(props.parkingArea)}
-              description="Total area of all dedicated parking amenities within the shape. Click number for data source."
+              description={
+                <ReactMarkdown linkTarget="_blank">
+                  Total area of all [dedicated parking
+                  amenities](https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dparking)
+                  within the shape. Shown in red on the map. Click number for
+                  data source.
+                </ReactMarkdown>
+              }
             />
             <ExpandableTableRow
               label="🛣️️ Road Length"
               value={this.valueToDisplay(props.highwayLength)}
-              description="Total length of all vehicle-accessible roads within the shape. Click number for data source."
+              description="Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map."
             />
             <ExpandableTableRow
               label="🚙️️ Road Area"
@@ -168,7 +175,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
                   Total length of all [dedicated cycle
                   paths](https://wiki.openstreetmap.org/wiki/Key:highway#When_cycleway_is_drawn_as_its_own_way_(see_Bicycle))
                   within the shape, does not include shared lanes on roads.
-                  Click number for data source.
+                  Shown in dark green on the map. Click number for data source.
                 </ReactMarkdown>
               }
             />
@@ -189,7 +196,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
             <ExpandableTableRow
               label="🌳 Nature Area"
               value={this.valueToDisplay(props.natureArea)}
-              description="Total area of all natural features such as parks, forests, and recreation areas within the shape. Click number for data source."
+              description="Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source."
             />
             <ExpandableTableRow
               label="🚌 Bus Stops"
@@ -209,7 +216,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
             <ExpandableTableRow
               label="💦 Watery Area"
               value={this.valueToDisplay(props.wateryArea)}
-              description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans. Click number for data source."
+              description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source."
             />
           </tbody>
         </table>

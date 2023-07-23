@@ -3,7 +3,7 @@ export declare const WS_DOMAIN_NAME: string;
 export declare const RPC_WS_PATH = "rpc";
 export declare const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 export declare const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
-export declare const HIGHWAY_STATS_AREA_MAX_KM2 = 150;
+export declare const HIGHWAY_STATS_AREA_MAX_KM2 = 300;
 export declare const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 export declare const WORLDPOP_AREA_MAX_KM2 = 100000;
 export declare const d: (...args: unknown[]) => void;

@@ -41300,7 +41300,7 @@ const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
-const HIGHWAY_STATS_AREA_MAX_KM2 = 150;
+const HIGHWAY_STATS_AREA_MAX_KM2 = 300;
 const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 const WORLDPOP_AREA_MAX_KM2 = 100000;
 const DEBUG_LOG = true;
@@ -41391,10 +41391,12 @@ const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
 const PolygonCollectionInput = io_ts__WEBPACK_IMPORTED_MODULE_1__.any;
 const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
     xml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
+    query: optional(io_ts__WEBPACK_IMPORTED_MODULE_1__.string),
 });
 const TransitCounts = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
     railStops: io_ts__WEBPACK_IMPORTED_MODULE_1__.number,
     totalLines: io_ts__WEBPACK_IMPORTED_MODULE_1__.number,
+    query: optional(io_ts__WEBPACK_IMPORTED_MODULE_1__.string),
 });
 const ServerCalls = {
     GetMapboxApiKey: () => ({

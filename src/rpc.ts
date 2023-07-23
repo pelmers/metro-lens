@@ -23,12 +23,14 @@ const PolygonCollectionInput = t.any;
 
 const XmlResult = t.type({
   xml: t.string,
+  query: optional(t.string),
 });
 export type TXmlResult = t.TypeOf<typeof XmlResult>;
 
 const TransitCounts = t.type({
   railStops: t.number,
   totalLines: t.number,
+  query: optional(t.string),
 });
 export type TTransitCounts = t.TypeOf<typeof TransitCounts>;
 

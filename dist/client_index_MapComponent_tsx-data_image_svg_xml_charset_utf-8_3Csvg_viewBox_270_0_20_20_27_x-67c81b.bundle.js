@@ -29,13 +29,13 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
 
 #map-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 950px;
   min-width: calc(min(100vw, 600px));
   margin: auto;
   min-height: 600px;
   flex: 1;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 900px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 950px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -87,11 +87,17 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
   font-style: italic;
 }
 
-/* render linked values with bolded dark blue font */
+/* render linked values with bolded dark blue font but no underline */
 #map-stats-container .map-stats-linked-value {
-  color: #2196f3;
+  color: #0d4069;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: none
+}
+
+#map-stats-container .map-stats-linked-value:hover {
+  color: #2196f3;
+  text-decoration: underline;
 }
 
 /* render unlinked values with a bolded dark gray font */
@@ -99,7 +105,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
   color: #303030;
   font-weight: bold;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA,iEAAiE;;AAEjE,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,oDAAoD;AACpD;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;AACnB;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 460px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n/* TODO set inlined props (position absoluate, width 325px) etc */\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font */\n#map-stats-container .map-stats-linked-value {\n  color: #2196f3;\n  cursor: pointer;\n  font-weight: bold;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA,iEAAiE;;AAEjE,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,qEAAqE;AACrE;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;EACjB;AACF;;AAEA;EACE,cAAc;EACd,0BAA0B;AAC5B;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 460px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n/* TODO set inlined props (position absoluate, width 325px) etc */\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font but no underline */\n#map-stats-container .map-stats-linked-value {\n  color: #0d4069;\n  cursor: pointer;\n  font-weight: bold;\n  text-decoration: none\n}\n\n#map-stats-container .map-stats-linked-value:hover {\n  color: #2196f3;\n  text-decoration: underline;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -132,8 +138,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquo
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
-  padding-left: 8px;
-  padding-bottom: 5px;
+  padding: 8px;
+  background: #d1d1d1;
+  line-height: 1.4em;
 }
 
 /* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */
@@ -145,7 +152,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquo
 /* when not hovered add a very light blue underline */
 .expandable-table-row.row-label > td:nth-child(1) > span {
   border-bottom: 1px solid #b8e8ff;
-}`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B;;cAEY;EACZ,iBAAiB;EACjB,mBAAmB;AACrB;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n    Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  padding-left: 8px;\n  padding-bottom: 5px;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}"],"sourceRoot":""}]);
+}
+`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B;;cAEY;EACZ,YAAY;EACZ,mBAAmB;EACnB,kBAAkB;AACpB;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n    Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  padding: 8px;\n  background: #d1d1d1;\n  line-height: 1.4em;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -349,6 +357,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./MapStatsComponent */ "./client/index/MapStatsComponent.tsx");
 /* harmony import */ var _mapUtils__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../mapUtils */ "./client/mapUtils.tsx");
 /* harmony import */ var _fetchPopulation__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./fetchPopulation */ "./client/index/fetchPopulation.tsx");
+/* harmony import */ var _pickACity__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../pickACity */ "./pickACity.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -364,6 +373,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 // @ts-ignore untyped module
+
 
 
 
@@ -405,7 +415,16 @@ const MapLayers = {
         type: "line",
         paint: {
             "line-color": "blue",
-            "line-width": 2,
+            "line-opacity": 0.2,
+            "line-width": {
+                type: "exponential",
+                base: 1.5,
+                stops: [
+                    [14, 1],
+                    [18, 15],
+                    [22, 130],
+                ],
+            },
         },
     },
     STREETS_FEATURES_LINES: {
@@ -482,11 +501,17 @@ const OverpassAreaTooBigValue = {
 const HighwayAreaTooBigValue = {
     missing: `Selection too large (>${_constants__WEBPACK_IMPORTED_MODULE_10__.HIGHWAY_STATS_AREA_MAX_KM2} km²)`,
 };
-const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ railStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, totalTransitLines: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders) => __awaiter(void 0, void 0, void 0, function* () {
-    const { railStops, totalLines } = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_11__.getTransitCounts)(borders);
+const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ railStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, totalTransitLines: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders, areaKm2) => __awaiter(void 0, void 0, void 0, function* () {
+    if (areaKm2 > _constants__WEBPACK_IMPORTED_MODULE_10__.OVERPASS_STATS_AREA_MAX_KM2) {
+        return {
+            railStops: OverpassAreaTooBigValue,
+            totalTransitLines: OverpassAreaTooBigValue,
+        };
+    }
+    const { railStops, totalLines, query } = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_11__.getTransitCounts)(borders);
     return {
-        railStops: { value: railStops, units: "" },
-        totalTransitLines: { value: totalLines, units: "" },
+        railStops: { value: railStops, units: "", query },
+        totalTransitLines: { value: totalLines, units: "", query },
     };
 }));
 const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, function* () {
@@ -495,13 +520,11 @@ const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, 
     const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_12___default()(xmlObject);
     const { linestrings, points } = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.splitFeatureCollection)(geoJsons);
     const result = {
-        busStops: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         streets: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         roads: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         highways: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         cycleways: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
     };
-    result.busStops.features = points.features.filter((p) => p.properties.highway === "bus_stop");
     for (const linestring of linestrings.features) {
         switch (linestring.properties.highway) {
             case "cycleway":
@@ -540,7 +563,8 @@ const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, 
             continue;
         result[key] = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.clipLineSegmentsAtBorder)(value, borders);
     }
-    return result;
+    const busFeatures = points.features.filter((p) => p.properties.highway === "bus_stop");
+    return Object.assign(Object.assign({}, result), { busStops: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.featureCollection(busFeatures), query: allHighways.query });
 });
 class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor(props) {
@@ -581,7 +605,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                     cyclewayArea: HighwayAreaTooBigValue,
                 };
             }
-            const { streets, roads, highways, cycleways, busStops } = yield fetchAndClassifyHighways(borders);
+            const { streets, roads, highways, cycleways, busStops, query } = yield fetchAndClassifyHighways(borders);
             this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id).setData(streets);
             this.map.getSource(MapLayers.ROADS_FEATURES_LINES.id).setData(roads);
             this.map.getSource(MapLayers.HIGHWAYS_FEATURES_LINES.id).setData(highways);
@@ -590,22 +614,27 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 cyclewayLength: {
                     value: 0,
                     units: "km",
+                    query,
                 },
                 cyclewayArea: {
                     value: 0,
                     units: "km²",
+                    query,
                 },
                 highwayLength: {
                     value: 0,
                     units: "km",
+                    query,
                 },
                 highwayArea: {
                     value: 0,
                     units: "km²",
+                    query,
                 },
                 busStops: {
                     value: busStops.features.length,
                     units: "",
+                    query,
                 },
             };
             for (const cycleway of cycleways.features) {
@@ -673,6 +702,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 return {
                     value: areaValueM2 / 1000000,
                     units: "km²",
+                    query: areas.query,
                 };
             }));
             const updatePromises = [];
@@ -681,6 +711,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                     key: "parkingArea",
                     id: MapLayers.SURFACE_PARKING_POLYGONS.id,
                     fn: _rpcClient__WEBPACK_IMPORTED_MODULE_11__.getParkingAreas,
+                    // TODO: include on-street parking in calculation
+                    // https://wiki.openstreetmap.org/wiki/Street_parking#Physical_properties
                 },
                 {
                     key: "natureArea",
@@ -708,7 +740,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 }
                 this.setState({ stats: Object.assign({}, currentBatchStats) });
             }));
-            updatePromises.push(getTransitCountsStats(data).then(({ railStops, totalTransitLines }) => {
+            updatePromises.push(getTransitCountsStats(data, area.value).then(({ railStops, totalTransitLines }) => {
                 currentBatchStats.railStops = railStops;
                 currentBatchStats.totalTransitLines = totalTransitLines;
                 this.setState({ stats: Object.assign({}, currentBatchStats) });
@@ -740,8 +772,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 container: this.mapDivRef.current,
                 style: this.state.style,
                 accessToken: this.props.apiKey,
-                center: [-95.3698, 29.7604],
-                zoom: 13,
+                center: (0,_pickACity__WEBPACK_IMPORTED_MODULE_16__.randomCityCenter)(),
+                zoom: 12,
             });
             this.map.addControl(this.geocoderControl, "top-left");
             this.map.addControl(this.mapControl);
@@ -922,20 +954,20 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDC65 Population", value: this.valueToDisplay(props.population, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated population within the drawn shape. Data source: [WorldPop 2020](https://www.worldpop.org/).") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDD7F\uFE0F Parking Area", value: this.valueToDisplay(props.parkingArea), description: "Total area of all dedicated parking amenities within the shape. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEE3\uFE0F\uFE0F Road Length", value: this.valueToDisplay(props.highwayLength), description: "Total length of all vehicle-accessible roads within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDD7F\uFE0F Parking Area", value: this.valueToDisplay(props.parkingArea), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total area of all [dedicated parking amenities](https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dparking) within the shape. Shown in red on the map. Click number for data source.") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEE3\uFE0F\uFE0F Road Length", value: this.valueToDisplay(props.highwayLength), description: "Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE99\uFE0F\uFE0F Road Area", value: this.valueToDisplay(props.highwayArea, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total area of all vehicle-accessible roads within the shape. Estimate based on lane data of roads and [heuristics for road width](https://en.wikipedia.org/wiki/Lane#Lane_width).") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB4\u200D\u2642\uFE0F\uFE0F\uFE0F Cycle Paths", value: this.valueToDisplay(props.cyclewayLength), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total length of all [dedicated cycle paths](https://wiki.openstreetmap.org/wiki/Key:highway#When_cycleway_is_drawn_as_its_own_way_(see_Bicycle)) within the shape, does not include shared lanes on roads. Click number for data source.") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB4\u200D\u2642\uFE0F\uFE0F\uFE0F Cycle Paths", value: this.valueToDisplay(props.cyclewayLength), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total length of all [dedicated cycle paths](https://wiki.openstreetmap.org/wiki/Key:highway#When_cycleway_is_drawn_as_its_own_way_(see_Bicycle)) within the shape, does not include shared lanes on roads. Shown in dark green on the map. Click number for data source.") }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB2\uFE0F\uFE0F Cycle Area", value: this.valueToDisplay(props.cyclewayArea, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated total area of all dedicated cycle paths, not including shared lanes on roads. Estimate based on [average width of all labeled cycle paths](https://taginfo.openstreetmap.org/keys/cycleway%3Awidth#overview).") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDF33 Nature Area", value: this.valueToDisplay(props.natureArea), description: "Total area of all natural features such as parks, forests, and recreation areas within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDF33 Nature Area", value: this.valueToDisplay(props.natureArea), description: "Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE8C Bus Stops", value: this.valueToDisplay(props.busStops), description: "Total number of bus stops within the shape. Click number for data source." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE83 Rail Stations", value: this.valueToDisplay(props.railStops), description: "Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE87 Transit Routes", value: this.valueToDisplay(props.totalTransitLines), description: "Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCA6 Watery Area", value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans. Click number for data source." })))));
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCA6 Watery Area", value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source." })))));
     }
 }
 
@@ -1243,7 +1275,7 @@ function renderDrawMeasurements(map, drawCollection
                     if (length < 0.001) {
                         // A "line" is generated before a single point has been drawn by taking the current cursor position to itself,
                         // so we filter that out here
-                        continue;
+                        break;
                     }
                     labelFeatures.push(_turf_turf__WEBPACK_IMPORTED_MODULE_1__.point(midpoint, {
                         type: "line",
@@ -1367,6 +1399,191 @@ function estimateHighwayFeatureWidth(feature) {
     }
     // Heuristic for the width of a lane, plus some buffer, depending on highway type
     return buffer + lanes * laneWidth;
+}
+
+
+/***/ }),
+
+/***/ "./pickACity.ts":
+/*!**********************!*\
+  !*** ./pickACity.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   randomCityCenter: () => (/* binding */ randomCityCenter)
+/* harmony export */ });
+// Pick a [lon, lat] of a random major city in the world
+// Used to set the map's initial position
+function randomCityCenter() {
+    // thanks chatgpt
+    const cities = [
+        // Tokyo
+        [139.6917, 35.6895],
+        // Delhi
+        [77.1025, 28.7041],
+        // Shanghai
+        [121.4737, 31.2304],
+        // São Paulo
+        [-46.6333, -23.5505],
+        // Mexico City
+        [-99.1332, 19.4326],
+        // Cairo
+        [31.2357, 30.0444],
+        // Mumbai
+        [72.8777, 19.076],
+        // Beijing
+        [116.4074, 39.9042],
+        // Dhaka
+        [90.4125, 23.8103],
+        // Osaka
+        [135.5022, 34.6937],
+        // New York
+        [-74.0059, 40.7128],
+        // Karachi
+        [67.0099, 24.8615],
+        // Buenos Aires
+        [-58.3816, -34.6037],
+        // Chongqing
+        [106.5516, 29.563],
+        // Istanbul
+        [28.9784, 41.0082],
+        // Kolkata
+        [88.3639, 22.5726],
+        // Manila
+        [120.9842, 14.5995],
+        // Lagos
+        [3.3792, 6.5244],
+        // Rio de Janeiro
+        [-43.1729, -22.9068],
+        // Tianjin
+        [117.1994, 39.0851],
+        // Kinshasa
+        [15.2663, -4.4419],
+        // Guangzhou
+        [113.2644, 23.1291],
+        // Los Angeles
+        [-118.2437, 34.0522],
+        // Moscow
+        [37.6173, 55.7558],
+        // Shenzhen
+        [114.0579, 22.5431],
+        // Lahore
+        [74.3587, 31.5204],
+        // Bangalore
+        [77.5946, 12.9716],
+        // Paris
+        [2.3522, 48.8566],
+        // Bogotá
+        [-74.0721, 4.7109],
+        // Jakarta
+        [106.865, -6.1751],
+        // Chennai
+        [80.2707, 13.0827],
+        // Lima
+        [-77.0428, -12.0464],
+        // Bangkok
+        [100.5018, 13.7563],
+        // Seoul
+        [126.978, 37.5665],
+        // Nagoya
+        [136.9065, 35.1815],
+        // Hyderabad
+        [78.4867, 17.385],
+        // London
+        [-0.1276, 51.5072],
+        // Tehran
+        [51.389, 35.6892],
+        // Chicago
+        [-87.6298, 41.8781],
+        // Chengdu
+        [104.0665, 30.5728],
+        // Nanjing
+        [118.7969, 32.0603],
+        // Wuhan
+        [114.3054, 30.5928],
+        // Ho Chi Minh City
+        [106.6297, 10.8231],
+        // Luanda
+        [13.242, -8.7832],
+        // Ahmedabad
+        [72.5714, 23.0225],
+        // Kuala Lumpur
+        [101.6869, 3.139],
+        // Xi'an
+        [108.9398, 34.3416],
+        // Hong Kong
+        [114.1491, 22.2815],
+        // Dongguan
+        [113.7518, 23.0205],
+        // Hangzhou
+        [120.1551, 30.2741],
+        // Foshan
+        [113.1214, 23.0219],
+        // Shenyang
+        [123.4315, 41.8057],
+        // Riyadh
+        [46.6753, 24.7136],
+        // Baghdad
+        [44.3661, 33.3152],
+        // Santiago
+        [-70.6483, -33.4489],
+        // Surat
+        [72.8311, 21.1702],
+        // Madrid
+        [-3.7038, 40.4168],
+        // Suzhou
+        [120.5853, 31.2989],
+        // Pune
+        [73.8567, 18.5204],
+        // Harbin
+        [126.5349, 45.8038],
+        // Houston
+        [-95.3698, 29.7604],
+        // Dallas
+        [-96.797, 32.7767],
+        // Toronto
+        [-79.3832, 43.6532],
+        // Dar es Salaam
+        [39.2083, -6.7924],
+        // Miami
+        [-80.1918, 25.7617],
+        // Belo Horizonte
+        [-43.9722, -19.9167],
+        // Singapore
+        [103.8198, 1.3521],
+        // Philadelphia
+        [-75.1652, 39.9526],
+        // Atlanta
+        [-84.3879, 33.749],
+        // Fukuoka
+        [130.4181, 33.5904],
+        // Khartoum
+        [32.5599, 15.5007],
+        // Barcelona
+        [2.1734, 41.3851],
+        // Johannesburg
+        [28.0473, -26.2041],
+        // Saint Petersburg
+        [30.3351, 59.9343],
+        // Qingdao
+        [120.3826, 36.0671],
+        // Dalian
+        [121.6147, 38.914],
+        // Washington
+        [-77.0369, 38.9072],
+        // Yangon
+        [96.1572, 16.8409],
+        // Alexandria
+        [29.9511, 31.2001],
+        // Jinan
+        [117.1201, 36.6512],
+        // Guadalajara
+        [-103.344, 20.6597],
+    ];
+    return cities[Math.floor(Math.random() * cities.length)];
 }
 
 

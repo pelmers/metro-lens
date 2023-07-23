@@ -23,11 +23,17 @@
   font-style: italic;
 }
 
-/* render linked values with bolded dark blue font */
+/* render linked values with bolded dark blue font but no underline */
 #map-stats-container .map-stats-linked-value {
-  color: #2196f3;
+  color: #0d4069;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: none
+}
+
+#map-stats-container .map-stats-linked-value:hover {
+  color: #2196f3;
+  text-decoration: underline;
 }
 
 /* render unlinked values with a bolded dark gray font */
