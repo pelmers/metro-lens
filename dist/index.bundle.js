@@ -41210,6 +41210,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getMapboxKey: () => (/* binding */ getMapboxKey),
 /* harmony export */   getNatureAndParkAreas: () => (/* binding */ getNatureAndParkAreas),
 /* harmony export */   getParkingAreas: () => (/* binding */ getParkingAreas),
+/* harmony export */   getTransitCounts: () => (/* binding */ getTransitCounts),
 /* harmony export */   getWateryAreas: () => (/* binding */ getWateryAreas)
 /* harmony export */ });
 /* harmony import */ var isomorphic_ws__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! isomorphic-ws */ "../node_modules/isomorphic-ws/browser.js");
@@ -41226,6 +41227,7 @@ let getParkingAreas;
 let getNatureAndParkAreas;
 let getWateryAreas;
 let getHighways;
+let getTransitCounts;
 let alreadyConnected = false;
 function connectClient() {
     if (alreadyConnected) {
@@ -41243,6 +41245,7 @@ function connectClient() {
     getNatureAndParkAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetNatureAndParkAreas);
     getWateryAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetWateryAreas);
     getHighways = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetHighways);
+    getTransitCounts = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetTransitCounts);
     socket.onopen = () => {
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket opened`);
     };
@@ -41389,6 +41392,10 @@ const PolygonCollectionInput = io_ts__WEBPACK_IMPORTED_MODULE_1__.any;
 const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
     xml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
 });
+const TransitCounts = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
+    railStops: io_ts__WEBPACK_IMPORTED_MODULE_1__.number,
+    totalLines: io_ts__WEBPACK_IMPORTED_MODULE_1__.number,
+});
 const ServerCalls = {
     GetMapboxApiKey: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_1__["null"],
@@ -41410,13 +41417,9 @@ const ServerCalls = {
         i: PolygonCollectionInput,
         o: XmlResult,
     }),
-    GetTransitStops: () => ({
+    GetTransitCounts: () => ({
         i: PolygonCollectionInput,
-        o: XmlResult,
-    }),
-    GetTransitLineCount: () => ({
-        i: PolygonCollectionInput,
-        o: io_ts__WEBPACK_IMPORTED_MODULE_1__.number,
+        o: TransitCounts,
     }),
 };
 

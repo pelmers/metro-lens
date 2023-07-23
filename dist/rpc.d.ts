@@ -10,6 +10,11 @@ declare const XmlResult: t.TypeC<{
     xml: t.StringC;
 }>;
 export type TXmlResult = t.TypeOf<typeof XmlResult>;
+declare const TransitCounts: t.TypeC<{
+    railStops: t.NumberC;
+    totalLines: t.NumberC;
+}>;
+export type TTransitCounts = t.TypeOf<typeof TransitCounts>;
 export declare const ServerCalls: {
     GetMapboxApiKey: () => {
         i: t.NullC;
@@ -39,15 +44,12 @@ export declare const ServerCalls: {
             xml: t.StringC;
         }>;
     };
-    GetTransitStops: () => {
+    GetTransitCounts: () => {
         i: t.AnyC;
         o: t.TypeC<{
-            xml: t.StringC;
+            railStops: t.NumberC;
+            totalLines: t.NumberC;
         }>;
-    };
-    GetTransitLineCount: () => {
-        i: t.AnyC;
-        o: t.NumberC;
     };
 };
 export {};

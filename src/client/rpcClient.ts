@@ -8,7 +8,12 @@ import {
   e,
   t,
 } from "../constants";
-import { ServerCalls, TClippedAndUnclippedXml, TXmlResult } from "../rpc";
+import {
+  ServerCalls,
+  TClippedAndUnclippedXml,
+  TTransitCounts,
+  TXmlResult,
+} from "../rpc";
 import { AnyJson, AsyncFN, FNDecl } from "roots-rpc/dist/rpcTypes";
 
 export let getMapboxKey: AsyncFN<null, string>;
@@ -16,6 +21,7 @@ export let getParkingAreas: AsyncFN<AnyJson, TXmlResult>;
 export let getNatureAndParkAreas: AsyncFN<AnyJson, TXmlResult>;
 export let getWateryAreas: AsyncFN<AnyJson, TXmlResult>;
 export let getHighways: AsyncFN<AnyJson, TXmlResult>;
+export let getTransitCounts: AsyncFN<AnyJson, TTransitCounts>;
 
 let alreadyConnected = false;
 
@@ -39,6 +45,7 @@ export function connectClient() {
   getNatureAndParkAreas = connect(ServerCalls.GetNatureAndParkAreas);
   getWateryAreas = connect(ServerCalls.GetWateryAreas);
   getHighways = connect(ServerCalls.GetHighways);
+  getTransitCounts = connect(ServerCalls.GetTransitCounts);
 
   socket.onopen = () => {
     d(`Socket opened`);

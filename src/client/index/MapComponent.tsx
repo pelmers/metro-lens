@@ -22,6 +22,7 @@ import {
   getHighways,
   getNatureAndParkAreas,
   getParkingAreas,
+  getTransitCounts,
   getWateryAreas,
 } from "../rpcClient";
 
@@ -167,15 +168,30 @@ const HighwayAreaTooBigValue: StatValue = {
 };
 
 type HighwayStatsType = {
+  busStops: StatValue;
   highwayLength: StatValue;
   cyclewayLength: StatValue;
   highwayArea: StatValue;
   cyclewayArea: StatValue;
 };
 
+const getTransitCountsStats = wrapWithDefault(
+  { railStops: ErrorValue, totalTransitLines: ErrorValue },
+  async (
+    borders: FeatureCollection
+  ): Promise<{ railStops: StatValue; totalTransitLines: StatValue }> => {
+    const { railStops, totalLines } = await getTransitCounts(borders as any);
+    return {
+      railStops: { value: railStops, units: "" },
+      totalTransitLines: { value: totalLines, units: "" },
+    };
+  }
+);
+
 const fetchAndClassifyHighways = async (
   borders: FeatureCollection
 ): Promise<{
+  busStops: FeatureCollection;
   streets: FeatureCollection;
   roads: FeatureCollection;
   highways: FeatureCollection;
@@ -187,15 +203,19 @@ const fetchAndClassifyHighways = async (
     "text/xml"
   );
   const geoJsons = osmtogeojson(xmlObject);
-  const { linestrings } = splitFeatureCollection(
+  const { linestrings, points } = splitFeatureCollection(
     geoJsons as turf.FeatureCollection
   );
   const result = {
+    busStops: EmptyFeatureCollection(),
     streets: EmptyFeatureCollection(),
     roads: EmptyFeatureCollection(),
     highways: EmptyFeatureCollection(),
     cycleways: EmptyFeatureCollection(),
   };
+  result.busStops.features = points.features.filter(
+    (p) => p.properties.highway === "bus_stop"
+  );
   for (const linestring of linestrings.features) {
     switch (linestring.properties.highway) {
       case "cycleway":
@@ -232,6 +252,7 @@ const fetchAndClassifyHighways = async (
   }
   // For each result value, clip lines at border
   for (const [key, value] of Object.entries(result)) {
+    if (key === "busStops") continue;
     result[key as keyof typeof result] = clipLineSegmentsAtBorder(
       value as turf.FeatureCollection,
       borders as turf.FeatureCollection
@@ -352,6 +373,7 @@ export default class MapComponent extends React.Component<Props, State> {
 
   updateHighwayMapAndGetStats = wrapWithDefault(
     {
+      busStops: ErrorValue,
       highwayLength: ErrorValue,
       cyclewayLength: ErrorValue,
       highwayArea: ErrorValue,
@@ -363,13 +385,14 @@ export default class MapComponent extends React.Component<Props, State> {
     ): Promise<HighwayStatsType> => {
       if (areaKm2 > HIGHWAY_STATS_AREA_MAX_KM2) {
         return {
+          busStops: HighwayAreaTooBigValue,
           highwayLength: HighwayAreaTooBigValue,
           cyclewayLength: HighwayAreaTooBigValue,
           highwayArea: HighwayAreaTooBigValue,
           cyclewayArea: HighwayAreaTooBigValue,
         };
       }
-      const { streets, roads, highways, cycleways } =
+      const { streets, roads, highways, cycleways, busStops } =
         await fetchAndClassifyHighways(borders);
       (
         this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id) as GeoJSONSource
@@ -403,6 +426,10 @@ export default class MapComponent extends React.Component<Props, State> {
         highwayArea: {
           value: 0,
           units: "km²",
+        },
+        busStops: {
+          value: busStops.features.length,
+          units: "",
         },
       };
       for (const cycleway of cycleways.features) {
@@ -533,6 +560,15 @@ export default class MapComponent extends React.Component<Props, State> {
         }
         this.setState({ stats: { ...currentBatchStats } });
       })
+    );
+    updatePromises.push(
+      getTransitCountsStats(data as any).then(
+        ({ railStops, totalTransitLines }) => {
+          currentBatchStats.railStops = railStops;
+          currentBatchStats.totalTransitLines = totalTransitLines;
+          this.setState({ stats: { ...currentBatchStats } });
+        }
+      )
     );
     try {
       await Promise.all(updatePromises);

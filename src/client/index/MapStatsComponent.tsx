@@ -37,6 +37,9 @@ class DefaultProps {
   cyclewayLength = NoPolygonValue;
   highwayArea = NoPolygonValue;
   cyclewayArea = NoPolygonValue;
+  busStops = NoPolygonValue;
+  totalTransitLines = NoPolygonValue;
+  railStops = NoPolygonValue;
 }
 
 export interface Props extends DefaultProps {}
@@ -73,7 +76,7 @@ export class MapStatsComponent extends React.Component<Props> {
         <ul>
           <li>🗺️ Area: {this.valueToDisplay(props.area)}</li>
           <li>📏 Perimeter: {this.valueToDisplay(props.perimeter)}</li>
-          <li>🚻️️ Population: {this.valueToDisplay(props.population)}</li>
+          <li>🚻️️ Population: {this.valueToDisplay(props.population, {isEstimate: true})}</li>
           <li>🅿️ Parking Area: {this.valueToDisplay(props.parkingArea)}</li>
           <li>🛣️️ Road Length: {this.valueToDisplay(props.highwayLength)}</li>
           <li>
@@ -86,9 +89,11 @@ export class MapStatsComponent extends React.Component<Props> {
             {this.valueToDisplay(props.cyclewayArea, { isEstimate: true })}
           </li>
           <li>🌳 Nature Area: {this.valueToDisplay(props.natureArea)}</li>
-          <li>🚌 Bus Stops: TODO</li>
-          <li>🚃 Rail Stations: TODO</li>
-          <li>🚇 Transit Routes: TODO</li>
+          <li>🚌 Bus Stops: {this.valueToDisplay(props.busStops)}</li>
+          <li>🚃 Rail Stations: {this.valueToDisplay(props.railStops)}</li>
+          <li>
+            🚇 Transit Routes: {this.valueToDisplay(props.totalTransitLines)}
+          </li>
           <li>💦 Watery Area: {this.valueToDisplay(props.wateryArea)}</li>
         </ul>
       </div>

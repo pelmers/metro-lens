@@ -30,6 +30,7 @@ export default class MapComponent extends React.Component<Props, State> {
     updateHighwayMapAndGetStats: (borders: FeatureCollection<import("geojson").Geometry, {
         [name: string]: any;
     }>, areaKm2: number) => Promise<{
+        busStops: StatValue;
         highwayLength: StatValue;
         cyclewayLength: StatValue;
         highwayArea: StatValue;

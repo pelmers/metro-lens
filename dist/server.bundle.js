@@ -132,6 +132,10 @@ const PolygonCollectionInput = io_ts__WEBPACK_IMPORTED_MODULE_0__.any;
 const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
     xml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
 });
+const TransitCounts = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
+    railStops: io_ts__WEBPACK_IMPORTED_MODULE_0__.number,
+    totalLines: io_ts__WEBPACK_IMPORTED_MODULE_0__.number,
+});
 const ServerCalls = {
     GetMapboxApiKey: () => ({
         i: io_ts__WEBPACK_IMPORTED_MODULE_0__["null"],
@@ -153,13 +157,9 @@ const ServerCalls = {
         i: PolygonCollectionInput,
         o: XmlResult,
     }),
-    GetTransitStops: () => ({
+    GetTransitCounts: () => ({
         i: PolygonCollectionInput,
-        o: XmlResult,
-    }),
-    GetTransitLineCount: () => ({
-        i: PolygonCollectionInput,
-        o: io_ts__WEBPACK_IMPORTED_MODULE_0__.number,
+        o: TransitCounts,
     }),
 };
 
@@ -358,24 +358,29 @@ function createRpcServer(socket) {
     server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetNatureAndParkAreas, getNatureAndParkAreas);
     server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetWateryAreas, getWateryAreas);
     server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetHighways, getHighways);
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetTransitCounts, getTransitCounts);
     return server;
 }
 function getPolyFilter(coords) {
     return `poly:"${coords.map(([lng, lat]) => `${lat} ${lng}`).join(" ")}"`;
 }
+// Modifies input in place to be friendlier to overpass
+function prepareInput(input) {
+    // Pre-process the input polygons
+    for (const polygon of input.features) {
+        polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.unkinkPolygon)(polygon).features[0].geometry;
+        // Simplify circles to 16 points for querying overpass to improve performance
+        // overpass also has a low limit on the request length
+        if (polygon.properties.isCircle === true) {
+            polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.circle)((0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.centroid)(polygon), polygon.properties.radiusInKm, { steps: 16 }).geometry;
+        }
+    }
+}
 function getOsmResultsWithQueryBuilder(i, queryBuilder) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: remove cast if i make better io-ts typing for turf
         const input = i;
-        // Pre-process the input polygons
-        for (const polygon of input.features) {
-            polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.unkinkPolygon)(polygon).features[0].geometry;
-            // Simplify circles to 16 points for querying overpass to improve performance
-            // overpass also has a low limit on the request length
-            if (polygon.properties.isCircle === true) {
-                polygon.geometry = (0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.circle)((0,_turf_turf__WEBPACK_IMPORTED_MODULE_3__.centroid)(polygon), polygon.properties.radiusInKm, { steps: 16 }).geometry;
-            }
-        }
+        prepareInput(input);
         const xmlResults = [];
         for (const polygon of input.features) {
             const coords = polygon.geometry.coordinates[0];
@@ -384,6 +389,28 @@ function getOsmResultsWithQueryBuilder(i, queryBuilder) {
             xmlResults.push(result);
         }
         return { xml: yield (0,_osmUtils__WEBPACK_IMPORTED_MODULE_5__.osmconvertMergeXmlResults)(xmlResults) };
+    });
+}
+function getOsmCountResultWithQueryBuilder(i, queryBuilder) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // TODO: remove cast if i make better io-ts typing for turf
+        const input = i;
+        prepareInput(input);
+        const jsonResults = [];
+        for (const polygon of input.features) {
+            const coords = polygon.geometry.coordinates[0];
+            const overpassql = queryBuilder(coords);
+            const result = JSON.parse(yield (0,_queryOverpass__WEBPACK_IMPORTED_MODULE_4__.queryOverpass)(overpassql));
+            jsonResults.push(result);
+        }
+        const result = { nodes: 0, ways: 0, relations: 0 };
+        for (const res of jsonResults) {
+            const countElement = res.elements[0];
+            result.nodes += Number.parseInt(countElement.tags.nodes);
+            result.ways += Number.parseInt(countElement.tags.ways);
+            result.relations += Number.parseInt(countElement.tags.relations);
+        }
+        return result;
     });
 }
 function getParkingAreas(i) {
@@ -441,11 +468,38 @@ function getHighways(i) {
       [out:xml][timeout:30];
   (
   way[highway](${filter});
+  node[highway=bus_stop](${filter});
   );
         out body;
         >;
         out body qt;`;
         });
+    });
+}
+function getTransitCounts(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const transitCounts = yield getOsmCountResultWithQueryBuilder(i, (coords) => {
+            const filter = getPolyFilter(coords);
+            return `
+    [out:json][timeout:30];
+    (
+      relation[type=route][route=bus](${filter});
+      relation[type=route][route=train](${filter});
+      relation[type=route][route=tram](${filter});
+      relation[type=route][route=subway](${filter});
+      relation[type=route][route=ferry](${filter});
+      relation[type=route][route=light_rail](${filter});
+      relation[type=route][route=trolleybus](${filter});
+      nw[railway=station](${filter});
+      nw[railway=tram_stop](${filter});
+    );
+    out count;
+    `;
+        });
+        return {
+            totalLines: transitCounts.relations,
+            railStops: transitCounts.nodes + transitCounts.ways,
+        };
     });
 }
 

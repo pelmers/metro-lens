@@ -21,6 +21,9 @@ declare class DefaultProps {
     cyclewayLength: StatValue;
     highwayArea: StatValue;
     cyclewayArea: StatValue;
+    busStops: StatValue;
+    totalTransitLines: StatValue;
+    railStops: StatValue;
 }
 export interface Props extends DefaultProps {
 }

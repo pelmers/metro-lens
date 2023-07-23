@@ -26,6 +26,12 @@ const XmlResult = t.type({
 });
 export type TXmlResult = t.TypeOf<typeof XmlResult>;
 
+const TransitCounts = t.type({
+  railStops: t.number,
+  totalLines: t.number,
+});
+export type TTransitCounts = t.TypeOf<typeof TransitCounts>;
+
 export const ServerCalls = {
   GetMapboxApiKey: () => ({
     i: t.null,
@@ -47,12 +53,8 @@ export const ServerCalls = {
     i: PolygonCollectionInput,
     o: XmlResult,
   }),
-  GetTransitStops: () => ({
+  GetTransitCounts: () => ({
     i: PolygonCollectionInput,
-    o: XmlResult,
-  }),
-  GetTransitLineCount: () => ({
-    i: PolygonCollectionInput,
-    o: t.number,
+    o: TransitCounts,
   }),
 };

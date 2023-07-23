@@ -355,17 +355,26 @@ const OverpassAreaTooBigValue = {
 const HighwayAreaTooBigValue = {
     missing: `Selection too large (>${_constants__WEBPACK_IMPORTED_MODULE_10__.HIGHWAY_STATS_AREA_MAX_KM2} km²)`,
 };
+const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ railStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, totalTransitLines: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders) => __awaiter(void 0, void 0, void 0, function* () {
+    const { railStops, totalLines } = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_11__.getTransitCounts)(borders);
+    return {
+        railStops: { value: railStops, units: "" },
+        totalTransitLines: { value: totalLines, units: "" },
+    };
+}));
 const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, function* () {
     const allHighways = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_11__.getHighways)(borders);
     const xmlObject = new DOMParser().parseFromString(allHighways.xml, "text/xml");
     const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_12___default()(xmlObject);
-    const { linestrings } = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.splitFeatureCollection)(geoJsons);
+    const { linestrings, points } = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.splitFeatureCollection)(geoJsons);
     const result = {
+        busStops: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         streets: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         roads: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         highways: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
         cycleways: (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.EmptyFeatureCollection)(),
     };
+    result.busStops.features = points.features.filter((p) => p.properties.highway === "bus_stop");
     for (const linestring of linestrings.features) {
         switch (linestring.properties.highway) {
             case "cycleway":
@@ -400,6 +409,8 @@ const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, 
     }
     // For each result value, clip lines at border
     for (const [key, value] of Object.entries(result)) {
+        if (key === "busStops")
+            continue;
         result[key] = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.clipLineSegmentsAtBorder)(value, borders);
     }
     return result;
@@ -428,6 +439,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.DefaultStats)(),
         };
         this.updateHighwayMapAndGetStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({
+            busStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
             highwayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
             cyclewayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
             highwayArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
@@ -435,13 +447,14 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         }, (borders, areaKm2) => __awaiter(this, void 0, void 0, function* () {
             if (areaKm2 > _constants__WEBPACK_IMPORTED_MODULE_10__.HIGHWAY_STATS_AREA_MAX_KM2) {
                 return {
+                    busStops: HighwayAreaTooBigValue,
                     highwayLength: HighwayAreaTooBigValue,
                     cyclewayLength: HighwayAreaTooBigValue,
                     highwayArea: HighwayAreaTooBigValue,
                     cyclewayArea: HighwayAreaTooBigValue,
                 };
             }
-            const { streets, roads, highways, cycleways } = yield fetchAndClassifyHighways(borders);
+            const { streets, roads, highways, cycleways, busStops } = yield fetchAndClassifyHighways(borders);
             this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id).setData(streets);
             this.map.getSource(MapLayers.ROADS_FEATURES_LINES.id).setData(roads);
             this.map.getSource(MapLayers.HIGHWAYS_FEATURES_LINES.id).setData(highways);
@@ -462,6 +475,10 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 highwayArea: {
                     value: 0,
                     units: "km²",
+                },
+                busStops: {
+                    value: busStops.features.length,
+                    units: "",
                 },
             };
             for (const cycleway of cycleways.features) {
@@ -562,6 +579,11 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 for (const [key, value] of Object.entries(stats)) {
                     currentBatchStats[key] = value;
                 }
+                this.setState({ stats: Object.assign({}, currentBatchStats) });
+            }));
+            updatePromises.push(getTransitCountsStats(data).then(({ railStops, totalTransitLines }) => {
+                currentBatchStats.railStops = railStops;
+                currentBatchStats.totalTransitLines = totalTransitLines;
                 this.setState({ stats: Object.assign({}, currentBatchStats) });
             }));
             try {
@@ -717,6 +739,9 @@ class DefaultProps {
         this.cyclewayLength = NoPolygonValue;
         this.highwayArea = NoPolygonValue;
         this.cyclewayArea = NoPolygonValue;
+        this.busStops = NoPolygonValue;
+        this.totalTransitLines = NoPolygonValue;
+        this.railStops = NoPolygonValue;
     }
 }
 const DefaultStats = () => new DefaultProps();
@@ -754,7 +779,7 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     this.valueToDisplay(props.perimeter)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDEBB\uFE0F\uFE0F Population: ",
-                    this.valueToDisplay(props.population)),
+                    this.valueToDisplay(props.population, { isEstimate: true })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83C\uDD7F\uFE0F Parking Area: ",
                     this.valueToDisplay(props.parkingArea)),
@@ -775,9 +800,15 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83C\uDF33 Nature Area: ",
                     this.valueToDisplay(props.natureArea)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE8C Bus Stops: TODO"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE83 Rail Stations: TODO"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "\uD83D\uDE87 Transit Routes: TODO"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDE8C Bus Stops: ",
+                    this.valueToDisplay(props.busStops)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDE83 Rail Stations: ",
+                    this.valueToDisplay(props.railStops)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
+                    "\uD83D\uDE87 Transit Routes: ",
+                    this.valueToDisplay(props.totalTransitLines)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null,
                     "\uD83D\uDCA6 Watery Area: ",
                     this.valueToDisplay(props.wateryArea)))));
