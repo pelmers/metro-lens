@@ -24,6 +24,8 @@ export type Props = {
   parkingArea: StatValue;
   natureArea: StatValue;
   wateryArea: StatValue;
+  highwayLength: StatValue;
+  cyclewayLength: StatValue;
   // TODO: normalized density, i.e. population / (area - watery - nature)
 };
 
@@ -46,6 +48,8 @@ export const DefaultStats: () => Props = () => ({
   parkingArea: NoPolygonValue,
   natureArea: NoPolygonValue,
   wateryArea: NoPolygonValue,
+  highwayLength: NoPolygonValue,
+  cyclewayLength: NoPolygonValue,
 });
 
 export const AllLoadingStats: () => Props = () => ({
@@ -55,11 +59,9 @@ export const AllLoadingStats: () => Props = () => ({
   parkingArea: LoadingValue,
   natureArea: LoadingValue,
   wateryArea: LoadingValue,
+  highwayLength: LoadingValue,
+  cyclewayLength: LoadingValue,
 });
-
-export const OverpassAreaTooBigValue: StatValue = {
-  missing: `Selection too large (>${OVERPASS_STATS_AREA_MAX_KM2} km²)`,
-};
 
 function valueToDisplay(value: StatValue): string {
   if ("missing" in value) {
@@ -82,8 +84,8 @@ export class MapStatsComponent extends React.Component<Props> {
           <li>📏 Perimeter: {valueToDisplay(props.perimeter)}</li>
           <li>🚻️️ Population: {valueToDisplay(props.population)}</li>
           <li>🅿️ Parking Area: {valueToDisplay(props.parkingArea)}</li>
-          <li>🛣️️ Road Length: TODO</li>
-          <li>🚲️️ Cycle Path Length: TODO</li>
+          <li>🛣️️ Road Length: {valueToDisplay(props.highwayLength)}</li>
+          <li>🚲️️ Cycle Paths: {valueToDisplay(props.cyclewayLength)}</li>
           <li>🌳 Nature Area: {valueToDisplay(props.natureArea)}</li>
           <li>🚌 Bus Stops: TODO</li>
           <li>🚃 Rail Stations: TODO</li>

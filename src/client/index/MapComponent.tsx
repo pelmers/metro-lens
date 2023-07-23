@@ -2,6 +2,7 @@ import React from "react";
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import { FeatureCollection } from "geojson";
 import * as turf from "@turf/turf";
 
 // @ts-ignore untyped module
@@ -12,8 +13,13 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-import { OVERPASS_STATS_AREA_MAX_KM2, wrapWithDefault } from "../../constants";
 import {
+  HIGHWAY_STATS_AREA_MAX_KM2,
+  OVERPASS_STATS_AREA_MAX_KM2,
+  wrapWithDefault,
+} from "../../constants";
+import {
+  getHighways,
   getNatureAndParkAreas,
   getParkingAreas,
   getWateryAreas,
@@ -26,12 +32,9 @@ import {
   ErrorValue,
   MapStatsComponent,
   Props as MapStatsComponentProps,
-  OverpassAreaTooBigValue,
   StatValue,
 } from "./MapStatsComponent";
-import { FeatureCollection } from "@turf/turf";
 import { TXmlResult } from "../../rpc";
-import { unkinkPolygon } from "@turf/turf";
 import {
   EmptyFeatureCollection,
   addDrawControlButton,
@@ -52,14 +55,13 @@ type State = {
   stats: MapStatsComponentProps;
 };
 
-// TODO: create linestring versions of these layers
 const MapLayers = {
   SURFACE_PARKING_POLYGONS: {
     id: "surfaceParkingAreas",
     type: "fill" as const,
     paint: {
       "fill-color": "red",
-      "fill-opacity": 0.5,
+      "fill-opacity": 0.7,
     },
   },
   NATURE_AND_PARKS_POLYGONS: {
@@ -86,6 +88,147 @@ const MapLayers = {
       "line-width": 2,
     },
   },
+  STREETS_FEATURES_LINES: {
+    id: "streetsFeaturesLines",
+    type: "line" as const,
+    paint: {
+      "line-color": "#b3b300",
+      "line-opacity": 0.5,
+      "line-width": {
+        type: "exponential" as const,
+        base: 1.5,
+        stops: [
+          [14, 1],
+          [18, 15],
+          [22, 130],
+        ],
+      },
+    },
+  },
+  ROADS_FEATURES_LINES: {
+    id: "roadsFeaturesLines",
+    type: "line" as const,
+    paint: {
+      "line-color": "#b3b300",
+      "line-opacity": 0.7,
+      "line-width": {
+        type: "exponential" as const,
+        base: 1.5,
+        stops: [
+          [12, 0.5],
+          [18, 22],
+          [22, 220],
+        ],
+      },
+    },
+  },
+  HIGHWAYS_FEATURES_LINES: {
+    id: "highwaysFeaturesLines",
+    type: "line" as const,
+    paint: {
+      "line-color": "orange",
+      "line-opacity": 0.9,
+      "line-width": {
+        type: "exponential" as const,
+        base: 1.5,
+        stops: [
+          [3, 0.8],
+          [18, 32],
+          [22, 320],
+        ],
+      },
+    },
+  },
+  CYCLEWAYS_FEATURES_LINES: {
+    id: "cyclewaysFeaturesLines",
+    type: "line" as const,
+    paint: {
+      "line-color": "#006400",
+      "line-opacity": 0.6,
+      "line-width": {
+        type: "exponential" as const,
+        base: 1.5,
+        stops: [
+          [14, 0.5],
+          [18, 14],
+        ],
+      },
+    },
+  },
+};
+
+const OverpassAreaTooBigValue: StatValue = {
+  missing: `Selection too large (>${OVERPASS_STATS_AREA_MAX_KM2} km²)`,
+};
+
+const HighwayAreaTooBigValue: StatValue = {
+  missing: `Selection too large (>${HIGHWAY_STATS_AREA_MAX_KM2} km²)`,
+};
+
+const fetchAndClassifyHighways = async (
+  borders: FeatureCollection
+): Promise<{
+  streets: FeatureCollection;
+  roads: FeatureCollection;
+  highways: FeatureCollection;
+  cycleways: FeatureCollection;
+}> => {
+  const allHighways = await getHighways(borders as any);
+  const xmlObject = new DOMParser().parseFromString(
+    allHighways.xml,
+    "text/xml"
+  );
+  const geoJsons = osmtogeojson(xmlObject);
+  const { linestrings } = splitFeatureCollection(
+    geoJsons as turf.FeatureCollection
+  );
+  const result = {
+    streets: EmptyFeatureCollection(),
+    roads: EmptyFeatureCollection(),
+    highways: EmptyFeatureCollection(),
+    cycleways: EmptyFeatureCollection(),
+  };
+  for (const linestring of linestrings.features) {
+    switch (linestring.properties.highway) {
+      case "cycleway":
+        result.cycleways.features.push(linestring);
+        break;
+      case "trunk":
+      case "motorway":
+      case "primary":
+        result.highways.features.push(linestring);
+        break;
+      case "secondary":
+      case "motorway_link":
+      case "trunk_link":
+        result.roads.features.push(linestring);
+        break;
+      case "service":
+      case "tertiary":
+      case "unclassified":
+      case "residential":
+      case "primary_link":
+      case "secondary_link":
+      case "tertiary_link":
+        result.streets.features.push(linestring);
+        break;
+      default:
+        if (
+          linestring.properties.cycleway === "track" ||
+          linestring.properties.cycleway === "separate"
+        ) {
+          result.cycleways.features.push(linestring);
+        }
+    }
+  }
+  // For each result value, clip lines at border
+  for (const [key, value] of Object.entries(result)) {
+    result[key as keyof typeof result] = clipLineSegmentsAtBorder(
+      value as turf.FeatureCollection,
+      borders as turf.FeatureCollection
+    );
+  }
+  return result;
 };
 
 export default class MapComponent extends React.Component<Props, State> {
@@ -144,8 +287,6 @@ export default class MapComponent extends React.Component<Props, State> {
         trackUserLocation: true,
       })
     );
-    // TODO: add draw measurements for area and side lengths
-    // see: https://github.com/mapbox/mapbox-gl-draw/issues/801#issuecomment-403360815
     this.map.addControl(this.drawControl);
     // TODO: the correct button isn't highlighted as active when clicked
     addDrawControlButton("/static/icons/circle.svg", () => {
@@ -199,6 +340,52 @@ export default class MapComponent extends React.Component<Props, State> {
       });
     });
   }
+
+  updateHighwayMapAndGetStats = wrapWithDefault(
+    { highwayLength: ErrorValue, cyclewayLength: ErrorValue },
+    async (
+      borders: FeatureCollection,
+      areaKm2: number
+    ): Promise<{ highwayLength: StatValue; cyclewayLength: StatValue }> => {
+      if (areaKm2 > HIGHWAY_STATS_AREA_MAX_KM2) {
+        return {
+          highwayLength: HighwayAreaTooBigValue,
+          cyclewayLength: HighwayAreaTooBigValue,
+        };
+      }
+      const { streets, roads, highways, cycleways } =
+        await fetchAndClassifyHighways(borders);
+      (
+        this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id) as GeoJSONSource
+      ).setData(streets);
+      (
+        this.map.getSource(MapLayers.ROADS_FEATURES_LINES.id) as GeoJSONSource
+      ).setData(roads);
+      (
+        this.map.getSource(
+          MapLayers.HIGHWAYS_FEATURES_LINES.id
+        ) as GeoJSONSource
+      ).setData(highways);
+      (
+        this.map.getSource(
+          MapLayers.CYCLEWAYS_FEATURES_LINES.id
+        ) as GeoJSONSource
+      ).setData(cycleways);
+      const cyclewayLength = {
+        value: turf.length(cycleways, { units: "kilometers" }),
+        units: "km",
+      };
+      const highwayLength = {
+        value:
+          turf.length(highways, { units: "kilometers" }) +
+          turf.length(roads, { units: "kilometers" }) +
+          turf.length(streets, { units: "kilometers" }),
+        units: "km",
+      };
+      // TODO: get area by estimating width for each way
+      return { cyclewayLength, highwayLength };
+    }
+  );
 
   // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
   updateDrawing = async (_evt: { type: string }) => {
@@ -300,7 +487,21 @@ export default class MapComponent extends React.Component<Props, State> {
         this.setState({ stats: { ...currentBatchStats } });
       })
     );
-    await Promise.all(updatePromises);
+    updatePromises.push(
+      this.updateHighwayMapAndGetStats(data, area.value).then(
+        ({ highwayLength, cyclewayLength }) => {
+          currentBatchStats.highwayLength = highwayLength;
+          currentBatchStats.cyclewayLength = cyclewayLength;
+          this.setState({ stats: { ...currentBatchStats } });
+        }
+      )
+    );
+    try {
+      await Promise.all(updatePromises);
+    } catch (err) {
+      console.error(err);
+    }
+    // TODO: also clear loading state here
     this.setState({ stats: { ...currentBatchStats } });
   };
 

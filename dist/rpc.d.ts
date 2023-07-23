@@ -33,5 +33,21 @@ export declare const ServerCalls: {
             xml: t.StringC;
         }>;
     };
+    GetHighways: () => {
+        i: t.AnyC;
+        o: t.TypeC<{
+            xml: t.StringC;
+        }>;
+    };
+    GetTransitStops: () => {
+        i: t.AnyC;
+        o: t.TypeC<{
+            xml: t.StringC;
+        }>;
+    };
+    GetTransitLineCount: () => {
+        i: t.AnyC;
+        o: t.NumberC;
+    };
 };
 export {};

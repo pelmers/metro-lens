@@ -13,13 +13,14 @@ export type Props = {
     parkingArea: StatValue;
     natureArea: StatValue;
     wateryArea: StatValue;
+    highwayLength: StatValue;
+    cyclewayLength: StatValue;
 };
 export declare const NoPolygonValue: StatValue;
 export declare const ErrorValue: StatValue;
 export declare const LoadingValue: StatValue;
 export declare const DefaultStats: () => Props;
 export declare const AllLoadingStats: () => Props;
-export declare const OverpassAreaTooBigValue: StatValue;
 export declare class MapStatsComponent extends React.Component<Props> {
     render(): React.JSX.Element;
 }

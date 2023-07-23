@@ -5,6 +5,9 @@ import * as turf from "@turf/turf";
 import { GeoJSONSource } from "mapbox-gl";
 import { numberForDisplay } from "../constants";
 
+// @ts-ignore untyped module
+import turfSliceAtIntersection from "turf-line-slice-at-intersection";
+
 type PolyFC = turf.FeatureCollection<turf.Polygon | turf.MultiPolygon>;
 
 // nb. it is really annoying that this FeatureCollection type is duplicated
@@ -101,6 +104,9 @@ export function clipPolygonsAtBorder(
 // Clip line strings at given border polygons and return a collection of line strings
 // fully contained in at least one border polygon
 // Slightly modified from https://gis.stackexchange.com/a/459122/227981 (added end check)
+// nb. Apparently lineSplit is buggy: https://github.com/Turfjs/turf/issues/2288
+// so instead using yarn add turf-line-slice-at-intersection
+// suggested in: https://github.com/Turfjs/turf/issues/2288#issuecomment-1125563629
 export function clipLineSegmentsAtBorder(
   featureLineSegments: turf.FeatureCollection,
   borders: turf.FeatureCollection
@@ -114,7 +120,8 @@ export function clipLineSegmentsAtBorder(
     for (const line of flattened.features) {
       for (const border of borderPolygons.features) {
         // split line by polygon
-        const split = turf.lineSplit(line, border);
+        // const split = turf.lineSplit(line, border);
+        const split = turfSliceAtIntersection(line, border);
         for (const part of split.features) {
           // check which parts have a start and end inside the polygon
           const start = turf.booleanPointInPolygon(
@@ -238,4 +245,40 @@ export function addDrawControlButton(iconPath: string, onClick: () => unknown) {
   } else {
     console.warn("Could not find sibling for draw control button");
   }
+}
+
+// Parse a length-type field from OSM into a meters number. If not possible return NaN.
+// This includes formats such as 7'6", 8 km, 16 ft, etc.
+// see: https://wiki.openstreetmap.org/wiki/Key:width
+function parseOsmLengthField(length: string): number {
+  // TODO: actually check the uncommon length formats
+  try {
+    return Number.parseFloat(length);
+  } catch (e) {
+    return NaN;
+  }
+}
+
+// Given a feature with property highway set, estimate a width for it in meters.
+// This will use the width property if it's available, otherwise we will multiply the lanes
+// property by a heuristic value depending on the type of highway.
+// nb. This estimation is VERY ROUGH.
+function estimateHighwayFeatureWidth(feature: turf.Feature): number {
+  // TODO return a number in meters
+  if (!Number.isNaN(parseOsmLengthField(feature.properties.width))) {
+    return parseOsmLengthField(feature.properties.width);
+  }
+  if (!Number.isNaN(parseOsmLengthField(feature.properties.est_width))) {
+    return parseOsmLengthField(feature.properties.est_width);
+  }
+  let lanes = 2;
+  if (feature.properties.lanes) {
+    try {
+      lanes = parseInt(feature.properties.lanes);
+    } catch (e) {
+      console.warn("could not parse lanes property", feature.properties.lanes);
+    }
+  }
+  // Heuristic for the width of a lane, plus some buffer, depending on highway type
+  return 0;
 }

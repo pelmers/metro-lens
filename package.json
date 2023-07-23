@@ -59,6 +59,7 @@
     "serve-favicon": "^2.5.0",
     "tmp": "^0.2.1",
     "tmp-promise": "^3.0.3",
+    "turf-line-slice-at-intersection": "^1.0.1",
     "ws": "^8.13.0"
   }
 }

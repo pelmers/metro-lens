@@ -19,6 +19,8 @@ const ClippedAndUnclippedXml = t.type({
 });
 export type TClippedAndUnclippedXml = t.TypeOf<typeof ClippedAndUnclippedXml>;
 
+const PolygonCollectionInput = t.any;
+
 const XmlResult = t.type({
   xml: t.string,
 });
@@ -30,15 +32,27 @@ export const ServerCalls = {
     o: t.string,
   }),
   GetParkingAreas: () => ({
-    i: t.any,
+    i: PolygonCollectionInput,
     o: XmlResult,
   }),
   GetNatureAndParkAreas: () => ({
-    i: t.any,
+    i: PolygonCollectionInput,
     o: XmlResult,
   }),
   GetWateryAreas: () => ({
-    i: t.any,
+    i: PolygonCollectionInput,
     o: XmlResult,
+  }),
+  GetHighways: () => ({
+    i: PolygonCollectionInput,
+    o: XmlResult,
+  }),
+  GetTransitStops: () => ({
+    i: PolygonCollectionInput,
+    o: XmlResult,
+  }),
+  GetTransitLineCount: () => ({
+    i: PolygonCollectionInput,
+    o: t.number,
   }),
 };

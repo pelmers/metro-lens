@@ -12,6 +12,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CLIENT_CALLS_SERVER_RPC_PREFIX: () => (/* binding */ CLIENT_CALLS_SERVER_RPC_PREFIX),
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
+/* harmony export */   HIGHWAY_STATS_AREA_MAX_KM2: () => (/* binding */ HIGHWAY_STATS_AREA_MAX_KM2),
 /* harmony export */   OVERPASS_STATS_AREA_MAX_KM2: () => (/* binding */ OVERPASS_STATS_AREA_MAX_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
 /* harmony export */   WORLDPOP_AREA_MAX_KM2: () => (/* binding */ WORLDPOP_AREA_MAX_KM2),
@@ -39,6 +40,7 @@ const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
+const HIGHWAY_STATS_AREA_MAX_KM2 = 150;
 const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 const WORLDPOP_AREA_MAX_KM2 = 100000;
 const DEBUG_LOG = true;
@@ -62,7 +64,7 @@ function e(func, params = {}) {
         catch (e) {
             const prefix = params.errorPrefix ? params.errorPrefix + ": " : "";
             const message = `${prefix}${getErrorMessage(e)}`;
-            d(`Error: ${message}`);
+            console.error(`Error: ${message}`);
             throw e;
         }
     });
@@ -126,6 +128,7 @@ const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
     clippedXml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
     unclippedXml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
 });
+const PolygonCollectionInput = io_ts__WEBPACK_IMPORTED_MODULE_0__.any;
 const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_0__.type({
     xml: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
 });
@@ -135,16 +138,28 @@ const ServerCalls = {
         o: io_ts__WEBPACK_IMPORTED_MODULE_0__.string,
     }),
     GetParkingAreas: () => ({
-        i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+        i: PolygonCollectionInput,
         o: XmlResult,
     }),
     GetNatureAndParkAreas: () => ({
-        i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+        i: PolygonCollectionInput,
         o: XmlResult,
     }),
     GetWateryAreas: () => ({
-        i: io_ts__WEBPACK_IMPORTED_MODULE_0__.any,
+        i: PolygonCollectionInput,
         o: XmlResult,
+    }),
+    GetHighways: () => ({
+        i: PolygonCollectionInput,
+        o: XmlResult,
+    }),
+    GetTransitStops: () => ({
+        i: PolygonCollectionInput,
+        o: XmlResult,
+    }),
+    GetTransitLineCount: () => ({
+        i: PolygonCollectionInput,
+        o: io_ts__WEBPACK_IMPORTED_MODULE_0__.number,
     }),
 };
 
@@ -341,12 +356,13 @@ function createRpcServer(socket) {
     server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetParkingAreas, getParkingAreas);
     server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetNatureAndParkAreas, getNatureAndParkAreas);
     server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetWateryAreas, getWateryAreas);
+    server.register(_rpc__WEBPACK_IMPORTED_MODULE_1__.ServerCalls.GetHighways, getHighways);
     return server;
 }
 function getPolyFilter(coords) {
     return `poly:"${coords.map(([lng, lat]) => `${lat} ${lng}`).join(" ")}"`;
 }
-function getAreasWithQueryBuilder(i, queryBuilder) {
+function getOsmResultsWithQueryBuilder(i, queryBuilder) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: remove cast if i make better io-ts typing for turf
         const input = i;
@@ -371,7 +387,7 @@ function getAreasWithQueryBuilder(i, queryBuilder) {
 }
 function getParkingAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
-        return getAreasWithQueryBuilder(i, (coords) => `
+        return getOsmResultsWithQueryBuilder(i, (coords) => `
       [out:xml][timeout:30];
       (
         nwr["amenity"="parking"](${getPolyFilter(coords)});
@@ -383,7 +399,7 @@ function getParkingAreas(i) {
 }
 function getNatureAndParkAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
-        return getAreasWithQueryBuilder(i, (coords) => {
+        return getOsmResultsWithQueryBuilder(i, (coords) => {
             const filter = getPolyFilter(coords);
             return `
       [out:xml][timeout:30];
@@ -402,13 +418,43 @@ nwr[boundary=protected_area](${filter});
 }
 function getWateryAreas(i) {
     return __awaiter(this, void 0, void 0, function* () {
-        return getAreasWithQueryBuilder(i, (coords) => {
+        return getOsmResultsWithQueryBuilder(i, (coords) => {
             const filter = getPolyFilter(coords);
             return `
       [out:xml][timeout:30];
   (
   nwr[waterway](${filter});
   nwr[natural=water](${filter});
+  );
+        out body;
+        >;
+        out body qt;`;
+        });
+    });
+}
+function getHighways(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return getOsmResultsWithQueryBuilder(i, (coords) => {
+            const filter = getPolyFilter(coords);
+            return `
+      [out:xml][timeout:30];
+  (
+  way[highway](${filter});
+  );
+        out body;
+        >;
+        out body qt;`;
+        });
+    });
+}
+function getCycleways(i) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return getOsmResultsWithQueryBuilder(i, (coords) => {
+            const filter = getPolyFilter(coords);
+            return `
+      [out:xml][timeout:30];
+  (
+  way[highway="cycleway"](${filter});
   );
         out body;
         >;

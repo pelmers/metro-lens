@@ -15,6 +15,7 @@ export let getMapboxKey: AsyncFN<null, string>;
 export let getParkingAreas: AsyncFN<AnyJson, TXmlResult>;
 export let getNatureAndParkAreas: AsyncFN<AnyJson, TXmlResult>;
 export let getWateryAreas: AsyncFN<AnyJson, TXmlResult>;
+export let getHighways: AsyncFN<AnyJson, TXmlResult>;
 
 let alreadyConnected = false;
 
@@ -37,6 +38,7 @@ export function connectClient() {
   getParkingAreas = connect(ServerCalls.GetParkingAreas);
   getNatureAndParkAreas = connect(ServerCalls.GetNatureAndParkAreas);
   getWateryAreas = connect(ServerCalls.GetWateryAreas);
+  getHighways = connect(ServerCalls.GetHighways);
 
   socket.onopen = () => {
     d(`Socket opened`);

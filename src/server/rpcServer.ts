@@ -26,6 +26,7 @@ export function createRpcServer(socket: ws) {
   server.register(ServerCalls.GetParkingAreas, getParkingAreas);
   server.register(ServerCalls.GetNatureAndParkAreas, getNatureAndParkAreas);
   server.register(ServerCalls.GetWateryAreas, getWateryAreas);
+  server.register(ServerCalls.GetHighways, getHighways);
   return server;
 }
 
@@ -33,7 +34,7 @@ function getPolyFilter(coords: Position[]): string {
   return `poly:"${coords.map(([lng, lat]) => `${lat} ${lng}`).join(" ")}"`;
 }
 
-async function getAreasWithQueryBuilder(
+async function getOsmResultsWithQueryBuilder(
   i: any,
   queryBuilder: (coords: Position[]) => string
 ): Promise<TXmlResult> {
@@ -65,7 +66,7 @@ async function getAreasWithQueryBuilder(
 }
 
 async function getParkingAreas(i: any): Promise<TXmlResult> {
-  return getAreasWithQueryBuilder(
+  return getOsmResultsWithQueryBuilder(
     i,
     (coords) => `
       [out:xml][timeout:30];
@@ -79,7 +80,7 @@ async function getParkingAreas(i: any): Promise<TXmlResult> {
 }
 
 async function getNatureAndParkAreas(i: any): Promise<TXmlResult> {
-  return getAreasWithQueryBuilder(i, (coords) => {
+  return getOsmResultsWithQueryBuilder(i, (coords) => {
     const filter = getPolyFilter(coords);
     return `
       [out:xml][timeout:30];
@@ -97,13 +98,41 @@ nwr[boundary=protected_area](${filter});
 }
 
 async function getWateryAreas(i: any): Promise<TXmlResult> {
-  return getAreasWithQueryBuilder(i, (coords) => {
+  return getOsmResultsWithQueryBuilder(i, (coords) => {
     const filter = getPolyFilter(coords);
     return `
       [out:xml][timeout:30];
   (
   nwr[waterway](${filter});
   nwr[natural=water](${filter});
+  );
+        out body;
+        >;
+        out body qt;`;
+  });
+}
+
+async function getHighways(i: any): Promise<TXmlResult> {
+  return getOsmResultsWithQueryBuilder(i, (coords) => {
+    const filter = getPolyFilter(coords);
+    return `
+      [out:xml][timeout:30];
+  (
+  way[highway](${filter});
+  );
+        out body;
+        >;
+        out body qt;`;
+  });
+}
+
+async function getCycleways(i: any): Promise<TXmlResult> {
+  return getOsmResultsWithQueryBuilder(i, (coords) => {
+    const filter = getPolyFilter(coords);
+    return `
+      [out:xml][timeout:30];
+  (
+  way[highway="cycleway"](${filter});
   );
         out body;
         >;

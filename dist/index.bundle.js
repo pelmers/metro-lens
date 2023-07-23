@@ -41181,7 +41181,7 @@ function main() {
         (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.connectClient)();
         // Import MapComponent dynamically for code splitting
         const [mapComponent, apiKey] = yield Promise.all([
-            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--c8ff88"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
+            Promise.all(/*! import() */[__webpack_require__.e("vendors-node_modules_mapbox_mapbox-gl-draw_dist_mapbox-gl-draw_js-node_modules_mapbox_mapbox--eecba2"), __webpack_require__.e("client_index_MapComponent_tsx-data_image_svg_xml_charset_utf-8_3Csvg_viewBox_270_0_20_20_27_x-67c81b")]).then(__webpack_require__.bind(__webpack_require__, /*! ./MapComponent */ "./client/index/MapComponent.tsx")),
             (0,_rpcClient__WEBPACK_IMPORTED_MODULE_2__.getMapboxKey)(),
         ]);
         // render with createroot
@@ -41206,6 +41206,7 @@ main();
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   connectClient: () => (/* binding */ connectClient),
+/* harmony export */   getHighways: () => (/* binding */ getHighways),
 /* harmony export */   getMapboxKey: () => (/* binding */ getMapboxKey),
 /* harmony export */   getNatureAndParkAreas: () => (/* binding */ getNatureAndParkAreas),
 /* harmony export */   getParkingAreas: () => (/* binding */ getParkingAreas),
@@ -41224,6 +41225,7 @@ let getMapboxKey;
 let getParkingAreas;
 let getNatureAndParkAreas;
 let getWateryAreas;
+let getHighways;
 let alreadyConnected = false;
 function connectClient() {
     if (alreadyConnected) {
@@ -41240,6 +41242,7 @@ function connectClient() {
     getParkingAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetParkingAreas);
     getNatureAndParkAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetNatureAndParkAreas);
     getWateryAreas = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetWateryAreas);
+    getHighways = connect(_rpc__WEBPACK_IMPORTED_MODULE_3__.ServerCalls.GetHighways);
     socket.onopen = () => {
         (0,_constants__WEBPACK_IMPORTED_MODULE_2__.d)(`Socket opened`);
     };
@@ -41266,6 +41269,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CLIENT_CALLS_SERVER_RPC_PREFIX: () => (/* binding */ CLIENT_CALLS_SERVER_RPC_PREFIX),
 /* harmony export */   DOMAIN: () => (/* binding */ DOMAIN),
+/* harmony export */   HIGHWAY_STATS_AREA_MAX_KM2: () => (/* binding */ HIGHWAY_STATS_AREA_MAX_KM2),
 /* harmony export */   OVERPASS_STATS_AREA_MAX_KM2: () => (/* binding */ OVERPASS_STATS_AREA_MAX_KM2),
 /* harmony export */   RPC_WS_PATH: () => (/* binding */ RPC_WS_PATH),
 /* harmony export */   WORLDPOP_AREA_MAX_KM2: () => (/* binding */ WORLDPOP_AREA_MAX_KM2),
@@ -41293,6 +41297,7 @@ const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
+const HIGHWAY_STATS_AREA_MAX_KM2 = 150;
 const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 const WORLDPOP_AREA_MAX_KM2 = 100000;
 const DEBUG_LOG = true;
@@ -41316,7 +41321,7 @@ function e(func, params = {}) {
         catch (e) {
             const prefix = params.errorPrefix ? params.errorPrefix + ": " : "";
             const message = `${prefix}${getErrorMessage(e)}`;
-            d(`Error: ${message}`);
+            console.error(`Error: ${message}`);
             throw e;
         }
     });
@@ -41380,6 +41385,7 @@ const ClippedAndUnclippedXml = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
     clippedXml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
     unclippedXml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
 });
+const PolygonCollectionInput = io_ts__WEBPACK_IMPORTED_MODULE_1__.any;
 const XmlResult = io_ts__WEBPACK_IMPORTED_MODULE_1__.type({
     xml: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
 });
@@ -41389,16 +41395,28 @@ const ServerCalls = {
         o: io_ts__WEBPACK_IMPORTED_MODULE_1__.string,
     }),
     GetParkingAreas: () => ({
-        i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        i: PolygonCollectionInput,
         o: XmlResult,
     }),
     GetNatureAndParkAreas: () => ({
-        i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        i: PolygonCollectionInput,
         o: XmlResult,
     }),
     GetWateryAreas: () => ({
-        i: io_ts__WEBPACK_IMPORTED_MODULE_1__.any,
+        i: PolygonCollectionInput,
         o: XmlResult,
+    }),
+    GetHighways: () => ({
+        i: PolygonCollectionInput,
+        o: XmlResult,
+    }),
+    GetTransitStops: () => ({
+        i: PolygonCollectionInput,
+        o: XmlResult,
+    }),
+    GetTransitLineCount: () => ({
+        i: PolygonCollectionInput,
+        o: io_ts__WEBPACK_IMPORTED_MODULE_1__.number,
     }),
 };
 

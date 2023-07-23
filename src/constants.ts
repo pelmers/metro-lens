@@ -7,6 +7,7 @@ export const RPC_WS_PATH = "rpc";
 export const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
 
 export const OVERPASS_STATS_AREA_MAX_KM2 = 1100;
+export const HIGHWAY_STATS_AREA_MAX_KM2 = 150;
 export const WORLDPOP_AREA_MINIMUM_KM2 = 4;
 export const WORLDPOP_AREA_MAX_KM2 = 100000;
 
@@ -38,7 +39,7 @@ export function e<TInput extends any[], TOutput>(
     } catch (e) {
       const prefix = params.errorPrefix ? params.errorPrefix + ": " : "";
       const message = `${prefix}${getErrorMessage(e)}`;
-      d(`Error: ${message}`);
+      console.error(`Error: ${message}`);
       throw e;
     }
   };

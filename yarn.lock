@@ -5824,10 +5824,29 @@ tsutils@^2.29.0:
   dependencies:
     tslib "^1.8.1"
 
+turf-featurecollection@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/turf-featurecollection/-/turf-featurecollection-1.0.1.tgz#eccd1cf9124176bfc6db197cbb45d6de55f724c5"
+  integrity sha512-VLoAXhEVd/KavMrs98x/bQccDd2R9gSPWkNLiwHwC8Cl/0S5Mid6AkCqGpc556V9DAz+6wcQvW6h+oZZQ+Sitg==
+
 turf-jsts@*:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/turf-jsts/-/turf-jsts-1.2.3.tgz#59757f542afbff9a577bbf411f183b8f48d38aa4"
   integrity sha512-Ja03QIJlPuHt4IQ2FfGex4F4JAr8m3jpaHbFbQrgwr7s7L6U8ocrHiF3J1+wf9jzhGKxvDeaCAnGDot8OjGFyA==
+
+turf-line-slice-at-intersection@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/turf-line-slice-at-intersection/-/turf-line-slice-at-intersection-1.0.1.tgz#73c0dd24ac8bbbfe1e8e33e3b53cb33e15c4d27c"
+  integrity sha512-ug8hdFg5btASR9lrmT22hOdvOC9ZnM+45/SwDesv+pXh8fNR2ApqfUdAmnnBcQSmVpKiIm1WtkhgM5uwH5Y0cg==
+  dependencies:
+    turf-featurecollection "^1.0.1"
+    turf-linestring "^1.0.2"
+    xtend "^4.0.1"
+
+turf-linestring@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/turf-linestring/-/turf-linestring-1.0.2.tgz#604a63a7c54c9346ab9f39f273bbb7ece05a3096"
+  integrity sha512-oXXB/COibgmPCUrVaSxCr5hqJsnSEwFvwGkC7hOx6KwlGfHTnhakLCM3BKeRHIfpwMT+Oo+WxJvagAh8UTUeSg==
 
 type-fest@^0.13.1:
   version "0.13.1"
