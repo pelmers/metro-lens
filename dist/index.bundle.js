@@ -41289,8 +41289,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// TODO: update the domain when I have picked a final domain name!
-const DOMAIN = "devzone.pelmers.com";
+const DOMAIN = "metro.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";

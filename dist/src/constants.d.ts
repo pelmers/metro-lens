@@ -1,4 +1,4 @@
-export declare const DOMAIN = "devzone.pelmers.com";
+export declare const DOMAIN = "metro.pelmers.com";
 export declare const WS_DOMAIN_NAME: string;
 export declare const RPC_WS_PATH = "rpc";
 export declare const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";

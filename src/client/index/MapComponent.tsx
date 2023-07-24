@@ -566,7 +566,7 @@ export default class MapComponent extends React.Component<Props, State> {
     const assertUpdateId = () => this.assertUpdateId(currentUpdateId);
     const setCurrentBatchState = (isLoading: boolean = true) => {
       if (currentUpdateId !== this.updateId) return;
-      this.setState({ stats: { ...currentBatchStats}, isLoading });
+      this.setState({ stats: { ...currentBatchStats }, isLoading });
     };
 
     setCurrentBatchState();

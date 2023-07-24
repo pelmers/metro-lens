@@ -1,5 +1,4 @@
-// TODO: update the domain when I have picked a final domain name!
-export const DOMAIN = "devzone.pelmers.com";
+export const DOMAIN = "metro.pelmers.com";
 
 export const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 

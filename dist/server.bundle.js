@@ -34,8 +34,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// TODO: update the domain when I have picked a final domain name!
-const DOMAIN = "devzone.pelmers.com";
+const DOMAIN = "metro.pelmers.com";
 const WS_DOMAIN_NAME = `wss://${DOMAIN}`;
 const RPC_WS_PATH = "rpc";
 const CLIENT_CALLS_SERVER_RPC_PREFIX = "ccsrp";
@@ -307,7 +306,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 const OVERPASS_INSTANCE_URL = "https://overpass-api.de/api/interpreter";
 const queryOverpass = (queryCode) => (0,_constants__WEBPACK_IMPORTED_MODULE_1__.t)(() => __awaiter(void 0, void 0, void 0, function* () {
-    (0,_constants__WEBPACK_IMPORTED_MODULE_1__.d)(`overpassql: ${queryCode}`);
     const url = `${OVERPASS_INSTANCE_URL}?data=${encodeURIComponent(queryCode)}`;
     const response = yield node_fetch__WEBPACK_IMPORTED_MODULE_0___default()(url);
     const text = yield response.text();
@@ -826,7 +824,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 console_stamp__WEBPACK_IMPORTED_MODULE_3___default()(console);
 const app = express__WEBPACK_IMPORTED_MODULE_0___default()();
-const port = 4041;
+const port = 4040;
 // TODO: add a global daily request limit
 function main() {
     return __awaiter(this, void 0, void 0, function* () {

@@ -15,7 +15,7 @@ import { createRpcServer } from "./rpcServer";
 
 consoleStamp(console);
 const app = express();
-const port = 4041;
+const port = 4040;
 
 // TODO: add a global daily request limit
 async function main() {

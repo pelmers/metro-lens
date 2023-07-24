@@ -239,6 +239,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquo
   padding: 8px;
   background: #d1d1d1;
   line-height: 1.4em;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
 }
 
 /* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */
@@ -251,7 +254,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquo
 .expandable-table-row.row-label > td:nth-child(1) > span {
   border-bottom: 1px solid #b8e8ff;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B,YAAY;EACZ,mBAAmB;EACnB,kBAAkB;AACpB;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  padding: 8px;\n  background: #d1d1d1;\n  line-height: 1.4em;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B,YAAY;EACZ,mBAAmB;EACnB,kBAAkB;EAClB;;cAEY;AACd;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  padding: 8px;\n  background: #d1d1d1;\n  line-height: 1.4em;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n    Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
