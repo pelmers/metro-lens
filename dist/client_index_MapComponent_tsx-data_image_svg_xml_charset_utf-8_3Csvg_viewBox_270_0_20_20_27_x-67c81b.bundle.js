@@ -27,15 +27,58 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
   flex-flow: row wrap;
 }
 
-#map-container {
+.map-container-with-style-select {
+  flex: 1;
+}
+
+.map-container-with-style-select > div {
   width: 100%;
   max-width: 950px;
   min-width: calc(min(100vw, 600px));
   margin: auto;
-  min-height: 600px;
-  flex: 1;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;EACZ,iBAAiB;EACjB,OAAO;AACT","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n#map-container {\n  width: 100%;\n  max-width: 950px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n  min-height: 600px;\n  flex: 1;\n}\n"],"sourceRoot":""}]);
+
+.map-container {
+  min-height: 620px;
+}
+
+.map-style-select {
+  font-weight: bold;
+}
+
+.map-style-select > label {
+  margin-left: 4px;
+}
+
+/* tooltip with border that points to the right |> */
+.tooltip-right {
+  position: absolute;
+  right: 33px;
+  top: 30px;
+  color: aliceblue;
+  background-color: rgba(48, 48, 48, 0.9);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid rgba(48, 48, 48, 0.9);
+  border-radius: 4px;
+  text-align: right;
+  width: 150px;
+  font-style: italic;
+  padding-right: 25px;
+  transition: visibility 0.3s, opacity 0.5s linear;
+}
+
+/* tooltip that border that points to the right |> */
+.tooltip-right:before {
+  content: "";
+  position: absolute;
+  border-left: 15px solid #aaa;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  right: 0;
+  top: 0;
+}
+`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,OAAO;AACT;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;AACd;;AAEA;EACE,iBAAiB;AACnB;;AAEA;EACE,iBAAiB;AACnB;;AAEA;EACE,gBAAgB;AAClB;;AAEA,oDAAoD;AACpD;EACE,kBAAkB;EAClB,WAAW;EACX,SAAS;EACT,gBAAgB;EAChB,uCAAuC;EACvC,iCAAiC;EACjC,oCAAoC;EACpC,4CAA4C;EAC5C,kBAAkB;EAClB,iBAAiB;EACjB,YAAY;EACZ,kBAAkB;EAClB,mBAAmB;EACnB,gDAAgD;AAClD;;AAEA,oDAAoD;AACpD;EACE,WAAW;EACX,kBAAkB;EAClB,4BAA4B;EAC5B,iCAAiC;EACjC,oCAAoC;EACpC,QAAQ;EACR,MAAM;AACR","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n.map-container-with-style-select {\n  flex: 1;\n}\n\n.map-container-with-style-select > div {\n  width: 100%;\n  max-width: 950px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n}\n\n.map-container {\n  min-height: 620px;\n}\n\n.map-style-select {\n  font-weight: bold;\n}\n\n.map-style-select > label {\n  margin-left: 4px;\n}\n\n/* tooltip with border that points to the right |> */\n.tooltip-right {\n  position: absolute;\n  right: 33px;\n  top: 30px;\n  color: aliceblue;\n  background-color: rgba(48, 48, 48, 0.9);\n  border-top: 8px solid transparent;\n  border-bottom: 8px solid transparent;\n  border-left: 8px solid rgba(48, 48, 48, 0.9);\n  border-radius: 4px;\n  text-align: right;\n  width: 150px;\n  font-style: italic;\n  padding-right: 25px;\n  transition: visibility 0.3s, opacity 0.5s linear;\n}\n\n/* tooltip that border that points to the right |> */\n.tooltip-right:before {\n  content: \"\";\n  position: absolute;\n  border-left: 15px solid #aaa;\n  border-top: 8px solid transparent;\n  border-bottom: 8px solid transparent;\n  right: 0;\n  top: 0;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -64,7 +107,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed width and light gray background */
 #map-stats-container {
-  width: 460px;
+  width: 410px;
   background-color: #f8f8f8;
   padding: 4px;
   margin-left: calc(min(2vw, 6px));
@@ -72,6 +115,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
   border: 1px solid #ddd;
   box-shadow: 0 0 5px #ddd;
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
+}
+
+#map-stats-container > table > colgroup > col:nth-of-type(1) {
+  width: 163px;
+}
+
+#map-stats-container > table > colgroup > col:nth-of-type(2) {
+  width: calc(100% - 163px);
 }
 
 /* inline class is set when the stats are put inside of the map container */
@@ -119,7 +170,35 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
 #map-stats-container #map-stats-controls label:not(:last-of-type) {
   margin-right: 12px;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA,2EAA2E;AAC3E;EACE,YAAY;EACZ,2CAA2C;EAC3C,iBAAiB;EACjB,gBAAgB;AAClB;;AAEA,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,qEAAqE;AACrE;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;EACjB,qBAAqB;AACvB;;AAEA;EACE,cAAc;EACd,0BAA0B;AAC5B;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB;;AAEA,0BAA0B;AAC1B;EACE,eAAe;AACjB;AACA;EACE,kBAAkB;AACpB","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 460px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n/* inline class is set when the stats are put inside of the map container */\n#map-stats-container.map-stats-container-inline {\n  width: 325px;\n  background-color: rgba(248, 248, 248, 0.85);\n  max-height: 480px;\n  overflow-y: auto;\n}\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font but no underline */\n#map-stats-container .map-stats-linked-value {\n  color: #0d4069;\n  cursor: pointer;\n  font-weight: bold;\n  text-decoration: none;\n}\n\n#map-stats-container .map-stats-linked-value:hover {\n  color: #2196f3;\n  text-decoration: underline;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n\n/* style the control area*/\n#map-stats-container #map-stats-controls {\n  margin-top: 8px;\n}\n#map-stats-container #map-stats-controls label:not(:last-of-type) {\n  margin-right: 12px;\n}\n"],"sourceRoot":""}]);
+
+/* if the container is inline and screen is mobile, then hide the map-stats-labels */
+@media screen and (max-width: 640px) {
+  #map-stats-container.map-stats-container-inline {
+    width: 190px;
+    background-color: rgba(248, 248, 248, 0.85);
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  #map-stats-container.map-stats-container-inline .map-stats-label {
+    display: none;
+  }
+  #map-stats-container.map-stats-container-inline
+    > table
+    > colgroup
+    > col:nth-of-type(1) {
+    width: 30px;
+  }
+  #map-stats-container.map-stats-container-inline
+    > table
+    > colgroup
+    > col:nth-of-type(2) {
+    width: calc(100% - 30px);
+  }
+  #map-stats-container #map-stats-controls label:not(:last-of-type) {
+    margin-right: 1px;
+  }
+}
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA;EACE,YAAY;AACd;;AAEA;EACE,yBAAyB;AAC3B;;AAEA,2EAA2E;AAC3E;EACE,YAAY;EACZ,2CAA2C;EAC3C,iBAAiB;EACjB,gBAAgB;AAClB;;AAEA,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,qEAAqE;AACrE;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;EACjB,qBAAqB;AACvB;;AAEA;EACE,cAAc;EACd,0BAA0B;AAC5B;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB;;AAEA,0BAA0B;AAC1B;EACE,eAAe;AACjB;AACA;EACE,kBAAkB;AACpB;;AAEA,oFAAoF;AACpF;EACE;IACE,YAAY;IACZ,2CAA2C;IAC3C,iBAAiB;IACjB,gBAAgB;EAClB;EACA;IACE,aAAa;EACf;EACA;;;;IAIE,WAAW;EACb;EACA;;;;IAIE,wBAAwB;EAC1B;EACA;IACE,iBAAiB;EACnB;AACF","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 410px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n#map-stats-container > table > colgroup > col:nth-of-type(1) {\n  width: 163px;\n}\n\n#map-stats-container > table > colgroup > col:nth-of-type(2) {\n  width: calc(100% - 163px);\n}\n\n/* inline class is set when the stats are put inside of the map container */\n#map-stats-container.map-stats-container-inline {\n  width: 325px;\n  background-color: rgba(248, 248, 248, 0.85);\n  max-height: 480px;\n  overflow-y: auto;\n}\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font but no underline */\n#map-stats-container .map-stats-linked-value {\n  color: #0d4069;\n  cursor: pointer;\n  font-weight: bold;\n  text-decoration: none;\n}\n\n#map-stats-container .map-stats-linked-value:hover {\n  color: #2196f3;\n  text-decoration: underline;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n\n/* style the control area*/\n#map-stats-container #map-stats-controls {\n  margin-top: 8px;\n}\n#map-stats-container #map-stats-controls label:not(:last-of-type) {\n  margin-right: 12px;\n}\n\n/* if the container is inline and screen is mobile, then hide the map-stats-labels */\n@media screen and (max-width: 640px) {\n  #map-stats-container.map-stats-container-inline {\n    width: 190px;\n    background-color: rgba(248, 248, 248, 0.85);\n    max-height: 480px;\n    overflow-y: auto;\n  }\n  #map-stats-container.map-stats-container-inline .map-stats-label {\n    display: none;\n  }\n  #map-stats-container.map-stats-container-inline\n    > table\n    > colgroup\n    > col:nth-of-type(1) {\n    width: 30px;\n  }\n  #map-stats-container.map-stats-container-inline\n    > table\n    > colgroup\n    > col:nth-of-type(2) {\n    width: calc(100% - 30px);\n  }\n  #map-stats-container #map-stats-controls label:not(:last-of-type) {\n    margin-right: 1px;\n  }\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -149,9 +228,6 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquote blue border on the left and sans-serif font */
 .expandable-table-row.row-description td {
   border-left: 4px solid #2196f3;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
   padding: 8px;
   background: #d1d1d1;
   line-height: 1.4em;
@@ -167,7 +243,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* render descriptions with a blockquo
 .expandable-table-row.row-label > td:nth-child(1) > span {
   border-bottom: 1px solid #b8e8ff;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B;;cAEY;EACZ,YAAY;EACZ,mBAAmB;EACnB,kBAAkB;AACpB;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n    Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\",\n    sans-serif;\n  padding: 8px;\n  background: #d1d1d1;\n  line-height: 1.4em;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/components/ExpandableTableRow.css"],"names":[],"mappings":"AAAA,sFAAsF;AACtF;EACE,8BAA8B;EAC9B,YAAY;EACZ,mBAAmB;EACnB,kBAAkB;AACpB;;AAEA,gGAAgG;AAChG;EACE,eAAe;EACf,cAAc;AAChB;;AAEA,qDAAqD;AACrD;EACE,gCAAgC;AAClC","sourcesContent":["/* render descriptions with a blockquote blue border on the left and sans-serif font */\n.expandable-table-row.row-description td {\n  border-left: 4px solid #2196f3;\n  padding: 8px;\n  background: #d1d1d1;\n  line-height: 1.4em;\n}\n\n/* render labels with a cursor and highlight in blue on hover to indicate they can be expanded */\n.expandable-table-row.row-label > td:nth-child(1):hover {\n  cursor: pointer;\n  color: #2196f3;\n}\n\n/* when not hovered add a very light blue underline */\n.expandable-table-row.row-label > td:nth-child(1) > span {\n  border-bottom: 1px solid #b8e8ff;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -400,6 +476,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const MapStyles = {
+    // TODO: make a new style based on light but that shows transit stops and slightly darker city names
     default: "mapbox://styles/mapbox/light-v11",
     satellite: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
 };
@@ -519,6 +596,17 @@ const OverpassAreaTooBigValue = {
 const HighwayAreaTooBigValue = {
     missing: `Selection too large (>${_constants__WEBPACK_IMPORTED_MODULE_10__.HIGHWAY_STATS_AREA_MAX_KM2} km²)`,
 };
+function showTemporaryTooltip(options) {
+    const tooltip = document.createElement("div");
+    tooltip.className = `tooltip-${options.align}`;
+    tooltip.textContent = options.text;
+    tooltip.style.top = `${options.top}px`;
+    options.target.appendChild(tooltip);
+    setTimeout(() => {
+        tooltip.style.visibility = "hidden";
+        tooltip.style.opacity = "0";
+    }, options.timer);
+}
 const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ railStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, totalTransitLines: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders, areaKm2) => __awaiter(void 0, void 0, void 0, function* () {
     if (areaKm2 > _constants__WEBPACK_IMPORTED_MODULE_10__.OVERPASS_STATS_AREA_MAX_KM2) {
         return {
@@ -605,6 +693,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         this.state = {
             style: MapStyles.default,
             stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.DefaultStats)(),
+            isLoading: false,
         };
         this.updateHighwayMapAndGetStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({
             busStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
@@ -684,7 +773,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             // only the last one would be reflected. We don't know in advance the order and timing
             // so we keep a batch object that contains all stats so far, and use it as the new state each time.
             const currentBatchStats = (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.AllLoadingStats)();
-            this.setState({ stats: Object.assign({}, currentBatchStats) });
+            this.setState({ stats: Object.assign({}, currentBatchStats), isLoading: true });
             const area = {
                 value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.area(data) / 1000000,
                 units: "km²",
@@ -768,8 +857,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             catch (err) {
                 console.error(err);
             }
-            // TODO: also clear loading state here
-            this.setState({ stats: Object.assign({}, currentBatchStats) });
+            this.setState({ stats: Object.assign({}, currentBatchStats), isLoading: false });
         });
         this.deleteFeatures = () => {
             for (const layer of Object.values(MapLayers)) {
@@ -850,6 +938,24 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.map.on("draw.update", this.updateDrawing);
             this.map.on("draw.delete", this.updateDrawing);
             this.map.on("draw.render", () => (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.renderDrawMeasurements)(this.map, this.drawControl.getAll()));
+            console.log(document.querySelector(".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon"));
+            const drawPolyButton = document.querySelector(".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon");
+            const drawCircleButton = document.querySelector(".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_circle");
+            // TODO: add a tooltip that shows for 5 seconds, pointing at these buttons, one saying draw a circle, one saying draw a polygon
+            showTemporaryTooltip({
+                align: "right",
+                timer: 12000,
+                text: "Click to draw a polygon",
+                target: drawPolyButton,
+                top: 0,
+            });
+            showTemporaryTooltip({
+                align: "right",
+                timer: 12000,
+                text: "Click to draw a circle",
+                target: drawCircleButton,
+                top: 30,
+            });
             yield this.setMapSources();
         });
     }
@@ -870,19 +976,19 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         });
     }
     render() {
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-style-select" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "checkbox", id: "map-style-select", name: "map-style-select", checked: this.state.style === MapStyles.satellite, onChange: (e) => {
-                        this.setState({
-                            style: e.target.checked
-                                ? MapStyles.satellite
-                                : MapStyles.default,
-                        });
-                    } }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", { htmlFor: "map-style-select" }, "Satellite")),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.MapStatsComponent, Object.assign({}, this.state.stats)))));
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-with-style-select" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-style-select" },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "checkbox", id: "map-style-select", name: "map-style-select", checked: this.state.style === MapStyles.satellite, onChange: (e) => {
+                            this.setState({
+                                style: e.target.checked
+                                    ? MapStyles.satellite
+                                    : MapStyles.default,
+                            });
+                        } }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", { htmlFor: "map-style-select" }, "\uD83D\uDEF0\uFE0F Satellite")),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container", ref: this.mapDivRef })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.MapStatsComponent, Object.assign({}, this.state.stats))));
     }
 }
 
@@ -950,6 +1056,11 @@ const AllLoadingStats = () => {
     }
     return props;
 };
+function EmojiLabelComponent(props) {
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-emoji-label" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-emoji" }, props.emoji),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-label" }, " " + props.label)));
+}
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor() {
         super(...arguments);
@@ -988,8 +1099,8 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     units = "%";
                 }
                 else {
-                    value = stat.value / areaMaybeMi2;
-                    units = stat.units + (this.state.metric ? "/km²" : "/mi²");
+                    value = value / areaMaybeMi2;
+                    units = units + (this.state.metric ? "/km²" : "/mi²");
                 }
             }
             const text = `${isEstimate ? "~" : ""}${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value)} ${units}`;
@@ -1028,30 +1139,30 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-container", ref: this.containerRef, className: this.state.inline ? "map-stats-container-inline" : "" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("table", null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("colgroup", null,
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", { style: { width: "163px" } }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", { style: { width: "calc(100% - 163px)" } })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", null),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", null)),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tbody", null,
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDDFA\uFE0F Area", value: this.valueToDisplay(props.area, { skipDensity: true }), description: "Area of the drawn shape." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCCF Perimeter", value: this.valueToDisplay(props.perimeter, {
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDDFA\uFE0F", label: "Area" }), value: this.valueToDisplay(props.area, { skipDensity: true }), description: "Area of the drawn shape." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDCCF", label: "Perimeter" }), value: this.valueToDisplay(props.perimeter, {
                             skipDensity: true,
                         }), description: "Perimeter of the drawn shape." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDC65 Population", value: this.valueToDisplay(props.population, {
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDC65", label: "Population" }), value: this.valueToDisplay(props.population, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated population within the drawn shape. Data source: [WorldPop 2020](https://www.worldpop.org/).") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDD7F\uFE0F Parking Area", value: this.valueToDisplay(props.parkingArea), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total area of all [dedicated parking amenities](https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dparking) within the shape. Shown in red on the map. Click number for data source.") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEE3\uFE0F\uFE0F Road Length", value: this.valueToDisplay(props.highwayLength), description: "Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE99\uFE0F\uFE0F Road Area", value: this.valueToDisplay(props.highwayArea, {
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83C\uDD7F\uFE0F", label: "Parking Area" }), value: this.valueToDisplay(props.parkingArea), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total area of all [dedicated parking amenities](https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dparking) within the shape. Shown in red on the map. Click number for data source.") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDEE3\uFE0F", label: "Road Length" }), value: this.valueToDisplay(props.highwayLength), description: "Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDE99\uFE0F", label: "Road Area" }), value: this.valueToDisplay(props.highwayArea, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total area of all vehicle-accessible roads within the shape. Estimate based on lane data of roads and [heuristics for road width](https://en.wikipedia.org/wiki/Lane#Lane_width).") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB4\u200D\u2642\uFE0F\uFE0F\uFE0F Cycle Paths", value: this.valueToDisplay(props.cyclewayLength), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total length of all [dedicated cycle paths](https://wiki.openstreetmap.org/wiki/Key:highway#When_cycleway_is_drawn_as_its_own_way_(see_Bicycle)) within the shape, does not include shared lanes on roads. Shown in dark green on the map. Click number for data source.") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDEB2\uFE0F\uFE0F Cycle Area", value: this.valueToDisplay(props.cyclewayArea, {
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDEB4\u200D\u2642\uFE0F", label: "Cycle Paths" }), value: this.valueToDisplay(props.cyclewayLength), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Total length of all [dedicated cycle paths](https://wiki.openstreetmap.org/wiki/Key:highway#When_cycleway_is_drawn_as_its_own_way_(see_Bicycle)) within the shape, does not include shared lanes on roads. Shown in dark green on the map. Click number for data source.") }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDEB2\uFE0F\uFE0F", label: "Cycle Area" }), value: this.valueToDisplay(props.cyclewayArea, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated total area of all dedicated cycle paths, not including shared lanes on roads. Estimate based on [average width of all labeled cycle paths](https://taginfo.openstreetmap.org/keys/cycleway%3Awidth#overview).") }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83C\uDF33 Nature Area", value: this.valueToDisplay(props.natureArea), description: "Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE8C Bus Stops", value: this.valueToDisplay(props.busStops), description: "Total number of bus stops within the shape. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE83 Rail Stations", value: this.valueToDisplay(props.railStops), description: "Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE87 Transit Routes", value: this.valueToDisplay(props.totalTransitLines), description: "Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCA6 Water Area", value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source." }))),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83C\uDF33", label: "Nature Area" }), value: this.valueToDisplay(props.natureArea), description: "Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDE8C", label: "Bus Stops" }), value: this.valueToDisplay(props.busStops), description: "Total number of bus stops within the shape. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDE83", label: "Rail Stations" }), value: this.valueToDisplay(props.railStops), description: "Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDE87", label: "Transit Routes" }), value: this.valueToDisplay(props.totalTransitLines), description: "Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(EmojiLabelComponent, { emoji: "\uD83D\uDCA6", label: "Water Area" }), value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source." }))),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-controls" },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "checkbox", checked: this.state.inline, onChange: (e) => this.setState({ inline: e.target.checked }) }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", null, "Inline"),
@@ -1404,6 +1515,7 @@ function addDrawControlButton(iconPath, onClick) {
     // Create a button with the given icon as a sibling of the selected polygon button
     const button = document.createElement("button");
     button.className = "mapbox-gl-draw_ctrl-draw-btn";
+    button.classList.add("mapbox-gl-draw_circle");
     // Set padding: 3px on the button
     button.style.padding = "3px";
     button.innerHTML = `<span class="mapbox-gl-draw_icon"><img src="${iconPath}"></span>`;
@@ -1492,7 +1604,15 @@ function estimateHighwayFeatureWidth(feature) {
         }
     }
     // Heuristic for the width of a lane, plus some buffer, depending on highway type
-    return buffer + lanes * laneWidth;
+    const width = buffer + lanes * laneWidth;
+    // if nan, return 0 and print a warning
+    if (Number.isNaN(width)) {
+        console.warn("Could not estimate width for feature", feature);
+        return 0;
+    }
+    else {
+        return width;
+    }
 }
 
 

@@ -243,6 +243,7 @@ export function addDrawControlButton(iconPath: string, onClick: () => unknown) {
   // Create a button with the given icon as a sibling of the selected polygon button
   const button = document.createElement("button");
   button.className = "mapbox-gl-draw_ctrl-draw-btn";
+  button.classList.add("mapbox-gl-draw_circle");
   // Set padding: 3px on the button
   button.style.padding = "3px";
   button.innerHTML = `<span class="mapbox-gl-draw_icon"><img src="${iconPath}"></span>`;
@@ -331,5 +332,12 @@ export function estimateHighwayFeatureWidth(feature: turf.Feature): number {
   }
 
   // Heuristic for the width of a lane, plus some buffer, depending on highway type
-  return buffer + lanes * laneWidth;
+  const width = buffer + lanes * laneWidth;
+  // if nan, return 0 and print a warning
+  if (Number.isNaN(width)) {
+    console.warn("Could not estimate width for feature", feature);
+    return 0;
+  } else {
+    return width;
+  }
 }

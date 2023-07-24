@@ -16,6 +16,7 @@ type Props = {
 };
 type State = {
     style: string;
+    isLoading: boolean;
     stats: MapStatsComponentProps;
 };
 export default class MapComponent extends React.Component<Props, State> {
@@ -26,7 +27,8 @@ export default class MapComponent extends React.Component<Props, State> {
     mapDivRef: React.RefObject<HTMLDivElement>;
     state: State;
     constructor(props: Props);
-    constructMap(): Promise<void>;
+    setMapSources(): Promise<void>;
+    constructMap(startingCenter?: [number, number]): Promise<void>;
     updateHighwayMapAndGetStats: (borders: FeatureCollection<import("geojson").Geometry, {
         [name: string]: any;
     }>, areaKm2: number) => Promise<{

@@ -827,6 +827,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 console_stamp__WEBPACK_IMPORTED_MODULE_3___default()(console);
 const app = express__WEBPACK_IMPORTED_MODULE_0___default()();
 const port = 4041;
+// TODO: add a global daily request limit
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         app.use(compression__WEBPACK_IMPORTED_MODULE_1___default()());

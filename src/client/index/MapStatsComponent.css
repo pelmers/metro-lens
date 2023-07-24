@@ -1,6 +1,6 @@
 /* create stats container with fixed width and light gray background */
 #map-stats-container {
-  width: 460px;
+  width: 410px;
   background-color: #f8f8f8;
   padding: 4px;
   margin-left: calc(min(2vw, 6px));
@@ -8,6 +8,14 @@
   border: 1px solid #ddd;
   box-shadow: 0 0 5px #ddd;
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
+}
+
+#map-stats-container > table > colgroup > col:nth-of-type(1) {
+  width: 163px;
+}
+
+#map-stats-container > table > colgroup > col:nth-of-type(2) {
+  width: calc(100% - 163px);
 }
 
 /* inline class is set when the stats are put inside of the map container */
@@ -54,4 +62,32 @@
 }
 #map-stats-container #map-stats-controls label:not(:last-of-type) {
   margin-right: 12px;
+}
+
+/* if the container is inline and screen is mobile, then hide the map-stats-labels */
+@media screen and (max-width: 640px) {
+  #map-stats-container.map-stats-container-inline {
+    width: 190px;
+    background-color: rgba(248, 248, 248, 0.85);
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  #map-stats-container.map-stats-container-inline .map-stats-label {
+    display: none;
+  }
+  #map-stats-container.map-stats-container-inline
+    > table
+    > colgroup
+    > col:nth-of-type(1) {
+    width: 30px;
+  }
+  #map-stats-container.map-stats-container-inline
+    > table
+    > colgroup
+    > col:nth-of-type(2) {
+    width: calc(100% - 30px);
+  }
+  #map-stats-container #map-stats-controls label:not(:last-of-type) {
+    margin-right: 1px;
+  }
 }

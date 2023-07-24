@@ -55,10 +55,12 @@ type Props = {
 };
 type State = {
   style: string;
+  isLoading: boolean;
   stats: MapStatsComponentProps;
 };
 
 const MapStyles = {
+  // TODO: make a new style based on light but that shows transit stops and slightly darker city names
   default: "mapbox://styles/mapbox/light-v11",
   satellite: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
 };
@@ -190,6 +192,24 @@ type HighwayStatsType = {
   cyclewayArea: StatValue;
 };
 
+function showTemporaryTooltip(options: {
+  align: "left" | "right";
+  timer: number;
+  text: string;
+  target: HTMLElement;
+  top: number;
+}) {
+  const tooltip = document.createElement("div");
+  tooltip.className = `tooltip-${options.align}`;
+  tooltip.textContent = options.text;
+  tooltip.style.top = `${options.top}px`;
+  options.target.appendChild(tooltip);
+  setTimeout(() => {
+    tooltip.style.visibility = "hidden";
+    tooltip.style.opacity = "0";
+  }, options.timer);
+}
+
 const getTransitCountsStats = wrapWithDefault(
   { railStops: ErrorValue, totalTransitLines: ErrorValue },
   async (
@@ -315,6 +335,7 @@ export default class MapComponent extends React.Component<Props, State> {
   state: State = {
     style: MapStyles.default,
     stats: DefaultStats(),
+    isLoading: false,
   };
 
   constructor(props: Props) {
@@ -399,6 +420,33 @@ export default class MapComponent extends React.Component<Props, State> {
     this.map.on("draw.render", () =>
       renderDrawMeasurements(this.map, this.drawControl.getAll())
     );
+
+    console.log(
+      document.querySelector(
+        ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon"
+      )
+    );
+    const drawPolyButton = document.querySelector(
+      ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon"
+    );
+    const drawCircleButton = document.querySelector(
+      ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_circle"
+    );
+    // TODO: add a tooltip that shows for 5 seconds, pointing at these buttons, one saying draw a circle, one saying draw a polygon
+    showTemporaryTooltip({
+      align: "right",
+      timer: 12000,
+      text: "Click to draw a polygon",
+      target: drawPolyButton as HTMLElement,
+      top: 0,
+    });
+    showTemporaryTooltip({
+      align: "right",
+      timer: 12000,
+      text: "Click to draw a circle",
+      target: drawCircleButton as HTMLElement,
+      top: 30,
+    });
 
     await this.setMapSources();
   }
@@ -501,7 +549,7 @@ export default class MapComponent extends React.Component<Props, State> {
     // only the last one would be reflected. We don't know in advance the order and timing
     // so we keep a batch object that contains all stats so far, and use it as the new state each time.
     const currentBatchStats = AllLoadingStats();
-    this.setState({ stats: { ...currentBatchStats } });
+    this.setState({ stats: { ...currentBatchStats }, isLoading: true });
 
     const area = {
       value: turf.area(data) / 1000000,
@@ -615,8 +663,7 @@ export default class MapComponent extends React.Component<Props, State> {
     } catch (err) {
       console.error(err);
     }
-    // TODO: also clear loading state here
-    this.setState({ stats: { ...currentBatchStats } });
+    this.setState({ stats: { ...currentBatchStats }, isLoading: false });
   };
 
   deleteFeatures = () => {
@@ -649,30 +696,29 @@ export default class MapComponent extends React.Component<Props, State> {
 
   render() {
     return (
-      <>
-        {/* satellite style select checkbox */}
-        <div className="map-style-select">
-          <input
-            type="checkbox"
-            id="map-style-select"
-            name="map-style-select"
-            checked={this.state.style === MapStyles.satellite}
-            onChange={(e) => {
-              this.setState({
-                style: e.target.checked
-                  ? MapStyles.satellite
-                  : MapStyles.default,
-              });
-            }}
-          />
-          <label htmlFor="map-style-select">Satellite</label>
+      <div className="map-container-container">
+        <div className="map-container-with-style-select">
+          <div className="map-style-select">
+            <input
+              type="checkbox"
+              id="map-style-select"
+              name="map-style-select"
+              checked={this.state.style === MapStyles.satellite}
+              onChange={(e) => {
+                this.setState({
+                  style: e.target.checked
+                    ? MapStyles.satellite
+                    : MapStyles.default,
+                });
+              }}
+            />
+            <label htmlFor="map-style-select">🛰️ Satellite</label>
+          </div>
+          <div className="map-container" ref={this.mapDivRef} />
         </div>
-        <div className="map-container-container">
-          <div id="map-container" ref={this.mapDivRef} />
-          {/* TODO add a map legend, e.g. https://docs.mapbox.com/mapbox-gl-js/example/updating-choropleth/ */}
-          <MapStatsComponent {...this.state.stats} />
-        </div>
-      </>
+        {/* TODO add a map legend, e.g. https://docs.mapbox.com/mapbox-gl-js/example/updating-choropleth/ */}
+        <MapStatsComponent {...this.state.stats} />
+      </div>
     );
   }
 }

@@ -64,6 +64,15 @@ type State = {
   density: boolean;
 };
 
+function EmojiLabelComponent(props: { emoji: string; label: string }) {
+  return (
+    <span className="map-stats-emoji-label">
+      <span className="map-stats-emoji">{props.emoji}</span>
+      <span className="map-stats-label">{" " + props.label}</span>
+    </span>
+  );
+}
+
 export class MapStatsComponent extends React.Component<Props, State> {
   containerRef: React.RefObject<HTMLDivElement> = React.createRef();
   state: State = {
@@ -99,8 +108,8 @@ export class MapStatsComponent extends React.Component<Props, State> {
           value = (stat.value / areaKm2) * 100;
           units = "%";
         } else {
-          value = stat.value / areaMaybeMi2;
-          units = stat.units + (this.state.metric ? "/km²" : "/mi²");
+          value = value / areaMaybeMi2;
+          units = units + (this.state.metric ? "/km²" : "/mi²");
         }
       }
       const text = `${isEstimate ? "~" : ""}${numberForDisplay(
@@ -166,24 +175,24 @@ export class MapStatsComponent extends React.Component<Props, State> {
       >
         <table>
           <colgroup>
-            <col style={{ width: "163px" }} />
-            <col style={{ width: "calc(100% - 163px)" }} />
+            <col />
+            <col />
           </colgroup>
           <tbody>
             <ExpandableTableRow
-              label="🗺️ Area"
+              label={<EmojiLabelComponent emoji="🗺️" label="Area" />}
               value={this.valueToDisplay(props.area, { skipDensity: true })}
               description="Area of the drawn shape."
             />
             <ExpandableTableRow
-              label="📏 Perimeter"
+              label={<EmojiLabelComponent emoji="📏" label="Perimeter" />}
               value={this.valueToDisplay(props.perimeter, {
                 skipDensity: true,
               })}
               description="Perimeter of the drawn shape."
             />
             <ExpandableTableRow
-              label="👥 Population"
+              label={<EmojiLabelComponent emoji="👥" label="Population" />}
               value={this.valueToDisplay(props.population, {
                 isEstimate: true,
               })}
@@ -195,7 +204,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
               }
             />
             <ExpandableTableRow
-              label="🅿️ Parking Area"
+              label={<EmojiLabelComponent emoji="🅿️" label="Parking Area" />}
               value={this.valueToDisplay(props.parkingArea)}
               description={
                 <ReactMarkdown linkTarget="_blank">
@@ -207,12 +216,12 @@ export class MapStatsComponent extends React.Component<Props, State> {
               }
             />
             <ExpandableTableRow
-              label="🛣️️ Road Length"
+              label={<EmojiLabelComponent emoji="🛣️" label="Road Length" />}
               value={this.valueToDisplay(props.highwayLength)}
               description="Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map."
             />
             <ExpandableTableRow
-              label="🚙️️ Road Area"
+              label={<EmojiLabelComponent emoji="🚙️" label="Road Area" />}
               value={this.valueToDisplay(props.highwayArea, {
                 isEstimate: true,
               })}
@@ -225,7 +234,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
               }
             />
             <ExpandableTableRow
-              label="🚴‍♂️️️ Cycle Paths"
+              label={<EmojiLabelComponent emoji="🚴‍♂️" label="Cycle Paths" />}
               value={this.valueToDisplay(props.cyclewayLength)}
               description={
                 <ReactMarkdown linkTarget="_blank">
@@ -237,7 +246,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
               }
             />
             <ExpandableTableRow
-              label="🚲️️ Cycle Area"
+              label={<EmojiLabelComponent emoji="🚲️️" label="Cycle Area" />}
               value={this.valueToDisplay(props.cyclewayArea, {
                 isEstimate: true,
               })}
@@ -251,27 +260,27 @@ export class MapStatsComponent extends React.Component<Props, State> {
               }
             />
             <ExpandableTableRow
-              label="🌳 Nature Area"
+              label={<EmojiLabelComponent emoji="🌳" label="Nature Area" />}
               value={this.valueToDisplay(props.natureArea)}
               description="Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source."
             />
             <ExpandableTableRow
-              label="🚌 Bus Stops"
+              label={<EmojiLabelComponent emoji="🚌" label="Bus Stops" />}
               value={this.valueToDisplay(props.busStops)}
               description="Total number of bus stops within the shape. Click number for data source."
             />
             <ExpandableTableRow
-              label="🚃 Rail Stations"
+              label={<EmojiLabelComponent emoji="🚃" label="Rail Stations" />}
               value={this.valueToDisplay(props.railStops)}
               description="Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source."
             />
             <ExpandableTableRow
-              label="🚇 Transit Routes"
+              label={<EmojiLabelComponent emoji="🚇" label="Transit Routes" />}
               value={this.valueToDisplay(props.totalTransitLines)}
               description="Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source."
             />
             <ExpandableTableRow
-              label="💦 Water Area"
+              label={<EmojiLabelComponent emoji="💦" label="Water Area" />}
               value={this.valueToDisplay(props.wateryArea)}
               description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source."
             />

@@ -1,9 +1,6 @@
 /* render descriptions with a blockquote blue border on the left and sans-serif font */
 .expandable-table-row.row-description td {
   border-left: 4px solid #2196f3;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
   padding: 8px;
   background: #d1d1d1;
   line-height: 1.4em;

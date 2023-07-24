@@ -16,6 +16,7 @@ type Props = {
 };
 type State = {
     style: string;
+    isLoading: boolean;
     stats: MapStatsComponentProps;
 };
 export default class MapComponent extends React.Component<Props, State> {

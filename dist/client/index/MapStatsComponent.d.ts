@@ -37,9 +37,11 @@ type State = {
 export declare class MapStatsComponent extends React.Component<Props, State> {
     containerRef: React.RefObject<HTMLDivElement>;
     state: State;
-    valueToDisplay(value: StatValue, options?: {
-        isEstimate: boolean;
+    valueToDisplay(stat: StatValue, options?: {
+        isEstimate?: boolean;
+        skipDensity?: boolean;
     }): React.JSX.Element;
+    componentDidUpdate(prevProps: Props, prevState: State): void;
     render(): React.JSX.Element;
 }
 export {};

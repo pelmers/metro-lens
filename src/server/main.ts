@@ -17,6 +17,7 @@ consoleStamp(console);
 const app = express();
 const port = 4041;
 
+// TODO: add a global daily request limit
 async function main() {
   app.use(compression());
   app.use(favicon(r("favicon.ico")));
