@@ -77,7 +77,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
 /* inline class is set when the stats are put inside of the map container */
 #map-stats-container.map-stats-container-inline {
   width: 325px;
-  background-color: rgba(248, 248, 248, 0.5);
+  background-color: rgba(248, 248, 248, 0.85);
+  max-height: 480px;
+  overflow-y: auto;
 }
 
 /* add a border, bold the values in the second column of the table */
@@ -117,7 +119,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* create stats container with fixed w
 #map-stats-container #map-stats-controls label:not(:last-of-type) {
   margin-right: 12px;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA,2EAA2E;AAC3E;EACE,YAAY;EACZ,0CAA0C;AAC5C;;AAEA,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,qEAAqE;AACrE;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;EACjB,qBAAqB;AACvB;;AAEA;EACE,cAAc;EACd,0BAA0B;AAC5B;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB;;AAEA,0BAA0B;AAC1B;EACE,eAAe;AACjB;AACA;EACE,kBAAkB;AACpB","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 460px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n/* inline class is set when the stats are put inside of the map container */\n#map-stats-container.map-stats-container-inline {\n  width: 325px;\n  background-color: rgba(248, 248, 248, 0.5);\n}\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font but no underline */\n#map-stats-container .map-stats-linked-value {\n  color: #0d4069;\n  cursor: pointer;\n  font-weight: bold;\n  text-decoration: none;\n}\n\n#map-stats-container .map-stats-linked-value:hover {\n  color: #2196f3;\n  text-decoration: underline;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n\n/* style the control area*/\n#map-stats-container #map-stats-controls {\n  margin-top: 8px;\n}\n#map-stats-container #map-stats-controls label:not(:last-of-type) {\n  margin-right: 12px;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapStatsComponent.css"],"names":[],"mappings":"AAAA,sEAAsE;AACtE;EACE,YAAY;EACZ,yBAAyB;EACzB,YAAY;EACZ,gCAAgC;EAChC,kBAAkB;EAClB,sBAAsB;EACtB,wBAAwB;EACxB,uDAAuD;AACzD;;AAEA,2EAA2E;AAC3E;EACE,YAAY;EACZ,2CAA2C;EAC3C,iBAAiB;EACjB,gBAAgB;AAClB;;AAEA,oEAAoE;AACpE;EACE,2BAA2B;AAC7B;;AAEA,6DAA6D;AAC7D;EACE,cAAc;EACd,kBAAkB;AACpB;;AAEA,qEAAqE;AACrE;EACE,cAAc;EACd,eAAe;EACf,iBAAiB;EACjB,qBAAqB;AACvB;;AAEA;EACE,cAAc;EACd,0BAA0B;AAC5B;;AAEA,wDAAwD;AACxD;EACE,cAAc;EACd,iBAAiB;AACnB;;AAEA,0BAA0B;AAC1B;EACE,eAAe;AACjB;AACA;EACE,kBAAkB;AACpB","sourcesContent":["/* create stats container with fixed width and light gray background */\n#map-stats-container {\n  width: 460px;\n  background-color: #f8f8f8;\n  padding: 4px;\n  margin-left: calc(min(2vw, 6px));\n  border-radius: 5px;\n  border: 1px solid #ddd;\n  box-shadow: 0 0 5px #ddd;\n  font-family: Consolas, Monaco, \"Roboto Mono\", monospace;\n}\n\n/* inline class is set when the stats are put inside of the map container */\n#map-stats-container.map-stats-container-inline {\n  width: 325px;\n  background-color: rgba(248, 248, 248, 0.85);\n  max-height: 480px;\n  overflow-y: auto;\n}\n\n/* add a border, bold the values in the second column of the table */\n#map-stats-container table tr td:nth-of-type(2) {\n  border-left: 1px solid #ddd;\n}\n\n/* render missing values in a light orange color in italics */\n#map-stats-container .map-stats-missing-value {\n  color: #ff8a80;\n  font-style: italic;\n}\n\n/* render linked values with bolded dark blue font but no underline */\n#map-stats-container .map-stats-linked-value {\n  color: #0d4069;\n  cursor: pointer;\n  font-weight: bold;\n  text-decoration: none;\n}\n\n#map-stats-container .map-stats-linked-value:hover {\n  color: #2196f3;\n  text-decoration: underline;\n}\n\n/* render unlinked values with a bolded dark gray font */\n#map-stats-container .map-stats-unlinked-value {\n  color: #303030;\n  font-weight: bold;\n}\n\n/* style the control area*/\n#map-stats-container #map-stats-controls {\n  margin-top: 8px;\n}\n#map-stats-container #map-stats-controls label:not(:last-of-type) {\n  margin-right: 12px;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -397,6 +399,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+const MapStyles = {
+    default: "mapbox://styles/mapbox/light-v11",
+    satellite: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
+};
 const MapLayers = {
     SURFACE_PARKING_POLYGONS: {
         id: "surfaceParkingAreas",
@@ -597,8 +603,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         });
         this.mapDivRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
         this.state = {
-            // use satellite style
-            style: "mapbox://styles/mapbox/light-v11",
+            style: MapStyles.default,
             stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.DefaultStats)(),
         };
         this.updateHighwayMapAndGetStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({
@@ -778,33 +783,8 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.state = Object.assign(Object.assign({}, this.state), props.initialState);
         }
     }
-    constructMap() {
+    setMapSources() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.map = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().Map)({
-                container: this.mapDivRef.current,
-                style: this.state.style,
-                accessToken: this.props.apiKey,
-                center: (0,_pickACity__WEBPACK_IMPORTED_MODULE_16__.randomCityCenter)(),
-                zoom: 12,
-            });
-            this.map.addControl(this.geocoderControl, "top-left");
-            this.map.addControl(this.mapControl);
-            // Add geolocate control
-            this.map.addControl(new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().GeolocateControl)({
-                positionOptions: {
-                    enableHighAccuracy: true,
-                },
-                trackUserLocation: true,
-            }));
-            this.map.addControl(this.drawControl);
-            // TODO: the correct button isn't highlighted as active when clicked
-            (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.addDrawControlButton)("/static/icons/circle.svg", () => {
-                this.drawControl.changeMode("drag_circle");
-            });
-            this.map.on("draw.create", this.updateDrawing);
-            this.map.on("draw.update", this.updateDrawing);
-            this.map.on("draw.delete", this.updateDrawing);
-            this.map.on("draw.render", () => (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.renderDrawMeasurements)(this.map, this.drawControl.getAll()));
             yield new Promise((resolve) => {
                 this.map.once("styledata", () => {
                     for (const layer of Object.values(MapLayers)) {
@@ -842,6 +822,37 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             });
         });
     }
+    constructMap(startingCenter) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const center = startingCenter || (0,_pickACity__WEBPACK_IMPORTED_MODULE_16__.randomCityCenter)();
+            this.map = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().Map)({
+                container: this.mapDivRef.current,
+                style: this.state.style,
+                accessToken: this.props.apiKey,
+                center,
+                zoom: 12,
+            });
+            this.map.addControl(this.geocoderControl, "top-left");
+            this.map.addControl(this.mapControl);
+            // Add geolocate control
+            this.map.addControl(new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().GeolocateControl)({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+                trackUserLocation: true,
+            }));
+            this.map.addControl(this.drawControl);
+            // TODO: the correct button isn't highlighted as active when clicked
+            (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.addDrawControlButton)("/static/icons/circle.svg", () => {
+                this.drawControl.changeMode("drag_circle");
+            });
+            this.map.on("draw.create", this.updateDrawing);
+            this.map.on("draw.update", this.updateDrawing);
+            this.map.on("draw.delete", this.updateDrawing);
+            this.map.on("draw.render", () => (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.renderDrawMeasurements)(this.map, this.drawControl.getAll()));
+            yield this.setMapSources();
+        });
+    }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.constructMap();
@@ -853,13 +864,25 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         return __awaiter(this, void 0, void 0, function* () {
             if (this.state.style !== nextState.style) {
                 this.map.setStyle(nextState.style);
+                yield this.setMapSources();
+                yield this.updateDrawing({ type: "stylechange" });
             }
         });
     }
     render() {
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.MapStatsComponent, Object.assign({}, this.state.stats))));
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-style-select" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "checkbox", id: "map-style-select", name: "map-style-select", checked: this.state.style === MapStyles.satellite, onChange: (e) => {
+                        this.setState({
+                            style: e.target.checked
+                                ? MapStyles.satellite
+                                : MapStyles.default,
+                        });
+                    } }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", { htmlFor: "map-style-select" }, "Satellite")),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-container", ref: this.mapDivRef }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.MapStatsComponent, Object.assign({}, this.state.stats)))));
     }
 }
 
@@ -927,9 +950,6 @@ const AllLoadingStats = () => {
     }
     return props;
 };
-// TODO: add a stats compare mode if multiple polygons are selected
-// TODO: add a density toggle that changes all stats to per km2
-// TODO: add a inline toggle that moves the stats to the map and makes the background slightly transparent
 class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor() {
         super(...arguments);
@@ -940,17 +960,40 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
             density: false,
         };
     }
-    valueToDisplay(value, options) {
-        var _a;
+    valueToDisplay(stat, options) {
+        var _a, _b;
         const isEstimate = (_a = options === null || options === void 0 ? void 0 : options.isEstimate) !== null && _a !== void 0 ? _a : false;
-        if ("missing" in value) {
-            return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-missing-value" }, value.missing);
+        const skipDensity = (_b = options === null || options === void 0 ? void 0 : options.skipDensity) !== null && _b !== void 0 ? _b : false;
+        if ("missing" in stat) {
+            return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-missing-value" }, stat.missing);
         }
         else {
-            // TODO: convert to metric/imperial based on state
-            // TODO: convert to density based on state
-            const text = `${isEstimate ? "~" : ""}${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value.value)} ${value.units}`;
-            return value.query ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { className: "map-stats-linked-value", href: `https://overpass-turbo.eu/?Q=${encodeURIComponent(value.query)}`, target: "_blank", rel: "noopener noreferrer" }, text)) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-unlinked-value" }, text));
+            let { value, units } = stat;
+            // Stats are given as metric by default
+            if (!this.state.metric) {
+                if (stat.units === "km²") {
+                    value *= 0.386102;
+                    units = "mi²";
+                }
+                else if (stat.units == "km") {
+                    value *= 0.621371;
+                    units = "mi";
+                }
+            }
+            if (this.state.density && "value" in this.props.area && !skipDensity) {
+                const areaKm2 = this.props.area.value;
+                const areaMaybeMi2 = this.state.metric ? areaKm2 : areaKm2 * 0.386102;
+                if (stat.units === "km²") {
+                    value = (stat.value / areaKm2) * 100;
+                    units = "%";
+                }
+                else {
+                    value = stat.value / areaMaybeMi2;
+                    units = stat.units + (this.state.metric ? "/km²" : "/mi²");
+                }
+            }
+            const text = `${isEstimate ? "~" : ""}${(0,_constants__WEBPACK_IMPORTED_MODULE_1__.numberForDisplay)(value)} ${units}`;
+            return stat.query ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { className: "map-stats-linked-value", href: `https://overpass-turbo.eu/?Q=${encodeURIComponent(stat.query)}`, target: "_blank", rel: "noopener noreferrer" }, text)) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { className: "map-stats-unlinked-value" }, text));
         }
     }
     componentDidUpdate(prevProps, prevState) {
@@ -988,8 +1031,10 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", { style: { width: "163px" } }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("col", { style: { width: "calc(100% - 163px)" } })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("tbody", null,
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDDFA\uFE0F Area", value: this.valueToDisplay(props.area), description: "Area of the drawn shape." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCCF Perimeter", value: this.valueToDisplay(props.perimeter), description: "Perimeter of the drawn shape." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDDFA\uFE0F Area", value: this.valueToDisplay(props.area, { skipDensity: true }), description: "Area of the drawn shape." }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCCF Perimeter", value: this.valueToDisplay(props.perimeter, {
+                            skipDensity: true,
+                        }), description: "Perimeter of the drawn shape." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDC65 Population", value: this.valueToDisplay(props.population, {
                             isEstimate: true,
                         }), description: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, { linkTarget: "_blank" }, "Estimated population within the drawn shape. Data source: [WorldPop 2020](https://www.worldpop.org/).") }),
@@ -1006,7 +1051,7 @@ class MapStatsComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Co
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE8C Bus Stops", value: this.valueToDisplay(props.busStops), description: "Total number of bus stops within the shape. Click number for data source." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE83 Rail Stations", value: this.valueToDisplay(props.railStops), description: "Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source." }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDE87 Transit Routes", value: this.valueToDisplay(props.totalTransitLines), description: "Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source." }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCA6 Watery Area", value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source." }))),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTableRow__WEBPACK_IMPORTED_MODULE_3__.ExpandableTableRow, { label: "\uD83D\uDCA6 Water Area", value: this.valueToDisplay(props.wateryArea), description: "Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source." }))),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { id: "map-stats-controls" },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "checkbox", checked: this.state.inline, onChange: (e) => this.setState({ inline: e.target.checked }) }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", null, "Inline"),
@@ -1136,7 +1181,7 @@ const fetchPopulation = (0,_constants__WEBPACK_IMPORTED_MODULE_0__.t)((0,_consta
     }
     return {
         value: Math.round(yield pollTaskId(json.taskid)),
-        units: "people",
+        units: "🧍",
     };
 })), "fetchPopulation");
 
@@ -1345,10 +1390,13 @@ function renderDrawMeasurements(map, drawCollection
                 break;
         }
     }
-    map.getSource("_measurements").setData({
-        type: "FeatureCollection",
-        features: labelFeatures,
-    });
+    const source = map.getSource("_measurements");
+    if (source) {
+        source.setData({
+            type: "FeatureCollection",
+            features: labelFeatures,
+        });
+    }
 }
 function addDrawControlButton(iconPath, onClick) {
     var _a;
@@ -1639,7 +1687,7 @@ function randomCityCenter() {
         // Taipei
         [121.5654, 25.0329],
         // Berlin
-        [13.4049, 52.520],
+        [13.4049, 52.52],
         // Rome
         [12.4964, 41.9028],
         // Vienna

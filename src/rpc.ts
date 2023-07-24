@@ -1,7 +1,6 @@
 import * as t from "io-ts";
 import { RpcServer } from "roots-rpc";
 import { e, t as timed } from "./constants";
-import { FeatureCollection, featureCollection } from "@turf/turf";
 
 export function wrapServerErrors(server: RpcServer) {
   const oldRegister = server.register.bind(server);
