@@ -4,3 +4,6 @@ node_modules
 .env
 dist/**/*.js.map
 dist/*.js.map
+
+logs
+err_logs
