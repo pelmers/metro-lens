@@ -5,3 +5,46 @@ body {
     Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
 }
+
+.title-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 16px;
+  background-color: #0ec220;
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+
+/* make sure title does not wrap */
+.title-container .title {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.footer-container {
+  background-color: #0ec220;
+  padding: 10px 20px;
+  margin-top: 0.4em;
+  border-top: 1px solid #ddd;
+}
+
+/* style links like buttons */
+.footer-container a {
+  color: #ddd;
+  margin-right: 1em;
+  text-decoration: none;
+  padding: 0.2em 0.4em;
+  border: 1px solid white;
+  background-color: #0c8f19;
+  border-radius: 4px;
+}
+
+.footer-container a:hover {
+  color: white;
+  background-color: #053f0b;
+  cursor: pointer;
+}

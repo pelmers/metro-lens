@@ -214,7 +214,8 @@ const getTransitCountsStats = wrapWithDefault(
   { railStops: ErrorValue, totalTransitLines: ErrorValue },
   async (
     borders: FeatureCollection,
-    areaKm2: number
+    areaKm2: number,
+    assertUpdateId: () => void
   ): Promise<{ railStops: StatValue; totalTransitLines: StatValue }> => {
     if (areaKm2 > OVERPASS_STATS_AREA_MAX_KM2) {
       return {
@@ -225,6 +226,7 @@ const getTransitCountsStats = wrapWithDefault(
     const { railStops, totalLines, query } = await getTransitCounts(
       borders as any
     );
+    assertUpdateId();
     return {
       railStops: { value: railStops, units: "", query },
       totalTransitLines: { value: totalLines, units: "", query },
@@ -311,6 +313,7 @@ const fetchAndClassifyHighways = async (
 
 export default class MapComponent extends React.Component<Props, State> {
   map: mapboxgl.Map;
+  updateId: number = 0;
   drawControl: MapboxDraw = new MapboxDraw({
     displayControlsDefault: false,
     // Select which mapbox-gl-draw control buttons to add to the map.
@@ -331,6 +334,7 @@ export default class MapComponent extends React.Component<Props, State> {
   });
 
   mapDivRef: React.RefObject<HTMLDivElement> = React.createRef();
+  satelliteSelectRef: React.RefObject<HTMLDivElement> = React.createRef();
 
   state: State = {
     style: MapStyles.default,
@@ -421,32 +425,32 @@ export default class MapComponent extends React.Component<Props, State> {
       renderDrawMeasurements(this.map, this.drawControl.getAll())
     );
 
-    console.log(
-      document.querySelector(
-        ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon"
-      )
-    );
     const drawPolyButton = document.querySelector(
       ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon"
     );
     const drawCircleButton = document.querySelector(
       ".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_circle"
     );
-    // TODO: add a tooltip that shows for 5 seconds, pointing at these buttons, one saying draw a circle, one saying draw a polygon
     showTemporaryTooltip({
       align: "right",
-      timer: 12000,
+      timer: 16000,
       text: "Click to draw a polygon",
       target: drawPolyButton as HTMLElement,
       top: 0,
     });
     showTemporaryTooltip({
       align: "right",
-      timer: 12000,
+      timer: 16000,
       text: "Click to draw a circle",
       target: drawCircleButton as HTMLElement,
       top: 30,
     });
+    // Add the satellite select button as a child of the .mapboxgl-ctrl-top-left div
+    const topLeftDiv = document.querySelector(".mapboxgl-ctrl-top-left");
+    if (topLeftDiv) {
+      topLeftDiv.appendChild(this.satelliteSelectRef.current);
+    }
+    this.satelliteSelectRef.current.style.display = "block";
 
     await this.setMapSources();
   }
@@ -461,7 +465,8 @@ export default class MapComponent extends React.Component<Props, State> {
     },
     async (
       borders: FeatureCollection,
-      areaKm2: number
+      areaKm2: number,
+      updateId: number
     ): Promise<HighwayStatsType> => {
       if (areaKm2 > HIGHWAY_STATS_AREA_MAX_KM2) {
         return {
@@ -474,6 +479,7 @@ export default class MapComponent extends React.Component<Props, State> {
       }
       const { streets, roads, highways, cycleways, busStops, query } =
         await fetchAndClassifyHighways(borders);
+      this.assertUpdateId(updateId);
       (
         this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id) as GeoJSONSource
       ).setData(streets);
@@ -537,9 +543,17 @@ export default class MapComponent extends React.Component<Props, State> {
     }
   );
 
+  assertUpdateId = (id: number) => {
+    if (id !== this.updateId) {
+      throw new Error(`abort update for ${id}, new update is ${this.updateId}`);
+    }
+  };
+
   // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
   updateDrawing = async (_evt: { type: string }) => {
     // TODO: if there are multiple polygons only update the one that was changed
+    this.updateId++;
+    const currentUpdateId = this.updateId;
     const data = this.drawControl.getAll() as FeatureCollection<turf.Polygon>;
     if (data.features.length == 0) {
       this.deleteFeatures();
@@ -549,7 +563,13 @@ export default class MapComponent extends React.Component<Props, State> {
     // only the last one would be reflected. We don't know in advance the order and timing
     // so we keep a batch object that contains all stats so far, and use it as the new state each time.
     const currentBatchStats = AllLoadingStats();
-    this.setState({ stats: { ...currentBatchStats }, isLoading: true });
+    const assertUpdateId = () => this.assertUpdateId(currentUpdateId);
+    const setCurrentBatchState = (isLoading: boolean = true) => {
+      if (currentUpdateId !== this.updateId) return;
+      this.setState({ stats: { ...currentBatchStats}, isLoading });
+    };
+
+    setCurrentBatchState();
 
     const area = {
       value: turf.area(data) / 1000000,
@@ -561,7 +581,7 @@ export default class MapComponent extends React.Component<Props, State> {
     };
     currentBatchStats.area = area;
     currentBatchStats.perimeter = perimeter;
-    this.setState({ stats: { ...currentBatchStats } });
+    setCurrentBatchState();
 
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
@@ -575,6 +595,7 @@ export default class MapComponent extends React.Component<Props, State> {
         }
 
         const areas = await overpassQueryFn(data);
+        assertUpdateId();
         const xmlObject = new DOMParser().parseFromString(
           areas.xml,
           "text/xml"
@@ -632,38 +653,41 @@ export default class MapComponent extends React.Component<Props, State> {
       ].map(async ({ key, id, fn, lineId }) => {
         const value = await updateAreaFeature(fn, id, lineId);
         currentBatchStats[key] = value;
-        this.setState({ stats: { ...currentBatchStats } });
+        setCurrentBatchState();
       })
     );
     updatePromises.push(
       fetchPopulation(data, area.value).then((value) => {
         currentBatchStats.population = value;
-        this.setState({ stats: { ...currentBatchStats } });
+        setCurrentBatchState();
       })
     );
     updatePromises.push(
-      this.updateHighwayMapAndGetStats(data, area.value).then((stats) => {
-        for (const [key, value] of Object.entries(stats)) {
-          currentBatchStats[key as keyof typeof stats] = value;
+      this.updateHighwayMapAndGetStats(data, area.value, currentUpdateId).then(
+        (stats) => {
+          for (const [key, value] of Object.entries(stats)) {
+            currentBatchStats[key as keyof typeof stats] = value;
+          }
+          setCurrentBatchState();
         }
-        this.setState({ stats: { ...currentBatchStats } });
-      })
+      )
     );
     updatePromises.push(
-      getTransitCountsStats(data as any, area.value).then(
+      getTransitCountsStats(data as any, area.value, assertUpdateId).then(
         ({ railStops, totalTransitLines }) => {
           currentBatchStats.railStops = railStops;
           currentBatchStats.totalTransitLines = totalTransitLines;
-          this.setState({ stats: { ...currentBatchStats } });
+          setCurrentBatchState();
         }
       )
     );
     try {
       await Promise.all(updatePromises);
+      assertUpdateId();
     } catch (err) {
       console.error(err);
     }
-    this.setState({ stats: { ...currentBatchStats }, isLoading: false });
+    setCurrentBatchState(false);
   };
 
   deleteFeatures = () => {
@@ -695,10 +719,17 @@ export default class MapComponent extends React.Component<Props, State> {
   }
 
   render() {
+    const styleClass =
+      this.state.style === MapStyles.satellite
+        ? "satellite-view"
+        : "default-view";
     return (
-      <div className="map-container-container">
+      <div className={`map-container-container ${styleClass}`}>
         <div className="map-container-with-style-select">
-          <div className="map-style-select">
+          <div
+            className="map-style-select mapboxgl-ctrl"
+            ref={this.satelliteSelectRef}
+          >
             <input
               type="checkbox"
               id="map-style-select"
@@ -714,7 +745,7 @@ export default class MapComponent extends React.Component<Props, State> {
             />
             <label htmlFor="map-style-select">🛰️ Satellite</label>
           </div>
-          <div className="map-container" ref={this.mapDivRef} />
+          <div className="map-container mapboxgl-ctrl" ref={this.mapDivRef} />
         </div>
         {/* TODO add a map legend, e.g. https://docs.mapbox.com/mapbox-gl-js/example/updating-choropleth/ */}
         <MapStatsComponent {...this.state.stats} />

@@ -41152,12 +41152,23 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 function TitleComponent() {
-    // TODO: add logo, intro, etc.
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Shitty World");
+    // Show logo and intro phrase, plus expandable usage steps
+    // TODO: create an icon
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "title-container" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "title" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Metro Lens")),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "subtitle" }, "\"yeah it's pretty cool\" - #1 Reviewer")));
 }
 function FooterComponent() {
-    // TODO: links to data sources, about, contact etc.
-    return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Fancy Footer");
+    // Row of links to about, source, report bug, request feature
+    // TODO: contribution option
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "footer-container" },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "footer-links" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://pelmers.com/blog", target: "_blank" }, "About"),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens", target: "_blank" }, "Source"),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/issues", target: "_blank" }, "Report Bug"),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/issues", target: "_blank" }, "Request Feature"),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/blob/main/Roadmap.md", target: "_blank" }, "Roadmap"))));
 }
 // Render react-root app
 function main() {

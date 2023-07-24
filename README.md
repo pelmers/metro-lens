@@ -1,22 +1,8 @@
-# [WoP](https://wop.pelmers.com)
-
-name ideas
-
-- World of Polygons
-- Shitty World
-- Jambalaya
-- EcoScape
-- MetroMinestrone
-- MetroScape
-- Metro Lens (potential winner?)
-
-## aka: World of Polygons
+# [Metro Lens](https://metro.pelmers.com)
 
 ### Draw any shape and see how awful our world is...
 
-### Example
-
-TODO
+TODO - screenshot
 
 ### Description
 
@@ -26,11 +12,9 @@ TODO - short version and link to blog post
 
 TODO
 
-Install osmium
-Install osmconvert
-
-Data source: [WorldPop](https://www.worldpop.org)
+Data sources:
+ - [WorldPop](https://www.worldpop.org)
+ - [OpenStreetMap](https://www.openstreetmap.org)
 
 ### Future work
-
-TODO
+ - See [Roadmap.md](./Roadmap.md)

@@ -21,11 +21,19 @@
 }
 
 .map-style-select {
+  margin-left: 10px;
   font-weight: bold;
+  display: none;
 }
 
 .map-style-select > label {
   margin-left: 4px;
+}
+
+/* in satellite view the black text can be hard to read */
+.map-container-container.satellite-view .map-style-select {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 /* tooltip with border that points to the right |> */

@@ -43,11 +43,19 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
 }
 
 .map-style-select {
+  margin-left: 10px;
   font-weight: bold;
+  display: none;
 }
 
 .map-style-select > label {
   margin-left: 4px;
+}
+
+/* in satellite view the black text can be hard to read */
+.map-container-container.satellite-view .map-style-select {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 /* tooltip with border that points to the right |> */
@@ -78,7 +86,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.map-container-container {
   right: 0;
   top: 0;
 }
-`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,OAAO;AACT;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;AACd;;AAEA;EACE,iBAAiB;AACnB;;AAEA;EACE,iBAAiB;AACnB;;AAEA;EACE,gBAAgB;AAClB;;AAEA,oDAAoD;AACpD;EACE,kBAAkB;EAClB,WAAW;EACX,SAAS;EACT,gBAAgB;EAChB,uCAAuC;EACvC,iCAAiC;EACjC,oCAAoC;EACpC,4CAA4C;EAC5C,kBAAkB;EAClB,iBAAiB;EACjB,YAAY;EACZ,kBAAkB;EAClB,mBAAmB;EACnB,gDAAgD;AAClD;;AAEA,oDAAoD;AACpD;EACE,WAAW;EACX,kBAAkB;EAClB,4BAA4B;EAC5B,iCAAiC;EACjC,oCAAoC;EACpC,QAAQ;EACR,MAAM;AACR","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n.map-container-with-style-select {\n  flex: 1;\n}\n\n.map-container-with-style-select > div {\n  width: 100%;\n  max-width: 950px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n}\n\n.map-container {\n  min-height: 620px;\n}\n\n.map-style-select {\n  font-weight: bold;\n}\n\n.map-style-select > label {\n  margin-left: 4px;\n}\n\n/* tooltip with border that points to the right |> */\n.tooltip-right {\n  position: absolute;\n  right: 33px;\n  top: 30px;\n  color: aliceblue;\n  background-color: rgba(48, 48, 48, 0.9);\n  border-top: 8px solid transparent;\n  border-bottom: 8px solid transparent;\n  border-left: 8px solid rgba(48, 48, 48, 0.9);\n  border-radius: 4px;\n  text-align: right;\n  width: 150px;\n  font-style: italic;\n  padding-right: 25px;\n  transition: visibility 0.3s, opacity 0.5s linear;\n}\n\n/* tooltip that border that points to the right |> */\n.tooltip-right:before {\n  content: \"\";\n  position: absolute;\n  border-left: 15px solid #aaa;\n  border-top: 8px solid transparent;\n  border-bottom: 8px solid transparent;\n  right: 0;\n  top: 0;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./client/index/MapComponent.css"],"names":[],"mappings":"AAAA;EACE,aAAa;EACb,YAAY;EACZ,gBAAgB;EAChB,mBAAmB;AACrB;;AAEA;EACE,OAAO;AACT;;AAEA;EACE,WAAW;EACX,gBAAgB;EAChB,kCAAkC;EAClC,YAAY;AACd;;AAEA;EACE,iBAAiB;AACnB;;AAEA;EACE,iBAAiB;EACjB,iBAAiB;EACjB,aAAa;AACf;;AAEA;EACE,gBAAgB;AAClB;;AAEA,yDAAyD;AACzD;EACE,YAAY;EACZ,oCAAoC;AACtC;;AAEA,oDAAoD;AACpD;EACE,kBAAkB;EAClB,WAAW;EACX,SAAS;EACT,gBAAgB;EAChB,uCAAuC;EACvC,iCAAiC;EACjC,oCAAoC;EACpC,4CAA4C;EAC5C,kBAAkB;EAClB,iBAAiB;EACjB,YAAY;EACZ,kBAAkB;EAClB,mBAAmB;EACnB,gDAAgD;AAClD;;AAEA,oDAAoD;AACpD;EACE,WAAW;EACX,kBAAkB;EAClB,4BAA4B;EAC5B,iCAAiC;EACjC,oCAAoC;EACpC,QAAQ;EACR,MAAM;AACR","sourcesContent":[".map-container-container {\n  display: flex;\n  margin: auto;\n  max-width: 100vw;\n  flex-flow: row wrap;\n}\n\n.map-container-with-style-select {\n  flex: 1;\n}\n\n.map-container-with-style-select > div {\n  width: 100%;\n  max-width: 950px;\n  min-width: calc(min(100vw, 600px));\n  margin: auto;\n}\n\n.map-container {\n  min-height: 620px;\n}\n\n.map-style-select {\n  margin-left: 10px;\n  font-weight: bold;\n  display: none;\n}\n\n.map-style-select > label {\n  margin-left: 4px;\n}\n\n/* in satellite view the black text can be hard to read */\n.map-container-container.satellite-view .map-style-select {\n  color: white;\n  background-color: rgba(0, 0, 0, 0.7);\n}\n\n/* tooltip with border that points to the right |> */\n.tooltip-right {\n  position: absolute;\n  right: 33px;\n  top: 30px;\n  color: aliceblue;\n  background-color: rgba(48, 48, 48, 0.9);\n  border-top: 8px solid transparent;\n  border-bottom: 8px solid transparent;\n  border-left: 8px solid rgba(48, 48, 48, 0.9);\n  border-radius: 4px;\n  text-align: right;\n  width: 150px;\n  font-style: italic;\n  padding-right: 25px;\n  transition: visibility 0.3s, opacity 0.5s linear;\n}\n\n/* tooltip that border that points to the right |> */\n.tooltip-right:before {\n  content: \"\";\n  position: absolute;\n  border-left: 15px solid #aaa;\n  border-top: 8px solid transparent;\n  border-bottom: 8px solid transparent;\n  right: 0;\n  top: 0;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -607,7 +615,7 @@ function showTemporaryTooltip(options) {
         tooltip.style.opacity = "0";
     }, options.timer);
 }
-const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ railStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, totalTransitLines: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders, areaKm2) => __awaiter(void 0, void 0, void 0, function* () {
+const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)({ railStops: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, totalTransitLines: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue }, (borders, areaKm2, assertUpdateId) => __awaiter(void 0, void 0, void 0, function* () {
     if (areaKm2 > _constants__WEBPACK_IMPORTED_MODULE_10__.OVERPASS_STATS_AREA_MAX_KM2) {
         return {
             railStops: OverpassAreaTooBigValue,
@@ -615,6 +623,7 @@ const getTransitCountsStats = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWi
         };
     }
     const { railStops, totalLines, query } = yield (0,_rpcClient__WEBPACK_IMPORTED_MODULE_11__.getTransitCounts)(borders);
+    assertUpdateId();
     return {
         railStops: { value: railStops, units: "", query },
         totalTransitLines: { value: totalLines, units: "", query },
@@ -675,6 +684,7 @@ const fetchAndClassifyHighways = (borders) => __awaiter(void 0, void 0, void 0, 
 class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Component) {
     constructor(props) {
         super(props);
+        this.updateId = 0;
         this.drawControl = new (_mapbox_mapbox_gl_draw__WEBPACK_IMPORTED_MODULE_2___default())({
             displayControlsDefault: false,
             // Select which mapbox-gl-draw control buttons to add to the map.
@@ -690,6 +700,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             mapboxgl: (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default()),
         });
         this.mapDivRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
+        this.satelliteSelectRef = react__WEBPACK_IMPORTED_MODULE_0___default().createRef();
         this.state = {
             style: MapStyles.default,
             stats: (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.DefaultStats)(),
@@ -701,7 +712,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             cyclewayLength: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
             highwayArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
             cyclewayArea: _MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue,
-        }, (borders, areaKm2) => __awaiter(this, void 0, void 0, function* () {
+        }, (borders, areaKm2, updateId) => __awaiter(this, void 0, void 0, function* () {
             if (areaKm2 > _constants__WEBPACK_IMPORTED_MODULE_10__.HIGHWAY_STATS_AREA_MAX_KM2) {
                 return {
                     busStops: HighwayAreaTooBigValue,
@@ -712,6 +723,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                 };
             }
             const { streets, roads, highways, cycleways, busStops, query } = yield fetchAndClassifyHighways(borders);
+            this.assertUpdateId(updateId);
             this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id).setData(streets);
             this.map.getSource(MapLayers.ROADS_FEATURES_LINES.id).setData(roads);
             this.map.getSource(MapLayers.HIGHWAYS_FEATURES_LINES.id).setData(highways);
@@ -761,9 +773,16 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             }
             return Object.assign({}, stats);
         }));
+        this.assertUpdateId = (id) => {
+            if (id !== this.updateId) {
+                throw new Error(`abort update for ${id}, new update is ${this.updateId}`);
+            }
+        };
         // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
         this.updateDrawing = (_evt) => __awaiter(this, void 0, void 0, function* () {
             // TODO: if there are multiple polygons only update the one that was changed
+            this.updateId++;
+            const currentUpdateId = this.updateId;
             const data = this.drawControl.getAll();
             if (data.features.length == 0) {
                 this.deleteFeatures();
@@ -773,7 +792,13 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             // only the last one would be reflected. We don't know in advance the order and timing
             // so we keep a batch object that contains all stats so far, and use it as the new state each time.
             const currentBatchStats = (0,_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.AllLoadingStats)();
-            this.setState({ stats: Object.assign({}, currentBatchStats), isLoading: true });
+            const assertUpdateId = () => this.assertUpdateId(currentUpdateId);
+            const setCurrentBatchState = (isLoading = true) => {
+                if (currentUpdateId !== this.updateId)
+                    return;
+                this.setState({ stats: Object.assign({}, currentBatchStats), isLoading });
+            };
+            setCurrentBatchState();
             const area = {
                 value: _turf_turf__WEBPACK_IMPORTED_MODULE_4__.area(data) / 1000000,
                 units: "km²",
@@ -784,12 +809,13 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             };
             currentBatchStats.area = area;
             currentBatchStats.perimeter = perimeter;
-            this.setState({ stats: Object.assign({}, currentBatchStats) });
+            setCurrentBatchState();
             const updateAreaFeature = (0,_constants__WEBPACK_IMPORTED_MODULE_10__.wrapWithDefault)(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.ErrorValue, (overpassQueryFn, polygonLayerId, lineLayerId) => __awaiter(this, void 0, void 0, function* () {
                 if (area.value > _constants__WEBPACK_IMPORTED_MODULE_10__.OVERPASS_STATS_AREA_MAX_KM2) {
                     return OverpassAreaTooBigValue;
                 }
                 const areas = yield overpassQueryFn(data);
+                assertUpdateId();
                 const xmlObject = new DOMParser().parseFromString(areas.xml, "text/xml");
                 const geoJsons = osmtogeojson__WEBPACK_IMPORTED_MODULE_12___default()(xmlObject);
                 let { polygons, linestrings } = (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.splitFeatureCollection)(geoJsons);
@@ -834,30 +860,31 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             ].map(({ key, id, fn, lineId }) => __awaiter(this, void 0, void 0, function* () {
                 const value = yield updateAreaFeature(fn, id, lineId);
                 currentBatchStats[key] = value;
-                this.setState({ stats: Object.assign({}, currentBatchStats) });
+                setCurrentBatchState();
             })));
             updatePromises.push((0,_fetchPopulation__WEBPACK_IMPORTED_MODULE_15__.fetchPopulation)(data, area.value).then((value) => {
                 currentBatchStats.population = value;
-                this.setState({ stats: Object.assign({}, currentBatchStats) });
+                setCurrentBatchState();
             }));
-            updatePromises.push(this.updateHighwayMapAndGetStats(data, area.value).then((stats) => {
+            updatePromises.push(this.updateHighwayMapAndGetStats(data, area.value, currentUpdateId).then((stats) => {
                 for (const [key, value] of Object.entries(stats)) {
                     currentBatchStats[key] = value;
                 }
-                this.setState({ stats: Object.assign({}, currentBatchStats) });
+                setCurrentBatchState();
             }));
-            updatePromises.push(getTransitCountsStats(data, area.value).then(({ railStops, totalTransitLines }) => {
+            updatePromises.push(getTransitCountsStats(data, area.value, assertUpdateId).then(({ railStops, totalTransitLines }) => {
                 currentBatchStats.railStops = railStops;
                 currentBatchStats.totalTransitLines = totalTransitLines;
-                this.setState({ stats: Object.assign({}, currentBatchStats) });
+                setCurrentBatchState();
             }));
             try {
                 yield Promise.all(updatePromises);
+                assertUpdateId();
             }
             catch (err) {
                 console.error(err);
             }
-            this.setState({ stats: Object.assign({}, currentBatchStats), isLoading: false });
+            setCurrentBatchState(false);
         });
         this.deleteFeatures = () => {
             for (const layer of Object.values(MapLayers)) {
@@ -938,24 +965,28 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             this.map.on("draw.update", this.updateDrawing);
             this.map.on("draw.delete", this.updateDrawing);
             this.map.on("draw.render", () => (0,_mapUtils__WEBPACK_IMPORTED_MODULE_14__.renderDrawMeasurements)(this.map, this.drawControl.getAll()));
-            console.log(document.querySelector(".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon"));
             const drawPolyButton = document.querySelector(".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon");
             const drawCircleButton = document.querySelector(".mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_circle");
-            // TODO: add a tooltip that shows for 5 seconds, pointing at these buttons, one saying draw a circle, one saying draw a polygon
             showTemporaryTooltip({
                 align: "right",
-                timer: 12000,
+                timer: 16000,
                 text: "Click to draw a polygon",
                 target: drawPolyButton,
                 top: 0,
             });
             showTemporaryTooltip({
                 align: "right",
-                timer: 12000,
+                timer: 16000,
                 text: "Click to draw a circle",
                 target: drawCircleButton,
                 top: 30,
             });
+            // Add the satellite select button as a child of the .mapboxgl-ctrl-top-left div
+            const topLeftDiv = document.querySelector(".mapboxgl-ctrl-top-left");
+            if (topLeftDiv) {
+                topLeftDiv.appendChild(this.satelliteSelectRef.current);
+            }
+            this.satelliteSelectRef.current.style.display = "block";
             yield this.setMapSources();
         });
     }
@@ -976,9 +1007,12 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
         });
     }
     render() {
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-container" },
+        const styleClass = this.state.style === MapStyles.satellite
+            ? "satellite-view"
+            : "default-view";
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: `map-container-container ${styleClass}` },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container-with-style-select" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-style-select" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-style-select mapboxgl-ctrl", ref: this.satelliteSelectRef },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "checkbox", id: "map-style-select", name: "map-style-select", checked: this.state.style === MapStyles.satellite, onChange: (e) => {
                             this.setState({
                                 style: e.target.checked
@@ -987,7 +1021,7 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
                             });
                         } }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", { htmlFor: "map-style-select" }, "\uD83D\uDEF0\uFE0F Satellite")),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container", ref: this.mapDivRef })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "map-container mapboxgl-ctrl", ref: this.mapDivRef })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_MapStatsComponent__WEBPACK_IMPORTED_MODULE_13__.MapStatsComponent, Object.assign({}, this.state.stats))));
     }
 }
@@ -1637,7 +1671,7 @@ function randomCityCenter() {
         // Tokyo
         [139.6917, 35.6895],
         // Delhi
-        [77.1025, 28.7041],
+        [77.209, 28.614],
         // Shanghai
         [121.4737, 31.2304],
         // São Paulo
@@ -1708,52 +1742,26 @@ function randomCityCenter() {
         [78.4867, 17.385],
         // London
         [-0.1276, 51.5072],
-        // Tehran
-        [51.389, 35.6892],
         // Chicago
         [-87.6298, 41.8781],
         // Chengdu
         [104.0665, 30.5728],
-        // Nanjing
-        [118.7969, 32.0603],
-        // Wuhan
-        [114.3054, 30.5928],
         // Ho Chi Minh City
         [106.6297, 10.8231],
-        // Luanda
-        [13.242, -8.7832],
-        // Ahmedabad
-        [72.5714, 23.0225],
         // Kuala Lumpur
         [101.6869, 3.139],
         // Xi'an
         [108.9398, 34.3416],
         // Hong Kong
         [114.1491, 22.2815],
-        // Dongguan
-        [113.7518, 23.0205],
-        // Hangzhou
-        [120.1551, 30.2741],
-        // Foshan
-        [113.1214, 23.0219],
-        // Shenyang
-        [123.4315, 41.8057],
         // Riyadh
         [46.6753, 24.7136],
         // Baghdad
         [44.3661, 33.3152],
         // Santiago
         [-70.6483, -33.4489],
-        // Surat
-        [72.8311, 21.1702],
         // Madrid
         [-3.7038, 40.4168],
-        // Suzhou
-        [120.5853, 31.2989],
-        // Pune
-        [73.8567, 18.5204],
-        // Harbin
-        [126.5349, 45.8038],
         // Houston
         [-95.3698, 29.7604],
         // Dallas
@@ -1774,26 +1782,16 @@ function randomCityCenter() {
         [-84.3879, 33.749],
         // Fukuoka
         [130.4181, 33.5904],
-        // Khartoum
-        [32.5599, 15.5007],
         // Barcelona
         [2.1734, 41.3851],
         // Johannesburg
         [28.0473, -26.2041],
         // Saint Petersburg
         [30.3351, 59.9343],
-        // Qingdao
-        [120.3826, 36.0671],
-        // Dalian
-        [121.6147, 38.914],
         // Washington
         [-77.0369, 38.9072],
-        // Yangon
-        [96.1572, 16.8409],
         // Alexandria
         [29.9511, 31.2001],
-        // Jinan
-        [117.1201, 36.6512],
         // Guadalajara
         [-103.344, 20.6597],
         // Amsterdam
@@ -1816,7 +1814,7 @@ function randomCityCenter() {
         [129.0756, 35.1796],
         // Seattle
         [-122.3321, 47.6062],
-        // San fran
+        // San francisco
         [-122.4194, 37.7749],
     ];
     return cities[Math.floor(Math.random() * cities.length)];

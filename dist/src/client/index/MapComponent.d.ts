@@ -21,23 +21,26 @@ type State = {
 };
 export default class MapComponent extends React.Component<Props, State> {
     map: mapboxgl.Map;
+    updateId: number;
     drawControl: MapboxDraw;
     mapControl: mapboxgl.NavigationControl;
     geocoderControl: MapboxGeocoder;
     mapDivRef: React.RefObject<HTMLDivElement>;
+    satelliteSelectRef: React.RefObject<HTMLDivElement>;
     state: State;
     constructor(props: Props);
     setMapSources(): Promise<void>;
     constructMap(startingCenter?: [number, number]): Promise<void>;
     updateHighwayMapAndGetStats: (borders: FeatureCollection<import("geojson").Geometry, {
         [name: string]: any;
-    }>, areaKm2: number) => Promise<{
+    }>, areaKm2: number, updateId: number) => Promise<{
         busStops: StatValue;
         highwayLength: StatValue;
         cyclewayLength: StatValue;
         highwayArea: StatValue;
         cyclewayArea: StatValue;
     }>;
+    assertUpdateId: (id: number) => void;
     updateDrawing: (_evt: {
         type: string;
     }) => Promise<void>;

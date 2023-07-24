@@ -6,7 +6,7 @@ export function randomCityCenter(): [number, number] {
     // Tokyo
     [139.6917, 35.6895],
     // Delhi
-    [77.1025, 28.7041],
+    [77.209, 28.614],
     // Shanghai
     [121.4737, 31.2304],
     // São Paulo
@@ -77,52 +77,26 @@ export function randomCityCenter(): [number, number] {
     [78.4867, 17.385],
     // London
     [-0.1276, 51.5072],
-    // Tehran
-    [51.389, 35.6892],
     // Chicago
     [-87.6298, 41.8781],
     // Chengdu
     [104.0665, 30.5728],
-    // Nanjing
-    [118.7969, 32.0603],
-    // Wuhan
-    [114.3054, 30.5928],
     // Ho Chi Minh City
     [106.6297, 10.8231],
-    // Luanda
-    [13.242, -8.7832],
-    // Ahmedabad
-    [72.5714, 23.0225],
     // Kuala Lumpur
     [101.6869, 3.139],
     // Xi'an
     [108.9398, 34.3416],
     // Hong Kong
     [114.1491, 22.2815],
-    // Dongguan
-    [113.7518, 23.0205],
-    // Hangzhou
-    [120.1551, 30.2741],
-    // Foshan
-    [113.1214, 23.0219],
-    // Shenyang
-    [123.4315, 41.8057],
     // Riyadh
     [46.6753, 24.7136],
     // Baghdad
     [44.3661, 33.3152],
     // Santiago
     [-70.6483, -33.4489],
-    // Surat
-    [72.8311, 21.1702],
     // Madrid
     [-3.7038, 40.4168],
-    // Suzhou
-    [120.5853, 31.2989],
-    // Pune
-    [73.8567, 18.5204],
-    // Harbin
-    [126.5349, 45.8038],
     // Houston
     [-95.3698, 29.7604],
     // Dallas
@@ -143,26 +117,16 @@ export function randomCityCenter(): [number, number] {
     [-84.3879, 33.749],
     // Fukuoka
     [130.4181, 33.5904],
-    // Khartoum
-    [32.5599, 15.5007],
     // Barcelona
     [2.1734, 41.3851],
     // Johannesburg
     [28.0473, -26.2041],
     // Saint Petersburg
     [30.3351, 59.9343],
-    // Qingdao
-    [120.3826, 36.0671],
-    // Dalian
-    [121.6147, 38.914],
     // Washington
     [-77.0369, 38.9072],
-    // Yangon
-    [96.1572, 16.8409],
     // Alexandria
     [29.9511, 31.2001],
-    // Jinan
-    [117.1201, 36.6512],
     // Guadalajara
     [-103.344, 20.6597],
     // Amsterdam
@@ -185,7 +149,7 @@ export function randomCityCenter(): [number, number] {
     [129.0756, 35.1796],
     // Seattle
     [-122.3321, 47.6062],
-    // San fran
+    // San francisco
     [-122.4194, 37.7749],
   ];
   return cities[Math.floor(Math.random() * cities.length)];
