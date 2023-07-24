@@ -58,6 +58,11 @@ type State = {
   stats: MapStatsComponentProps;
 };
 
+const MapStyles = {
+  default: "mapbox://styles/mapbox/light-v11",
+  satellite: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
+};
+
 const MapLayers = {
   SURFACE_PARKING_POLYGONS: {
     id: "surfaceParkingAreas",
@@ -308,8 +313,7 @@ export default class MapComponent extends React.Component<Props, State> {
   mapDivRef: React.RefObject<HTMLDivElement> = React.createRef();
 
   state: State = {
-    // use satellite style
-    style: "mapbox://styles/mapbox/light-v11",
+    style: MapStyles.default,
     stats: DefaultStats(),
   };
 
@@ -320,39 +324,7 @@ export default class MapComponent extends React.Component<Props, State> {
     }
   }
 
-  async constructMap() {
-    this.map = new mapboxgl.Map({
-      container: this.mapDivRef.current,
-      style: this.state.style,
-      accessToken: this.props.apiKey,
-      center: randomCityCenter(),
-      zoom: 12,
-    });
-
-    this.map.addControl(this.geocoderControl, "top-left");
-    this.map.addControl(this.mapControl);
-    // Add geolocate control
-    this.map.addControl(
-      new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        trackUserLocation: true,
-      })
-    );
-    this.map.addControl(this.drawControl);
-    // TODO: the correct button isn't highlighted as active when clicked
-    addDrawControlButton("/static/icons/circle.svg", () => {
-      this.drawControl.changeMode("drag_circle");
-    });
-
-    this.map.on("draw.create", this.updateDrawing);
-    this.map.on("draw.update", this.updateDrawing);
-    this.map.on("draw.delete", this.updateDrawing);
-    this.map.on("draw.render", () =>
-      renderDrawMeasurements(this.map, this.drawControl.getAll())
-    );
-
+  async setMapSources() {
     await new Promise<void>((resolve) => {
       this.map.once("styledata", () => {
         for (const layer of Object.values(MapLayers)) {
@@ -392,6 +364,43 @@ export default class MapComponent extends React.Component<Props, State> {
         resolve();
       });
     });
+  }
+
+  async constructMap(startingCenter?: [number, number]) {
+    const center = startingCenter || randomCityCenter();
+    this.map = new mapboxgl.Map({
+      container: this.mapDivRef.current,
+      style: this.state.style,
+      accessToken: this.props.apiKey,
+      center,
+      zoom: 12,
+    });
+
+    this.map.addControl(this.geocoderControl, "top-left");
+    this.map.addControl(this.mapControl);
+    // Add geolocate control
+    this.map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+      })
+    );
+    this.map.addControl(this.drawControl);
+    // TODO: the correct button isn't highlighted as active when clicked
+    addDrawControlButton("/static/icons/circle.svg", () => {
+      this.drawControl.changeMode("drag_circle");
+    });
+
+    this.map.on("draw.create", this.updateDrawing);
+    this.map.on("draw.update", this.updateDrawing);
+    this.map.on("draw.delete", this.updateDrawing);
+    this.map.on("draw.render", () =>
+      renderDrawMeasurements(this.map, this.drawControl.getAll())
+    );
+
+    await this.setMapSources();
   }
 
   updateHighwayMapAndGetStats = wrapWithDefault(
@@ -633,16 +642,37 @@ export default class MapComponent extends React.Component<Props, State> {
   ) {
     if (this.state.style !== nextState.style) {
       this.map.setStyle(nextState.style);
+      await this.setMapSources();
+      await this.updateDrawing({ type: "stylechange" });
     }
   }
 
   render() {
     return (
-      <div className="map-container-container">
-        <div id="map-container" ref={this.mapDivRef} />
-        {/* TODO add a map legend, e.g. https://docs.mapbox.com/mapbox-gl-js/example/updating-choropleth/ */}
-        <MapStatsComponent {...this.state.stats} />
-      </div>
+      <>
+        {/* satellite style select checkbox */}
+        <div className="map-style-select">
+          <input
+            type="checkbox"
+            id="map-style-select"
+            name="map-style-select"
+            checked={this.state.style === MapStyles.satellite}
+            onChange={(e) => {
+              this.setState({
+                style: e.target.checked
+                  ? MapStyles.satellite
+                  : MapStyles.default,
+              });
+            }}
+          />
+          <label htmlFor="map-style-select">Satellite</label>
+        </div>
+        <div className="map-container-container">
+          <div id="map-container" ref={this.mapDivRef} />
+          {/* TODO add a map legend, e.g. https://docs.mapbox.com/mapbox-gl-js/example/updating-choropleth/ */}
+          <MapStatsComponent {...this.state.stats} />
+        </div>
+      </>
     );
   }
 }

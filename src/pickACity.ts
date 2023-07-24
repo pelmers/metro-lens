@@ -176,7 +176,7 @@ export function randomCityCenter(): [number, number] {
     // Taipei
     [121.5654, 25.0329],
     // Berlin
-    [13.4049, 52.520],
+    [13.4049, 52.52],
     // Rome
     [12.4964, 41.9028],
     // Vienna

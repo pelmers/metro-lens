@@ -228,10 +228,13 @@ export function renderDrawMeasurements(
         break;
     }
   }
-  (map.getSource("_measurements") as GeoJSONSource).setData({
-    type: "FeatureCollection",
-    features: labelFeatures,
-  });
+  const source = map.getSource("_measurements") as GeoJSONSource;
+  if (source) {
+    source.setData({
+      type: "FeatureCollection",
+      features: labelFeatures,
+    });
+  }
 }
 
 export function addDrawControlButton(iconPath: string, onClick: () => unknown) {

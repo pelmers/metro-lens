@@ -64,9 +64,6 @@ type State = {
   density: boolean;
 };
 
-// TODO: add a stats compare mode if multiple polygons are selected
-// TODO: add a density toggle that changes all stats to per km2
-// TODO: add a inline toggle that moves the stats to the map and makes the background slightly transparent
 export class MapStatsComponent extends React.Component<Props, State> {
   containerRef: React.RefObject<HTMLDivElement> = React.createRef();
   state: State = {
@@ -76,23 +73,44 @@ export class MapStatsComponent extends React.Component<Props, State> {
   };
 
   valueToDisplay(
-    value: StatValue,
-    options?: { isEstimate: boolean }
+    stat: StatValue,
+    options?: { isEstimate?: boolean; skipDensity?: boolean }
   ): React.JSX.Element {
     const isEstimate = options?.isEstimate ?? false;
-    if ("missing" in value) {
-      return <span className="map-stats-missing-value">{value.missing}</span>;
+    const skipDensity = options?.skipDensity ?? false;
+    if ("missing" in stat) {
+      return <span className="map-stats-missing-value">{stat.missing}</span>;
     } else {
-      // TODO: convert to metric/imperial based on state
-      // TODO: convert to density based on state
-      const text = `${isEstimate ? "~" : ""}${numberForDisplay(value.value)} ${
-        value.units
-      }`;
-      return value.query ? (
+      let { value, units } = stat;
+      // Stats are given as metric by default
+      if (!this.state.metric) {
+        if (stat.units === "km²") {
+          value *= 0.386102;
+          units = "mi²";
+        } else if (stat.units == "km") {
+          value *= 0.621371;
+          units = "mi";
+        }
+      }
+      if (this.state.density && "value" in this.props.area && !skipDensity) {
+        const areaKm2 = this.props.area.value;
+        const areaMaybeMi2 = this.state.metric ? areaKm2 : areaKm2 * 0.386102;
+        if (stat.units === "km²") {
+          value = (stat.value / areaKm2) * 100;
+          units = "%";
+        } else {
+          value = stat.value / areaMaybeMi2;
+          units = stat.units + (this.state.metric ? "/km²" : "/mi²");
+        }
+      }
+      const text = `${isEstimate ? "~" : ""}${numberForDisplay(
+        value
+      )} ${units}`;
+      return stat.query ? (
         <a
           className="map-stats-linked-value"
           href={`https://overpass-turbo.eu/?Q=${encodeURIComponent(
-            value.query
+            stat.query
           )}`}
           target="_blank"
           rel="noopener noreferrer"
@@ -154,12 +172,14 @@ export class MapStatsComponent extends React.Component<Props, State> {
           <tbody>
             <ExpandableTableRow
               label="🗺️ Area"
-              value={this.valueToDisplay(props.area)}
+              value={this.valueToDisplay(props.area, { skipDensity: true })}
               description="Area of the drawn shape."
             />
             <ExpandableTableRow
               label="📏 Perimeter"
-              value={this.valueToDisplay(props.perimeter)}
+              value={this.valueToDisplay(props.perimeter, {
+                skipDensity: true,
+              })}
               description="Perimeter of the drawn shape."
             />
             <ExpandableTableRow
@@ -251,7 +271,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
               description="Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source."
             />
             <ExpandableTableRow
-              label="💦 Watery Area"
+              label="💦 Water Area"
               value={this.valueToDisplay(props.wateryArea)}
               description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source."
             />

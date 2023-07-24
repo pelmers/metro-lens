@@ -13,7 +13,9 @@
 /* inline class is set when the stats are put inside of the map container */
 #map-stats-container.map-stats-container-inline {
   width: 325px;
-  background-color: rgba(248, 248, 248, 0.5);
+  background-color: rgba(248, 248, 248, 0.75);
+  max-height: 480px;
+  overflow-y: auto;
 }
 
 /* add a border, bold the values in the second column of the table */
