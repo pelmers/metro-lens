@@ -9,7 +9,19 @@
 
 ### Description
 
-TODO - short version and link to blog post
+[Metro Lens](https://metro.pelmers.com) is a web app built to answer some of the questions I have most often about urban areas.
+ - How large is the area?
+ - How many people live here?
+ - How many cycling paths are there?
+ - How much car parking?
+ - How many bus routes? Train stations? Parks and recreation areas?
+
+This app specifically answers all these questions on any arbitrary provided shape, scratching
+the urbanism investigation itch, a la [CityNerd](https://www.youtube.com/c/citynerd).
+See the examples below and compare your favorite city, or shame your most detested!
+
+Try it here: [metro.pelmers.com](https://metro.pelmers.com).
+For more details: TODO blog post link
 
 ### Examples
 ![](res/houston_ex.png)

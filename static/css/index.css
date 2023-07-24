@@ -32,7 +32,12 @@ body {
   border-top: 1px solid #ddd;
 }
 
-/* style links like buttons */
+.footer-container-links {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+/* style links like buttons, no break */
 .footer-container a {
   color: #ddd;
   margin-right: 1em;
@@ -41,6 +46,7 @@ body {
   border: 1px solid white;
   background-color: #0c8f19;
   border-radius: 4px;
+  white-space: nowrap
 }
 
 .footer-container a:hover {
