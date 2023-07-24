@@ -21,7 +21,7 @@ the urbanism investigation itch, a la [CityNerd](https://www.youtube.com/c/cityn
 See the examples below and compare your favorite city, or shame your most detested!
 
 Try it here: [metro.pelmers.com](https://metro.pelmers.com).
-For more details: TODO blog post link
+For more details: [My Blog post](https://pelmers.com/metro-something-something/).
 
 ### Examples
 ![](res/houston_ex.png)

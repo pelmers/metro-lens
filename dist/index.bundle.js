@@ -41164,7 +41164,7 @@ function FooterComponent() {
     // TODO: contribution option
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "footer-container" },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "footer-links" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://pelmers.com/blog", target: "_blank" }, "About"),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://pelmers.com/metro-something-something/", target: "_blank" }, "About"),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens", target: "_blank" }, "Source"),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/issues", target: "_blank" }, "Report Bug"),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/issues", target: "_blank" }, "Request Feature"),
