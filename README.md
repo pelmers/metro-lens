@@ -6,15 +6,15 @@
 
 ![](res/20s_usage.gif)
 
-
 ### Description
 
 [Metro Lens](https://metro.pelmers.com) is a web app built to answer some of the questions I have most often about urban areas.
- - How large is the area?
- - How many people live here?
- - How many cycling paths are there?
- - How much car parking?
- - How many bus routes? Train stations? Parks and recreation areas?
+
+- How large is the area?
+- How many people live here?
+- How many cycling paths are there?
+- How much car parking?
+- How many bus routes? Train stations? Parks and recreation areas?
 
 This app specifically answers all these questions on any arbitrary provided shape, scratching
 the urbanism investigation itch, a la [CityNerd](https://www.youtube.com/c/citynerd).
@@ -24,17 +24,18 @@ Try it here: [metro.pelmers.com](https://metro.pelmers.com).
 For more details: [My Blog post](https://pelmers.com/metro-something-something/).
 
 ### Examples
+
 ![](res/houston_ex.png)
-*10km radius around Houston*
+_10km radius around Houston_
 
 ![](res/ams_ex.png)
-*10km radius around Amsterdam, density stats*
+_10km radius around Amsterdam, density stats_
 
 ![](res/dodgers_parking.png)
-*Dodger Stadium, LA*
+_Dodger Stadium, LA_
 
 ![](res/miduptown_nyc.png)
-*Manhattan, NYC*
+_Manhattan, NYC_
 
 **What will you discover?**
 

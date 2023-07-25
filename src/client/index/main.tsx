@@ -21,7 +21,10 @@ function FooterComponent() {
   return (
     <div className="footer-container">
       <div className="footer-links">
-        <a href="https://pelmers.com/metro-something-something/" target="_blank">
+        <a
+          href="https://pelmers.com/metro-something-something/"
+          target="_blank"
+        >
           About
         </a>
         <a href="https://github.com/pelmers/metro-lens" target="_blank">

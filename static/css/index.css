@@ -46,7 +46,7 @@ body {
   border: 1px solid white;
   background-color: #0c8f19;
   border-radius: 4px;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .footer-container a:hover {

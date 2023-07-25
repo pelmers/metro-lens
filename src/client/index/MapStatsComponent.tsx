@@ -210,8 +210,8 @@ export class MapStatsComponent extends React.Component<Props, State> {
                 <ReactMarkdown linkTarget="_blank">
                   Total area of all [dedicated parking
                   amenities](https://wiki.openstreetmap.org/wiki/Tag:amenity%3Dparking)
-                  within the shape. Shown in red on the map. Click number for
-                  data source.
+                  within the shape. Does not include on-street parking.
+                  Shown in red on the map. Click number for data source.
                 </ReactMarkdown>
               }
             />
