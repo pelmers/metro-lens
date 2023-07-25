@@ -487,8 +487,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const MapStyles = {
-    // TODO: make a new style based on light but that shows transit stops and slightly darker city names
-    default: "mapbox://styles/mapbox/light-v11",
+    default: "mapbox://styles/pelmers/clkio1a3n00pm01qk9d17c5vv",
     satellite: "mapbox://styles/pelmers/cl8ilg939000u15o5hxcr1mjy",
 };
 const MapLayers = {
