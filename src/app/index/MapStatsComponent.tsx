@@ -30,7 +30,7 @@ export const LoadingValue: StatValue = {
   missing: "Loading...",
 };
 
-class DefaultProps {
+class DefaultStatsList {
   area = NoPolygonValue;
   perimeter = NoPolygonValue;
   population = NoPolygonValue;
@@ -46,16 +46,22 @@ class DefaultProps {
   railStops = NoPolygonValue;
 }
 
-export interface Props extends DefaultProps {}
+export interface Stats extends DefaultStatsList {}
 
-export const DefaultStats: () => Props = () => new DefaultProps();
+export const DefaultProps = () => ({
+  statsByPolygon: [{ polygon: "", stats: new DefaultStatsList() }],
+});
 
-export const AllLoadingStats: () => Props = () => {
-  const props = new DefaultProps();
+export const AllLoadingStats: () => Stats = () => {
+  const props = new DefaultStatsList();
   for (const key of Object.keys(props)) {
-    props[key as keyof Props] = LoadingValue;
+    props[key as keyof Stats] = LoadingValue;
   }
   return props;
+};
+
+export type Props = {
+  statsByPolygon: { polygon: string; stats: Stats }[];
 };
 
 type State = {
@@ -83,6 +89,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
 
   valueToDisplay(
     stat: StatValue,
+    areaValue: StatValue,
     options?: { isEstimate?: boolean; skipDensity?: boolean }
   ): React.JSX.Element {
     const isEstimate = options?.isEstimate ?? false;
@@ -101,8 +108,8 @@ export class MapStatsComponent extends React.Component<Props, State> {
           units = "mi";
         }
       }
-      if (this.state.density && "value" in this.props.area && !skipDensity) {
-        const areaKm2 = this.props.area.value;
+      if (this.state.density && "value" in areaValue && !skipDensity) {
+        const areaKm2 = areaValue.value;
         const areaMaybeMi2 = this.state.metric ? areaKm2 : areaKm2 * 0.386102;
         if (stat.units === "km²") {
           value = (stat.value / areaKm2) * 100;
@@ -174,28 +181,48 @@ export class MapStatsComponent extends React.Component<Props, State> {
         className={this.state.inline ? "map-stats-container-inline" : ""}
       >
         <table>
+          {/* // Number of columns depends on props.statsByPolygon.length */}
           <colgroup>
-            <col />
-            <col />
+            {props.statsByPolygon.map((_, i) => (
+              <col key={i} />
+            ))}
           </colgroup>
           <tbody>
+            {/* // If there is more than 1 polygon then add a header row which shows the polygon name of each column */}
+            {props.statsByPolygon.length > 1 && (
+              <tr>
+                <th></th>
+                {props.statsByPolygon.map(({ polygon }, i) => (
+                  <th key={i}>{polygon}</th>
+                ))}
+              </tr>
+            )}
+
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🗺️" label="Area" />}
-              value={this.valueToDisplay(props.area, { skipDensity: true })}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.area, stats.area, {
+                  skipDensity: true,
+                })
+              )}
               description="Area of the drawn shape."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="📏" label="Perimeter" />}
-              value={this.valueToDisplay(props.perimeter, {
-                skipDensity: true,
-              })}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.perimeter, stats.area, {
+                  skipDensity: true,
+                })
+              )}
               description="Perimeter of the drawn shape."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="👥" label="Population" />}
-              value={this.valueToDisplay(props.population, {
-                isEstimate: true,
-              })}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.population, stats.area, {
+                  isEstimate: true,
+                })
+              )}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Estimated population within the drawn shape. Data source:
@@ -205,7 +232,9 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🅿️" label="Parking Area" />}
-              value={this.valueToDisplay(props.parkingArea)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.parkingArea, stats.area)
+              )}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Total area of all [dedicated parking
@@ -217,14 +246,18 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🛣️" label="Road Length" />}
-              value={this.valueToDisplay(props.highwayLength)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.highwayLength, stats.area)
+              )}
               description="Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚙️" label="Road Area" />}
-              value={this.valueToDisplay(props.highwayArea, {
-                isEstimate: true,
-              })}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.highwayArea, stats.area, {
+                  isEstimate: true,
+                })
+              )}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Total area of all vehicle-accessible roads within the shape.
@@ -235,7 +268,9 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚴‍♂️" label="Cycle Paths" />}
-              value={this.valueToDisplay(props.cyclewayLength)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.cyclewayLength, stats.area)
+              )}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Total length of all [dedicated cycle
@@ -247,9 +282,11 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚲️️" label="Cycle Area" />}
-              value={this.valueToDisplay(props.cyclewayArea, {
-                isEstimate: true,
-              })}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.cyclewayArea, stats.area, {
+                  isEstimate: true,
+                })
+              )}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Estimated total area of all dedicated cycle paths, not
@@ -261,27 +298,37 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🌳" label="Nature Area" />}
-              value={this.valueToDisplay(props.natureArea)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.natureArea, stats.area)
+              )}
               description="Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚌" label="Bus Stops" />}
-              value={this.valueToDisplay(props.busStops)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.busStops, stats.area)
+              )}
               description="Total number of bus stops within the shape. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚃" label="Rail Stations" />}
-              value={this.valueToDisplay(props.railStops)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.railStops, stats.area)
+              )}
               description="Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚇" label="Transit Routes" />}
-              value={this.valueToDisplay(props.totalTransitLines)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.totalTransitLines, stats.area)
+              )}
               description="Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="💦" label="Water Area" />}
-              value={this.valueToDisplay(props.wateryArea)}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.wateryArea, stats.area)
+              )}
               description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source."
             />
           </tbody>

@@ -4,7 +4,7 @@ import "./ExpandableTableRow.css";
 
 type ExpandableTableRowProps = {
   label: string | JSX.Element;
-  value: string | JSX.Element;
+  values: (string | JSX.Element)[];
   description: string | JSX.Element;
 };
 
@@ -12,7 +12,7 @@ type ExpandableTableRowState = {
   expanded: boolean;
 };
 
-// Defines a 2-column table row class that can be expanded when the user clicks the label
+// Defines an n-column table row class that can be expanded when the user clicks the label
 // Expanding a row adds a second row that shows the description for the label and takes the whole width of the table
 export class ExpandableTableRow extends React.Component<
   ExpandableTableRowProps,
@@ -21,7 +21,7 @@ export class ExpandableTableRow extends React.Component<
   state = { expanded: false };
 
   render() {
-    const { label, value, description } = this.props;
+    const { label, values, description } = this.props;
     const { expanded } = this.state;
     return (
       <React.Fragment>
@@ -29,11 +29,13 @@ export class ExpandableTableRow extends React.Component<
           <td onClick={() => this.setState({ expanded: !expanded })}>
             <span>{label}</span>
           </td>
-          <td>{value}</td>
+          {values.map((value, i) => (
+            <td key={i}>{value}</td>
+          ))}
         </tr>
         {expanded && (
           <tr className="expandable-table-row row-description">
-            <td colSpan={2}>
+            <td colSpan={values.length + 1}>
               <span>{description}</span>
             </td>
           </tr>

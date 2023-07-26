@@ -18,36 +18,36 @@ import {
   OVERPASS_STATS_AREA_MAX_KM2,
   wrapWithDefault,
 } from "../../constants";
-import {
-  getHighways,
-  getNatureAndParkAreas,
-  getParkingAreas,
-  getTransitCounts,
-  getWateryAreas,
-} from "../rpcClient";
 
 import osmtogeojson from "osmtogeojson";
 import {
   AllLoadingStats,
-  DefaultStats,
+  DefaultProps as DefaultStatsProps,
   ErrorValue,
   MapStatsComponent,
   Props as MapStatsComponentProps,
   StatValue,
 } from "./MapStatsComponent";
-import { TXmlResult } from "../../rpc";
-import {
-  EmptyFeatureCollection,
-  addDrawControlButton,
-  clipLineSegmentsAtBorder,
-  clipPolygonsAtBorder,
-  estimateHighwayFeatureWidth,
-  renderDrawMeasurements,
-  splitFeatureCollection,
-  unionPolygon,
-} from "../mapUtils";
 import { fetchPopulation } from "./fetchPopulation";
-import { randomCityCenter } from "../../pickACity";
+import {
+  TXmlResult,
+  getHighways,
+  getNatureAndParkAreas,
+  getParkingAreas,
+  getTransitCounts,
+  getWateryAreas,
+} from "./queries";
+import {
+  splitFeatureCollection,
+  EmptyFeatureCollection,
+  clipLineSegmentsAtBorder as clipLineSegmentsAtBorders,
+  addDrawControlButton,
+  renderDrawMeasurements,
+  estimateHighwayFeatureWidth,
+  clipPolygonsAtBorders,
+} from "./mapUtils";
+import { randomCityCenter } from "./pickACity";
+import { Feature, Polygon } from "@turf/turf";
 
 type Props = {
   apiKey: string;
@@ -212,7 +212,7 @@ function showTemporaryTooltip(options: {
 const getTransitCountsStats = wrapWithDefault(
   { railStops: ErrorValue, totalTransitLines: ErrorValue },
   async (
-    borders: FeatureCollection,
+    border: Feature<Polygon>,
     areaKm2: number,
     assertUpdateId: () => void
   ): Promise<{ railStops: StatValue; totalTransitLines: StatValue }> => {
@@ -222,9 +222,7 @@ const getTransitCountsStats = wrapWithDefault(
         totalTransitLines: OverpassAreaTooBigValue,
       };
     }
-    const { railStops, totalLines, query } = await getTransitCounts(
-      borders as any
-    );
+    const { railStops, totalLines, query } = await getTransitCounts(border);
     assertUpdateId();
     return {
       railStops: { value: railStops, units: "", query },
@@ -234,7 +232,8 @@ const getTransitCountsStats = wrapWithDefault(
 );
 
 const fetchAndClassifyHighways = async (
-  borders: FeatureCollection
+  border: Feature<Polygon>,
+  allBorders: FeatureCollection
 ): Promise<{
   busStops: FeatureCollection;
   streets: FeatureCollection;
@@ -243,7 +242,7 @@ const fetchAndClassifyHighways = async (
   cycleways: FeatureCollection;
   query: string;
 }> => {
-  const allHighways = await getHighways(borders as any);
+  const allHighways = await getHighways(border);
   const xmlObject = new DOMParser().parseFromString(
     allHighways.xml,
     "text/xml"
@@ -295,9 +294,9 @@ const fetchAndClassifyHighways = async (
   // For each result value, clip lines at border
   for (const [key, value] of Object.entries(result)) {
     if (key === "busStops") continue;
-    result[key as keyof typeof result] = clipLineSegmentsAtBorder(
+    result[key as keyof typeof result] = clipLineSegmentsAtBorders(
       value as turf.FeatureCollection,
-      borders as turf.FeatureCollection
+      allBorders as turf.FeatureCollection
     );
   }
   const busFeatures = points.features.filter(
@@ -337,7 +336,7 @@ export default class MapComponent extends React.Component<Props, State> {
 
   state: State = {
     style: MapStyles.default,
-    stats: DefaultStats(),
+    stats: DefaultStatsProps(),
     isLoading: false,
   };
 
@@ -454,6 +453,16 @@ export default class MapComponent extends React.Component<Props, State> {
     await this.setMapSources();
   }
 
+  appendDataByLayerId = (layerId: string, data: FeatureCollection) => {
+    const source = this.map.getSource(layerId) as GeoJSONSource;
+    // @ts-ignore using private API
+    const currentData = source._data as FeatureCollection;
+    source.setData({
+      ...currentData,
+      features: currentData.features.concat(data.features),
+    });
+  };
+
   updateHighwayMapAndGetStats = wrapWithDefault(
     {
       busStops: ErrorValue,
@@ -463,7 +472,8 @@ export default class MapComponent extends React.Component<Props, State> {
       cyclewayArea: ErrorValue,
     },
     async (
-      borders: FeatureCollection,
+      border: Feature<Polygon>,
+      allBorders: FeatureCollection,
       areaKm2: number,
       updateId: number
     ): Promise<HighwayStatsType> => {
@@ -477,24 +487,16 @@ export default class MapComponent extends React.Component<Props, State> {
         };
       }
       const { streets, roads, highways, cycleways, busStops, query } =
-        await fetchAndClassifyHighways(borders);
+        await fetchAndClassifyHighways(border, allBorders);
       this.assertUpdateId(updateId);
-      (
-        this.map.getSource(MapLayers.STREETS_FEATURES_LINES.id) as GeoJSONSource
-      ).setData(streets);
-      (
-        this.map.getSource(MapLayers.ROADS_FEATURES_LINES.id) as GeoJSONSource
-      ).setData(roads);
-      (
-        this.map.getSource(
-          MapLayers.HIGHWAYS_FEATURES_LINES.id
-        ) as GeoJSONSource
-      ).setData(highways);
-      (
-        this.map.getSource(
-          MapLayers.CYCLEWAYS_FEATURES_LINES.id
-        ) as GeoJSONSource
-      ).setData(cycleways);
+      for (const [sourceId, value] of [
+        [MapLayers.STREETS_FEATURES_LINES.id, streets],
+        [MapLayers.ROADS_FEATURES_LINES.id, roads],
+        [MapLayers.HIGHWAYS_FEATURES_LINES.id, highways],
+        [MapLayers.CYCLEWAYS_FEATURES_LINES.id, cycleways],
+      ] as [string, FeatureCollection][]) {
+        this.appendDataByLayerId(sourceId, value);
+      }
       const stats = {
         cyclewayLength: {
           value: 0,
@@ -553,47 +555,57 @@ export default class MapComponent extends React.Component<Props, State> {
     // TODO: if there are multiple polygons only update the one that was changed
     this.updateId++;
     const currentUpdateId = this.updateId;
-    const data = this.drawControl.getAll() as FeatureCollection<turf.Polygon>;
-    if (data.features.length == 0) {
-      this.deleteFeatures();
-      return;
-    }
+    const drawData =
+      this.drawControl.getAll() as FeatureCollection<turf.Polygon>;
+    // First thing we do is copy the data by sending it through and back JSON-serialization
+    // that way we do not accidentally mutate and mess up the draw control
+    const data = JSON.parse(JSON.stringify(drawData)) as typeof drawData;
+    this.deleteFeatures();
+    if (data.features.length === 0) return;
+    // TODO: Decide which polygons to update by comparing against
+    // TODO: name polygons by reverse geocoding their centers: https://docs.mapbox.com/api/search/geocoding/#reverse-geocoding
     // Since react batches state updates, if we updated with setState many times,
     // only the last one would be reflected. We don't know in advance the order and timing
     // so we keep a batch object that contains all stats so far, and use it as the new state each time.
-    const currentBatchStats = AllLoadingStats();
+    const currentBatchStats = drawData.features.map((poly, idx) => {
+      const area = {
+        value: turf.area(poly) / 1000000,
+        units: "km²",
+      };
+
+      const perimeter = {
+        value: turf.length(poly, { units: "kilometers" }),
+        units: "km",
+      };
+      return {
+        polygon: `Shape ${idx + 1}`,
+        stats: { ...AllLoadingStats(), area, perimeter },
+      };
+    });
     const assertUpdateId = () => this.assertUpdateId(currentUpdateId);
     const setCurrentBatchState = (isLoading: boolean = true) => {
       if (currentUpdateId !== this.updateId) return;
-      this.setState({ stats: { ...currentBatchStats }, isLoading });
+      this.setState({
+        stats: { statsByPolygon: currentBatchStats },
+        isLoading,
+      });
     };
-
-    setCurrentBatchState();
-
-    const area = {
-      value: turf.area(data) / 1000000,
-      units: "km²",
-    };
-    const perimeter = {
-      value: turf.length(data, { units: "kilometers" }),
-      units: "km",
-    };
-    currentBatchStats.area = area;
-    currentBatchStats.perimeter = perimeter;
     setCurrentBatchState();
 
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
       async (
-        overpassQueryFn: (data: any) => Promise<TXmlResult>,
+        borderIndex: number,
+        overpassQueryFn: (data: Feature<Polygon>) => Promise<TXmlResult>,
         polygonLayerId: string,
         lineLayerId?: string
       ): Promise<StatValue> => {
-        if (area.value > OVERPASS_STATS_AREA_MAX_KM2) {
+        const border = data.features[borderIndex];
+        const { area } = currentBatchStats[borderIndex].stats;
+        if ("value" in area && area.value > OVERPASS_STATS_AREA_MAX_KM2) {
           return OverpassAreaTooBigValue;
         }
-
-        const areas = await overpassQueryFn(data);
+        const areas = await overpassQueryFn(border);
         assertUpdateId();
         const xmlObject = new DOMParser().parseFromString(
           areas.xml,
@@ -603,14 +615,11 @@ export default class MapComponent extends React.Component<Props, State> {
         let { polygons, linestrings } = splitFeatureCollection(
           geoJsons as turf.FeatureCollection
         );
-        polygons = clipPolygonsAtBorder(polygons, data);
-
-        (this.map.getSource(polygonLayerId) as GeoJSONSource).setData(polygons);
+        polygons = clipPolygonsAtBorders(polygons, data);
+        this.appendDataByLayerId(polygonLayerId, polygons);
         if (lineLayerId) {
-          linestrings = clipLineSegmentsAtBorder(linestrings, data);
-          (this.map.getSource(lineLayerId) as GeoJSONSource).setData(
-            linestrings
-          );
+          linestrings = clipLineSegmentsAtBorders(linestrings, data);
+          this.appendDataByLayerId(lineLayerId, linestrings);
         }
 
         // TODO: for correctness we should take the union of all polygons before calculating area
@@ -629,57 +638,69 @@ export default class MapComponent extends React.Component<Props, State> {
     );
 
     const updatePromises = [];
-    updatePromises.push(
-      ...[
-        {
-          key: "parkingArea" as const,
-          id: MapLayers.SURFACE_PARKING_POLYGONS.id,
-          fn: getParkingAreas,
-          // TODO: include on-street parking in calculation
-          // https://wiki.openstreetmap.org/wiki/Street_parking#Physical_properties
-        },
-        {
-          key: "natureArea" as const,
-          id: MapLayers.NATURE_AND_PARKS_POLYGONS.id,
-          fn: getNatureAndParkAreas,
-        },
-        {
-          key: "wateryArea" as const,
-          id: MapLayers.WATERY_FEATURES_POLYGONS.id,
-          lineId: MapLayers.WATERY_FEATURES_LINES.id,
-          fn: getWateryAreas,
-        },
-      ].map(async ({ key, id, fn, lineId }) => {
-        const value = await updateAreaFeature(fn, id, lineId);
-        currentBatchStats[key] = value;
-        setCurrentBatchState();
-      })
-    );
-    updatePromises.push(
-      fetchPopulation(data, area.value).then((value) => {
-        currentBatchStats.population = value;
-        setCurrentBatchState();
-      })
-    );
-    updatePromises.push(
-      this.updateHighwayMapAndGetStats(data, area.value, currentUpdateId).then(
-        (stats) => {
+    let borderIndex = 0;
+    for (const border of data.features) {
+      const currentStats = currentBatchStats[borderIndex].stats;
+      if (!("value" in currentStats.area)) {
+        throw new Error(`area not set for ${borderIndex}`);
+      }
+      const areaValue = currentStats.area.value;
+      updatePromises.push(
+        ...[
+          {
+            key: "parkingArea" as const,
+            id: MapLayers.SURFACE_PARKING_POLYGONS.id,
+            fn: getParkingAreas,
+            // TODO: include on-street parking in calculation
+            // https://wiki.openstreetmap.org/wiki/Street_parking#Physical_properties
+          },
+          {
+            key: "natureArea" as const,
+            id: MapLayers.NATURE_AND_PARKS_POLYGONS.id,
+            fn: getNatureAndParkAreas,
+          },
+          {
+            key: "wateryArea" as const,
+            id: MapLayers.WATERY_FEATURES_POLYGONS.id,
+            lineId: MapLayers.WATERY_FEATURES_LINES.id,
+            fn: getWateryAreas,
+          },
+        ].map(async ({ key, id, fn, lineId }) => {
+          const value = await updateAreaFeature(borderIndex, fn, id, lineId);
+          currentStats[key] = value;
+          setCurrentBatchState();
+        })
+      );
+      updatePromises.push(
+        fetchPopulation(border, areaValue).then((value) => {
+          currentStats.population = value;
+          setCurrentBatchState();
+        })
+      );
+      updatePromises.push(
+        this.updateHighwayMapAndGetStats(
+          border,
+          data,
+          areaValue,
+          currentUpdateId
+        ).then((stats) => {
           for (const [key, value] of Object.entries(stats)) {
-            currentBatchStats[key as keyof typeof stats] = value;
+            currentStats[key as keyof typeof stats] = value;
           }
           setCurrentBatchState();
-        }
-      )
-    );
-    updatePromises.push(
-      getTransitCountsStats(data as any, area.value, assertUpdateId).then(
-        ({ railStops, totalTransitLines }) => {
-          currentBatchStats.railStops = railStops;
-          currentBatchStats.totalTransitLines = totalTransitLines;
-          setCurrentBatchState();
-        }
-      )
-    );
+        })
+      );
+      updatePromises.push(
+        getTransitCountsStats(border, areaValue, assertUpdateId).then(
+          ({ railStops, totalTransitLines }) => {
+            currentStats.railStops = railStops;
+            currentStats.totalTransitLines = totalTransitLines;
+            setCurrentBatchState();
+          }
+        )
+      );
+      borderIndex++;
+    }
     try {
       await Promise.all(updatePromises);
       assertUpdateId();
@@ -696,7 +717,7 @@ export default class MapComponent extends React.Component<Props, State> {
       );
     }
     this.setState({
-      stats: DefaultStats(),
+      stats: DefaultStatsProps(),
     });
   };
 

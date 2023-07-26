@@ -3,10 +3,10 @@ import cheap_ruler, { Points } from "cheap-ruler";
 
 import * as turf from "@turf/turf";
 import { GeoJSONSource } from "mapbox-gl";
-import { numberForDisplay } from "../constants";
 
 // @ts-ignore untyped module
 import turfSliceAtIntersection from "turf-line-slice-at-intersection";
+import { numberForDisplay } from "../../constants";
 
 type PolyFC = turf.FeatureCollection<turf.Polygon | turf.MultiPolygon>;
 
@@ -80,7 +80,7 @@ export function unionPolygon(collection: FeatureCollection) {
 
 // Clip polygons with the given border collection of polygons.
 // This is done by taking turf/intersect with each polygon against each border polygon
-export function clipPolygonsAtBorder(
+export function clipPolygonsAtBorders(
   featurePolygons: PolyFC,
   borders: turf.FeatureCollection
 ): PolyFC {

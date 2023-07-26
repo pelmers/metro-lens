@@ -1,4 +1,4 @@
-import { FeatureCollection } from "@turf/turf";
+import { Feature, FeatureCollection, Polygon } from "@turf/turf";
 import {
   wrapWithDefault,
   t,
@@ -61,7 +61,7 @@ const PopulationAreaTooLargeValue: StatValue = {
 export const fetchPopulation = t(
   wrapWithDefault(
     ErrorValue,
-    async (borders: FeatureCollection, areaKm2: number): Promise<StatValue> => {
+    async (border: Feature<Polygon>, areaKm2: number): Promise<StatValue> => {
       if (areaKm2 < WORLDPOP_AREA_MINIMUM_KM2) {
         return PopulationAreaTooSmallValue;
       }
@@ -70,7 +70,7 @@ export const fetchPopulation = t(
       }
       const baseUrl =
         "https://api.worldpop.org/v1/services/stats?dataset=wpgppop&year=2020";
-      const url = `${baseUrl}}&geojson=${JSON.stringify(borders)}`;
+      const url = `${baseUrl}}&geojson=${JSON.stringify(border)}`;
       const response = await fetch(url);
       const json = (await response.json()) as WorldPopResponse;
       if (json.error) {

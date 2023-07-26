@@ -8,6 +8,7 @@
   border: 1px solid #ddd;
   box-shadow: 0 0 5px #ddd;
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
+  overflow: scroll;
 }
 
 #map-stats-container > table > colgroup > col:nth-of-type(1) {
@@ -26,8 +27,8 @@
   overflow-y: auto;
 }
 
-/* add a border, bold the values in the second column of the table */
-#map-stats-container table tr td:nth-of-type(2) {
+/* add a border, bold the values in all columns except the first of the table */
+#map-stats-container table tr td:not(:first-of-type) {
   border-left: 1px solid #ddd;
 }
 

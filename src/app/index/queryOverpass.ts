@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { t } from "../constants";
+import { t } from "../../constants";
 
 const OVERPASS_INSTANCE_URL = "https://overpass-api.de/api/interpreter";
 
