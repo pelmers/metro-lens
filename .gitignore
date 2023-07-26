@@ -2,8 +2,7 @@ node_modules
 **/.DS_STORE
 
 .env
-dist/**/*.js.map
-dist/*.js.map
+dist
 
 logs
 err_logs
