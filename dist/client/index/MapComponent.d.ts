@@ -30,7 +30,7 @@ export default class MapComponent extends React.Component<Props, State> {
     state: State;
     constructor(props: Props);
     setMapSources(): Promise<void>;
-    constructMap(startingCenter?: [number, number]): Promise<void>;
+    constructMap(): Promise<void>;
     updateHighwayMapAndGetStats: (borders: FeatureCollection<import("geojson").Geometry, {
         [name: string]: any;
     }>, areaKm2: number, updateId: number) => Promise<{

@@ -10,7 +10,7 @@ function TitleComponent() {
       <div className="title">
         <h1>Metro Lens</h1>
       </div>
-      <div className="subtitle">"yeah it's pretty cool" - #1 Reviewer</div>
+      <div className="subtitle">"Whoa super cool!!!" - #2 Reviewer</div>
     </div>
   );
 }
@@ -36,11 +36,8 @@ function FooterComponent() {
         <a href="https://github.com/pelmers/metro-lens/issues" target="_blank">
           Request Feature
         </a>
-        <a
-          href="https://github.com/pelmers/metro-lens/blob/main/Roadmap.md"
-          target="_blank"
-        >
-          Roadmap
+        <a href="https://streetwarp.com/" target="_blank">
+          Check out StreetWarp
         </a>
       </div>
     </div>

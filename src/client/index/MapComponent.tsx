@@ -390,8 +390,8 @@ export default class MapComponent extends React.Component<Props, State> {
     });
   }
 
-  async constructMap(startingCenter?: [number, number]) {
-    const center = startingCenter || randomCityCenter();
+  async constructMap() {
+    const center = randomCityCenter();
     this.map = new mapboxgl.Map({
       container: this.mapDivRef.current,
       style: this.state.style,
@@ -702,8 +702,6 @@ export default class MapComponent extends React.Component<Props, State> {
 
   async componentDidMount() {
     await this.constructMap();
-    // TODO: on first mount show an info message that fades away or disappears on click
-    // "Draw a circle by clicking and dragging" and point at draw controls
   }
 
   async componentWillUpdate(

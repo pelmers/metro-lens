@@ -41157,7 +41157,7 @@ function TitleComponent() {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "title-container" },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "title" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", null, "Metro Lens")),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "subtitle" }, "\"yeah it's pretty cool\" - #1 Reviewer")));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { className: "subtitle" }, "\"Whoa super cool!!!\" - #2 Reviewer")));
 }
 function FooterComponent() {
     // Row of links to about, source, report bug, request feature
@@ -41168,7 +41168,7 @@ function FooterComponent() {
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens", target: "_blank" }, "Source"),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/issues", target: "_blank" }, "Report Bug"),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/issues", target: "_blank" }, "Request Feature"),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://github.com/pelmers/metro-lens/blob/main/Roadmap.md", target: "_blank" }, "Roadmap"))));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("a", { href: "https://streetwarp.com/", target: "_blank" }, "Check out StreetWarp"))));
 }
 // Render react-root app
 function main() {

@@ -939,9 +939,9 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
             });
         });
     }
-    constructMap(startingCenter) {
+    constructMap() {
         return __awaiter(this, void 0, void 0, function* () {
-            const center = startingCenter || (0,_pickACity__WEBPACK_IMPORTED_MODULE_16__.randomCityCenter)();
+            const center = (0,_pickACity__WEBPACK_IMPORTED_MODULE_16__.randomCityCenter)();
             this.map = new (mapbox_gl__WEBPACK_IMPORTED_MODULE_1___default().Map)({
                 container: this.mapDivRef.current,
                 style: this.state.style,
@@ -995,8 +995,6 @@ class MapComponent extends (react__WEBPACK_IMPORTED_MODULE_0___default().Compone
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.constructMap();
-            // TODO: on first mount show an info message that fades away or disappears on click
-            // "Draw a circle by clicking and dragging" and point at draw controls
         });
     }
     componentWillUpdate(nextProps, nextState) {
