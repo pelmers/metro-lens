@@ -5,7 +5,7 @@ import {
   WORLDPOP_AREA_MINIMUM_KM2,
   WORLDPOP_AREA_MAX_KM2,
 } from "../../constants";
-import { ErrorValue, StatValue } from "./MapStatsComponent";
+import { ErrorValue, StatValue } from "./components/MapStatsComponent";
 
 type WorldPopResponse = {
   error: boolean;

@@ -6,9 +6,10 @@ import {
   circle,
   centroid,
 } from "@turf/turf";
-import { queryOverpass } from "./queryOverpass";
+import { t } from "../../constants";
 
 const mapboxApiKey = process.env.MAPBOX_API_KEY;
+const OVERPASS_INSTANCE_URL = "https://overpass-api.de/api/interpreter";
 
 export type TXmlResult = {
   xml: string;
@@ -175,3 +176,13 @@ export async function getTransitCounts(
     query: transitCounts.query,
   };
 }
+
+export const queryOverpass = (queryCode: string): Promise<string> =>
+  t(async () => {
+    const url = `${OVERPASS_INSTANCE_URL}?data=${encodeURIComponent(
+      queryCode
+    )}`;
+    const response = await fetch(url);
+    const text = await response.text();
+    return text;
+  }, "queryOverpass")();

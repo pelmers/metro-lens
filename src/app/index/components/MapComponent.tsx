@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -17,7 +19,7 @@ import {
   HIGHWAY_STATS_AREA_MAX_KM2,
   OVERPASS_STATS_AREA_MAX_KM2,
   wrapWithDefault,
-} from "../../constants";
+} from "../../../constants";
 
 import osmtogeojson from "osmtogeojson";
 import {
@@ -28,7 +30,7 @@ import {
   Props as MapStatsComponentProps,
   StatValue,
 } from "./MapStatsComponent";
-import { fetchPopulation } from "./fetchPopulation";
+import { fetchPopulation } from "../fetchPopulation";
 import {
   TXmlResult,
   getHighways,
@@ -36,7 +38,7 @@ import {
   getParkingAreas,
   getTransitCounts,
   getWateryAreas,
-} from "./queries";
+} from "../queries";
 import {
   splitFeatureCollection,
   EmptyFeatureCollection,
@@ -45,8 +47,8 @@ import {
   renderDrawMeasurements,
   estimateHighwayFeatureWidth,
   clipPolygonsAtBorders,
-} from "./mapUtils";
-import { randomCityCenter } from "./pickACity";
+} from "../mapUtils";
+import { randomCityCenter } from "../pickACity";
 import { Feature, Polygon } from "@turf/turf";
 
 type Props = {

@@ -1,8 +1,10 @@
 node_modules
 **/.DS_STORE
 
-.env
+.env.local
 dist
 
 logs
 err_logs
+
+.next

@@ -6,9 +6,8 @@
   "repository": "git@github.com:pelmers/wop.git",
   "author": "Peter Elmers <peter.elmers@yahoo.com>",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "build-dist": "BUILD_MODE=dist webpack --config webpack.config.js",
-    "watch": "webpack --config webpack.config.js --watch",
+    "build": "next build",
+    "watch": "next dev",
     "format": "node_modules/.bin/prettier --ignore-path .gitignore --write '.' '!**/vendor/**/*' '!dist/**/*' '!.code-couplet/**/*'"
   },
   "license": "MIT",
@@ -36,6 +35,7 @@
     "eslint-config-next": "13.4.12",
     "mapbox-gl": "^2.10.0",
     "mapbox-gl-draw-circle": "^1.1.2",
+    "next": "^13.4.12",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -54,7 +54,6 @@
     "compression": "^1.7.4",
     "console-stamp": "^3.1.1",
     "io-ts": "^2.2.20",
-    "next": "13.4.12",
     "node-fetch": "^2",
     "osmtogeojson": "^3.0.0-beta.5",
     "serve-favicon": "^2.5.0",

@@ -1,10 +1,10 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 
-import { numberForDisplay } from "../../constants";
+import { numberForDisplay } from "../../../constants";
 
 import "./MapStatsComponent.css";
-import { ExpandableTableRow } from "./components/ExpandableTableRow";
+import { ExpandableTableRow } from "./ExpandableTableRow";
 
 // StatValue represents the value is either present, or it is missing for a given reason
 export type StatValue =
