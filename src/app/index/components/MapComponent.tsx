@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
@@ -327,7 +327,7 @@ export default class MapComponent extends React.Component<Props, State> {
     },
   });
 
-  mapControl = new mapboxgl.NavigationControl({ visualizePitch: true });
+  mapControl: mapboxgl.NavigationControl;
   geocoderControl = new MapboxGeocoder({
     accessToken: this.props.apiKey,
     mapboxgl: mapboxgl,
@@ -400,6 +400,7 @@ export default class MapComponent extends React.Component<Props, State> {
       center,
       zoom: 12,
     });
+    this.mapControl = new mapboxgl.NavigationControl({ visualizePitch: true });
 
     this.map.addControl(this.geocoderControl, "top-left");
     this.map.addControl(this.mapControl);

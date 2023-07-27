@@ -12,10 +12,7 @@
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es6",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -33,11 +30,6 @@
       }
     ]
   },
-  "include": [
-    "src/**/*",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

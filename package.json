@@ -7,7 +7,7 @@
   "author": "Peter Elmers <peter.elmers@yahoo.com>",
   "scripts": {
     "build": "next build",
-    "watch": "next dev",
+    "dev": "next dev",
     "format": "node_modules/.bin/prettier --ignore-path .gitignore --write '.' '!**/vendor/**/*' '!dist/**/*' '!.code-couplet/**/*'"
   },
   "license": "MIT",
