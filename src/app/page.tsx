@@ -1,5 +1,4 @@
 import React from "react";
-import Head from "next/head";
 import Script from "next/script";
 import { getMapboxKey } from "./index/queries";
 import MapComponent from "./index/components/MapComponent";
@@ -11,16 +10,6 @@ function TitleComponent() {
   // TODO: create an icon
   return (
     <>
-      <Head>
-        <title>
-          Metro Lens | Interactive maps of urban land use and mobility
-        </title>
-        <meta
-          name="description"
-          content="Analyze urban land use and mobility patterns with Metro Lens. Designed to help everyone understand how we share the space within our cities."
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
       <div className="title-container">
         <div className="title">
           <h1>Metro Lens</h1>
