@@ -9,6 +9,7 @@
   box-shadow: 0 0 5px #ddd;
   font-family: Consolas, Monaco, "Roboto Mono", monospace;
   overflow: scroll;
+  font-size: 1rem;
 }
 
 #map-stats-container > table > colgroup > col:nth-of-type(1) {
@@ -25,6 +26,7 @@
   background-color: rgba(248, 248, 248, 0.85);
   max-height: 480px;
   overflow-y: auto;
+  font-size: 0.9rem;
 }
 
 /* add a border, bold the values in all columns except the first of the table */
