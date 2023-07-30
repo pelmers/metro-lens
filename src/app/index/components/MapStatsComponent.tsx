@@ -44,6 +44,8 @@ class DefaultStatsList {
   busStops = NoPolygonValue;
   totalTransitLines = NoPolygonValue;
   railStops = NoPolygonValue;
+  cafeCount = NoPolygonValue;
+  bakeryCount = NoPolygonValue;
 }
 
 export interface Stats extends DefaultStatsList {}
@@ -330,6 +332,20 @@ export class MapStatsComponent extends React.Component<Props, State> {
                 this.valueToDisplay(stats.wateryArea, stats.area)
               )}
               description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source."
+            />
+            <ExpandableTableRow
+              label={<EmojiLabelComponent emoji="☕️" label="Café Count" />}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.cafeCount, stats.area)
+              )}
+              description="Number of cafes (coffee shops) within the shape. Click number for data source."
+            />
+            <ExpandableTableRow
+              label={<EmojiLabelComponent emoji="️🥐" label="Bakery Count" />}
+              values={props.statsByPolygon.map(({ stats }) =>
+                this.valueToDisplay(stats.bakeryCount, stats.area)
+              )}
+              description="Number of bakeries within the shape. Click number for data source."
             />
           </tbody>
         </table>

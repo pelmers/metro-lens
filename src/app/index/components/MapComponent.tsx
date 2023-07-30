@@ -33,6 +33,7 @@ import {
 import { fetchPopulation } from "../fetchPopulation";
 import {
   TXmlResult,
+  getCafesBakeries,
   getHighways,
   getNatureAndParkAreas,
   getParkingAreas,
@@ -229,6 +230,42 @@ const getTransitCountsStats = wrapWithDefault(
     return {
       railStops: { value: railStops, units: "", query },
       totalTransitLines: { value: totalLines, units: "", query },
+    };
+  }
+);
+
+const getCafeBakeryCountsStats = wrapWithDefault(
+  { bakeryCount: ErrorValue, cafeCount: ErrorValue },
+  async (
+    border: Feature<Polygon>,
+    areaKm2: number,
+    assertUpdateId: () => void
+  ): Promise<{ bakeryCount: StatValue; cafeCount: StatValue }> => {
+    if (areaKm2 > OVERPASS_STATS_AREA_MAX_KM2) {
+      return {
+        bakeryCount: OverpassAreaTooBigValue,
+        cafeCount: OverpassAreaTooBigValue,
+      };
+    }
+    const { xml, query } = await getCafesBakeries(border);
+    assertUpdateId();
+    const xmlObject = new DOMParser().parseFromString(xml, "text/xml");
+    const geoJsons = osmtogeojson(xmlObject);
+    let cafeCount = 0;
+    let bakeryCount = 0;
+    (geoJsons as turf.FeatureCollection).features.forEach((feature) => {
+      if (
+        feature.properties?.amenity === "cafe" &&
+        feature.properties?.cuisine === "coffee_shop"
+      ) {
+        cafeCount++;
+      } else if (feature.properties?.shop === "bakery") {
+        bakeryCount++;
+      }
+    });
+    return {
+      cafeCount: { value: cafeCount, units: "", query },
+      bakeryCount: { value: bakeryCount, units: "", query },
     };
   }
 );
@@ -698,6 +735,15 @@ export default class MapComponent extends React.Component<Props, State> {
           ({ railStops, totalTransitLines }) => {
             currentStats.railStops = railStops;
             currentStats.totalTransitLines = totalTransitLines;
+            setCurrentBatchState();
+          }
+        )
+      );
+      updatePromises.push(
+        getCafeBakeryCountsStats(border, areaValue, assertUpdateId).then(
+          ({ bakeryCount, cafeCount }) => {
+            currentStats.bakeryCount = bakeryCount;
+            currentStats.cafeCount = cafeCount;
             setCurrentBatchState();
           }
         )

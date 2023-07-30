@@ -65,6 +65,12 @@ type TNWRCounts = {
   query?: string;
 };
 
+type CafeBakeryCounts = {
+  cafeCount: number;
+  bakeryCount: number;
+  query?: string;
+};
+
 async function getOsmCountResultWithQueryBuilder(
   polygon: Feature<Polygon>,
   queryBuilder: (coords: Position[]) => string
@@ -175,6 +181,23 @@ export async function getTransitCounts(
     railStops: transitCounts.nodes + transitCounts.ways,
     query: transitCounts.query,
   };
+}
+
+export async function getCafesBakeries(
+  i: Feature<Polygon>
+): Promise<TXmlResult> {
+  return getOsmResultsWithQueryBuilder(i, (coords) => {
+    const filter = getPolyFilter(coords);
+    return `
+    [out:xml][timeout:30];
+    (
+      nwr[amenity=cafe](${filter});
+      nwr[shop=bakery](${filter});
+    );
+      out body;
+      >;
+      out body qt;`;
+  });
 }
 
 export const queryOverpass = (queryCode: string): Promise<string> =>
