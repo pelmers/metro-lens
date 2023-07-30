@@ -191,7 +191,7 @@ export async function getCafesBakeries(
     return `
     [out:xml][timeout:30];
     (
-      nwr[amenity=cafe](${filter});
+      nwr[amenity=cafe][cuisine=coffee_shop](${filter});
       nwr[shop=bakery](${filter});
     );
       out body;
