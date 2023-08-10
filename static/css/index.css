@@ -41,8 +41,9 @@ body {
 .footer-container a {
   color: #ddd;
   margin-right: 1em;
+  margin-bottom: 0.15em;;
   text-decoration: none;
-  padding: 0.2em 0.4em;
+  padding: 0.2em 0.4em 0.15em;
   border: 1px solid white;
   background-color: #0c8f19;
   border-radius: 4px;

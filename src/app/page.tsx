@@ -7,7 +7,6 @@ import "../../static/css/index.css";
 
 function TitleComponent() {
   // Show logo and intro phrase, plus expandable usage steps
-  // TODO: create an icon
   return (
     <>
       <div className="title-container">
@@ -25,7 +24,7 @@ function FooterComponent() {
   // TODO: contribution option
   return (
     <div className="footer-container">
-      <div className="footer-links">
+      <div className="footer-container-links">
         <a
           href="https://pelmers.com/metro-something-something/"
           target="_blank"
