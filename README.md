@@ -54,3 +54,8 @@ Data sources:
 ### Future work
 
 - See [Roadmap.md](./Roadmap.md)
+
+### Development
+- Build: `yarn build`
+- Development server: `yarn dev`
+- Format code: `yarn format`

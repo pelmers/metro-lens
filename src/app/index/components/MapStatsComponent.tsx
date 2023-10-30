@@ -69,7 +69,7 @@ export type Props = {
 type State = {
   inline: boolean;
   metric: boolean;
-  density: boolean;
+  densityOption: "off" | "per-capita" | "per-area";
 };
 
 function EmojiLabelComponent(props: { emoji: string; label: string }) {
@@ -81,21 +81,29 @@ function EmojiLabelComponent(props: { emoji: string; label: string }) {
   );
 }
 
+type ValueToDisplayOptions = {
+  isEstimate?: boolean;
+  skipAreaDensity?: boolean;
+  skipCapitaDensity?: boolean;
+};
+
 export class MapStatsComponent extends React.Component<Props, State> {
   containerRef: React.RefObject<HTMLDivElement> = React.createRef();
   state: State = {
     inline: false,
     metric: true,
-    density: false,
+    densityOption: "off",
   };
 
   valueToDisplay(
     stat: StatValue,
     areaValue: StatValue,
-    options?: { isEstimate?: boolean; skipDensity?: boolean }
+    populationValue: StatValue,
+    options?: ValueToDisplayOptions
   ): React.JSX.Element {
     const isEstimate = options?.isEstimate ?? false;
-    const skipDensity = options?.skipDensity ?? false;
+    const skipAreaDensity = options?.skipAreaDensity ?? false;
+    const skipCapitaDensity = options?.skipCapitaDensity ?? false;
     if ("missing" in stat) {
       return <span className="map-stats-missing-value">{stat.missing}</span>;
     } else {
@@ -110,7 +118,11 @@ export class MapStatsComponent extends React.Component<Props, State> {
           units = "mi";
         }
       }
-      if (this.state.density && "value" in areaValue && !skipDensity) {
+      if (
+        this.state.densityOption === "per-area" &&
+        "value" in areaValue &&
+        !skipAreaDensity
+      ) {
         const areaKm2 = areaValue.value;
         const areaMaybeMi2 = this.state.metric ? areaKm2 : areaKm2 * 0.386102;
         if (stat.units === "km²") {
@@ -119,6 +131,27 @@ export class MapStatsComponent extends React.Component<Props, State> {
         } else {
           value = value / areaMaybeMi2;
           units = units + (this.state.metric ? "/km²" : "/mi²");
+        }
+      }
+      if (
+        this.state.densityOption === "per-capita" &&
+        "value" in populationValue &&
+        !skipCapitaDensity
+      ) {
+        const population = populationValue.value;
+        // if the units are area, use ft2 or m2. if it is a count, then scale to per 1000 people
+        if (stat.units === "km") {
+          units = this.state.metric ? "m/🧍" : "ft/🧍";
+          // convert km to m or mi to ft for display
+          const convertFactor = this.state.metric ? 1000 : 5280;
+          value = (value * convertFactor) / population;
+        } else if (stat.units === "km²") {
+          units = this.state.metric ? "m²/🧍" : "ft²/🧍";
+          const convertFactor = this.state.metric ? 1000 * 1000 : 5280 * 5280;
+          value = (value * convertFactor) / population;
+        } else {
+          units = "‰🧍"
+          value = (value / population) * 1000;
         }
       }
       const text = `${isEstimate ? "~" : ""}${numberForDisplay(
@@ -176,6 +209,18 @@ export class MapStatsComponent extends React.Component<Props, State> {
 
   render() {
     const { props } = this;
+    const renderPolygonStats = (
+      getValue: { (arg0: Stats): StatValue },
+      options?: ValueToDisplayOptions
+    ) =>
+      props.statsByPolygon.map(({ stats }) =>
+        this.valueToDisplay(
+          getValue(stats),
+          stats.area,
+          stats.population,
+          options
+        )
+      );
     return (
       <div
         id="map-stats-container"
@@ -202,29 +247,26 @@ export class MapStatsComponent extends React.Component<Props, State> {
 
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🗺️" label="Area" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.area, stats.area, {
-                  skipDensity: true,
-                })
-              )}
+              values={renderPolygonStats((stats) => stats.area, {
+                skipCapitaDensity: true,
+                skipAreaDensity: true,
+              })}
               description="Area of the drawn shape."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="📏" label="Perimeter" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.perimeter, stats.area, {
-                  skipDensity: true,
-                })
-              )}
+              values={renderPolygonStats((stats) => stats.perimeter, {
+                skipAreaDensity: true,
+                skipCapitaDensity: true,
+              })}
               description="Perimeter of the drawn shape."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="👥" label="Population" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.population, stats.area, {
-                  isEstimate: true,
-                })
-              )}
+              values={renderPolygonStats((stats) => stats.population, {
+                skipCapitaDensity: true,
+                isEstimate: true,
+              })}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Estimated population within the drawn shape. Data source:
@@ -234,9 +276,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🅿️" label="Parking Area" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.parkingArea, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.parkingArea)}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Total area of all [dedicated parking
@@ -248,18 +288,14 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🛣️" label="Road Length" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.highwayLength, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.highwayLength)}
               description="Total length of all vehicle-accessible roads within the shape. Click number for data source. Shown in shades of yellow or orange on the map."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚙️" label="Road Area" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.highwayArea, stats.area, {
-                  isEstimate: true,
-                })
-              )}
+              values={renderPolygonStats((stats) => stats.highwayArea, {
+                isEstimate: true,
+              })}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Total area of all vehicle-accessible roads within the shape.
@@ -270,9 +306,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚴‍♂️" label="Cycle Paths" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.cyclewayLength, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.cyclewayLength)}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Total length of all [dedicated cycle
@@ -284,11 +318,9 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚲️️" label="Cycle Area" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.cyclewayArea, stats.area, {
-                  isEstimate: true,
-                })
-              )}
+              values={renderPolygonStats((stats) => stats.cyclewayArea, {
+                isEstimate: true,
+              })}
               description={
                 <ReactMarkdown linkTarget="_blank">
                   Estimated total area of all dedicated cycle paths, not
@@ -300,51 +332,37 @@ export class MapStatsComponent extends React.Component<Props, State> {
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🌳" label="Nature Area" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.natureArea, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.natureArea)}
               description="Total area of all natural features such as parks, forests, and recreation areas within the shape, shown in green on the map. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚌" label="Bus Stops" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.busStops, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.busStops)}
               description="Total number of bus stops within the shape. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚃" label="Rail Stations" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.railStops, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.railStops)}
               description="Total number of rail stations within the shape, including trains, subway, trams, and other light rail. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="🚇" label="Transit Routes" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.totalTransitLines, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.totalTransitLines)}
               description="Total number of transit routes contained in or passing through the shape, including bus, train, subway, tram, and light rail. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="💦" label="Water Area" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.wateryArea, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.wateryArea)}
               description="Total area of all water features such as lakes, rivers, and reservoirs within the shape, not including oceans, shown with blue on the map. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="☕️" label="Café Count" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.cafeCount, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.cafeCount)}
               description="Number of cafes (coffee shops) within the shape. Click number for data source."
             />
             <ExpandableTableRow
               label={<EmojiLabelComponent emoji="️🥐" label="Bakery Count" />}
-              values={props.statsByPolygon.map(({ stats }) =>
-                this.valueToDisplay(stats.bakeryCount, stats.area)
-              )}
+              values={renderPolygonStats((stats) => stats.bakeryCount)}
               description="Number of bakeries within the shape. Click number for data source."
             />
           </tbody>
@@ -365,10 +383,24 @@ export class MapStatsComponent extends React.Component<Props, State> {
           <label>Metric</label>
           <input
             type="checkbox"
-            checked={this.state.density}
-            onChange={(e) => this.setState({ density: e.target.checked })}
+            checked={this.state.densityOption === "per-area"}
+            onChange={(e) =>
+              this.setState({
+                densityOption: e.target.checked ? "per-area" : "off",
+              })
+            }
           />
           <label>Density</label>
+          <input
+            type="checkbox"
+            checked={this.state.densityOption === "per-capita"}
+            onChange={(e) =>
+              this.setState({
+                densityOption: e.target.checked ? "per-capita" : "off",
+              })
+            }
+          />
+          <label>Per Capita</label>
         </div>
       </div>
     );
