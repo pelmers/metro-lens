@@ -150,7 +150,7 @@ export class MapStatsComponent extends React.Component<Props, State> {
           const convertFactor = this.state.metric ? 1000 * 1000 : 5280 * 5280;
           value = (value * convertFactor) / population;
         } else {
-          units = "‰🧍"
+          units = "‰🧍";
           value = (value / population) * 1000;
         }
       }
