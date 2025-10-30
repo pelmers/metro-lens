@@ -6,10 +6,12 @@ import {
   circle,
   centroid,
 } from "@turf/turf";
+import { LRUCache } from "lru-cache";
 import { t } from "../../constants";
 
 const mapboxApiKey = process.env.MAPBOX_API_KEY;
-const OVERPASS_INSTANCE_URL = "https://overpass-api.de/api/interpreter";
+const OVERPASS_DOMAIN = "https://overpass.private.coffee";
+const OVERPASS_INTERPRETER_URL =  `${OVERPASS_DOMAIN}/api/interpreter`;
 
 export type TXmlResult = {
   xml: string;
@@ -200,12 +202,36 @@ export async function getCafesBakeries(
   });
 }
 
-export const queryOverpass = (queryCode: string): Promise<string> =>
-  t(async () => {
-    const url = `${OVERPASS_INSTANCE_URL}?data=${encodeURIComponent(
+const overpassCache = new LRUCache<string, string>({
+  max: 5000,
+});
+
+export const queryOverpass = async (queryCode: string, isRetry: boolean = false): Promise<string> => {
+  const cached = overpassCache.get(queryCode);
+  if (cached !== undefined) {
+    console.log("Using cached Overpass result");
+    return cached;
+  }
+
+  const result = await t(async () => {
+    const url = `${OVERPASS_INTERPRETER_URL}?data=${encodeURIComponent(
       queryCode
     )}`;
     const response = await fetch(url);
     const text = await response.text();
+    if (response.status !== 200) {
+      if (response.status === 429 && !isRetry) {
+        console.log("Retrying Overpass query after backing off rate limit...");
+        // Wait 2 seconds and try again
+        const BACKOFF_TIME_MS = 2000;
+        await new Promise((resolve) => setTimeout(resolve, BACKOFF_TIME_MS));
+        return queryOverpass(queryCode, isRetry = true);
+      }
+      throw new Error(`Overpass API error code ${response.status}`);
+    }
     return text;
   }, "queryOverpass")();
+
+  overpassCache.set(queryCode, result);
+  return result;
+};
