@@ -1,10 +1,11 @@
-import { Feature, FeatureCollection, Polygon } from "@turf/turf";
+import { Feature, Polygon } from "@turf/turf";
 import {
   wrapWithDefault,
   t,
   WORLDPOP_AREA_MINIMUM_KM2,
   WORLDPOP_AREA_MAX_KM2,
 } from "../../constants";
+import { LRUCache } from "lru-cache";
 import { ErrorValue, StatValue } from "./components/MapStatsComponent";
 
 type WorldPopResponse = {
@@ -58,6 +59,9 @@ const PopulationAreaTooLargeValue: StatValue = {
   missing: `Selection too large (<${WORLDPOP_AREA_MAX_KM2} km²)`,
 };
 
+const populationCache = new LRUCache<string, number>({
+  max: 1000,
+});
 export const fetchPopulation = t(
   wrapWithDefault(
     ErrorValue,
@@ -70,17 +74,25 @@ export const fetchPopulation = t(
       }
       const baseUrl =
         "https://api.worldpop.org/v1/services/stats?dataset=wpgppop&year=2020";
-      const url = `${baseUrl}}&geojson=${JSON.stringify(border)}`;
-      const response = await fetch(url);
-      const json = (await response.json()) as WorldPopResponse;
-      if (json.error) {
-        throw new Error(json.error_message);
-      }
-      if (!json.taskid) {
-        throw new Error("no task id returned from population api");
+      const url = `${baseUrl}&geojson=${JSON.stringify(border)}`;
+      let populationResult;
+      if (populationCache.has(url)) {
+        console.log("Using cached population result");
+        populationResult = populationCache.get(url);
+      } else {
+        const response = await fetch(url);
+        const json = (await response.json()) as WorldPopResponse;
+        if (json.error) {
+          throw new Error(json.error_message);
+        }
+        if (!json.taskid) {
+          throw new Error("no task id returned from population api");
+        }
+        populationResult = Math.round(await pollTaskId(json.taskid));
+        populationCache.set(url, populationResult);
       }
       return {
-        value: Math.round(await pollTaskId(json.taskid)),
+        value: populationResult,
         units: "🧍",
       };
     }

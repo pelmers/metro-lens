@@ -235,8 +235,8 @@ export class MapStatsComponent extends React.Component<Props, State> {
             ))}
           </colgroup>
           <tbody>
-            {/* // If there is more than 1 polygon then add a header row which shows the polygon name of each column */}
-            {props.statsByPolygon.length > 1 && (
+            {/* // If there is any polygon then add a header row which shows the polygon name of each column */}
+            {props.statsByPolygon.length >= 1 && (
               <tr>
                 <th></th>
                 {props.statsByPolygon.map(({ polygon }, i) => (

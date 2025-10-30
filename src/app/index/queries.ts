@@ -235,3 +235,48 @@ export const queryOverpass = async (queryCode: string, isRetry: boolean = false)
   overpassCache.set(queryCode, result);
   return result;
 };
+
+const geocodingCache = new LRUCache<string, string>({
+  max: 1000,
+});
+
+export const reverseGeocode = async (
+  longitude: number,
+  latitude: number,
+  apiKey: string
+): Promise<string> => {
+  const cacheKey = `${longitude.toFixed(3)},${latitude.toFixed(3)}`;
+  
+  const cached = geocodingCache.get(cacheKey);
+  if (cached !== undefined) {
+    console.log("Using cached reverse geocoding result");
+    return cached;
+  }
+
+  const result = await t(async () => {
+      const response = await fetch(
+        `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=${apiKey}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const context = feature.properties?.context || {};
+        const contextName = `${context.locality?.name ? context.locality.name + ', ' : '' }${context.place?.name || context.region?.name}`;
+        const propertiesName = feature.properties?.place_formatted ||
+                          feature.properties?.full_address ||
+                          feature.properties?.name;
+
+        return contextName || propertiesName;
+    }
+  }, "reverseGeocode")();
+
+  // Cache the result
+  geocodingCache.set(cacheKey, result);
+  return result;
+};

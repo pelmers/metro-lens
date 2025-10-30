@@ -39,6 +39,7 @@ import {
   getParkingAreas,
   getTransitCounts,
   getWateryAreas,
+  reverseGeocode,
 } from "../queries";
 import {
   splitFeatureCollection,
@@ -592,7 +593,6 @@ export default class MapComponent extends React.Component<Props, State> {
 
   // TODO: put up a loading spinner that blocks the map while we wait for the stats to load
   updateDrawing = async (_evt: { type: string }) => {
-    // TODO: if there are multiple polygons only update the one that was changed
     this.updateId++;
     const currentUpdateId = this.updateId;
     const drawData =
@@ -602,8 +602,6 @@ export default class MapComponent extends React.Component<Props, State> {
     const data = JSON.parse(JSON.stringify(drawData)) as typeof drawData;
     this.deleteFeatures();
     if (data.features.length === 0) return;
-    // TODO: Decide which polygons to update by comparing against
-    // TODO: name polygons by reverse geocoding their centers: https://docs.mapbox.com/api/search/geocoding/#reverse-geocoding
     // Since react batches state updates, if we updated with setState many times,
     // only the last one would be reflected. We don't know in advance the order and timing
     // so we keep a batch object that contains all stats so far, and use it as the new state each time.
@@ -618,6 +616,7 @@ export default class MapComponent extends React.Component<Props, State> {
         units: "km",
       };
       return {
+        // a default value that gets updated in the reverse geocode
         polygon: `Shape ${idx + 1}`,
         stats: { ...AllLoadingStats(), area, perimeter },
       };
@@ -631,6 +630,19 @@ export default class MapComponent extends React.Component<Props, State> {
       });
     };
     setCurrentBatchState();
+
+    // Reverse geocode polygon centers to get meaningful names
+    const geocodingPromises = data.features.map(async (poly, idx) => {
+      try {
+        const center = turf.centroid(poly);
+        const [longitude, latitude] = center.geometry.coordinates;
+        const name = await reverseGeocode(longitude, latitude, this.props.apiKey);
+        currentBatchStats[idx].polygon = name;
+        setCurrentBatchState();
+      } catch (error) {
+        console.error(`Failed to geocode polygon ${idx + 1}:`, error);
+      }
+    });
 
     const updateAreaFeature = wrapWithDefault(
       ErrorValue,
@@ -715,9 +727,7 @@ export default class MapComponent extends React.Component<Props, State> {
         fetchPopulation(border, areaValue).then((value) => {
           currentStats.population = value;
           setCurrentBatchState();
-        })
-      );
-      updatePromises.push(
+        }),
         this.updateHighwayMapAndGetStats(
           border,
           data,
@@ -728,18 +738,14 @@ export default class MapComponent extends React.Component<Props, State> {
             currentStats[key as keyof typeof stats] = value;
           }
           setCurrentBatchState();
-        })
-      );
-      updatePromises.push(
+        }),
         getTransitCountsStats(border, areaValue, assertUpdateId).then(
           ({ railStops, totalTransitLines }) => {
             currentStats.railStops = railStops;
             currentStats.totalTransitLines = totalTransitLines;
             setCurrentBatchState();
           }
-        )
-      );
-      updatePromises.push(
+        ),
         getCafeBakeryCountsStats(border, areaValue, assertUpdateId).then(
           ({ bakeryCount, cafeCount }) => {
             currentStats.bakeryCount = bakeryCount;
@@ -750,6 +756,9 @@ export default class MapComponent extends React.Component<Props, State> {
       );
       borderIndex++;
     }
+
+    updatePromises.push(...geocodingPromises);
+
     try {
       await Promise.all(updatePromises);
       assertUpdateId();
